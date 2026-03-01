@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import listEndpoints from "express-list-endpoints";
 
 dotenv.config();
 
@@ -17,12 +18,12 @@ import database from "./config/database.js";
 import logger from "./utils/logger.js";
 import monitor from "./utils/monitor.js";
 import { devFormat, prodFormat, morganOptions } from "./config/morgan.js";
+import createSocketManager from "./socket/socketManager.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import createSocketManager from "./socket/socketManager.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
-import listEndpoints from "express-list-endpoints";
+import pageRoutes from "./routes/pageRoutes.js";
 
 // Initialize Express app
 const app = express();
@@ -54,6 +55,7 @@ app.use(cookieParser());
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/projects/:projectId/pages", pageRoutes);
 
 // Health check
 app.get("/health", (req, res) => {
@@ -126,7 +128,9 @@ async function startServer() {
         `  Client Secret: ${config.GOOGLE_CLIENT_SECRET ? "✓ Set" : "✗ Not set"}`,
       );
 
-      console.log(`\n---------------------- Server listening on port ${PORT} ------------------ \n`);
+      console.log(
+        `\n---------------------- Server listening on port ${PORT} ------------------ \n`,
+      );
 
       listEndpoints(app).forEach((route) => {
         route.methods.forEach((method) => {
