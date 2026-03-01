@@ -20,7 +20,9 @@ export const verifyToken = (req, res, next) => {
     }
 
     const decoded = tokenService.verifyToken(token);
+
     req.user = decoded;
+    
     next();
   } catch (error) {
     res.status(401).json({ message: error.message });

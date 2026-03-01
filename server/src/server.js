@@ -23,8 +23,10 @@ import userRoutes from "./routes/userRoutes.js";
 import filterRoutes from "./routes/filterRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import createSocketManager from "./socket/socketManager.js";
+import projectRoutes from "./routes/ProjectRoutes.js";
+import listEndpoints from "express-list-endpoints";
 
-// Initialize Express app
+// Initialize Express app 
 const app = express();
 const server = http.createServer(app);
 
@@ -55,7 +57,7 @@ app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/filters",filterRoutes);
 app.use("/api/projects/:projectId/tasks",taskRoutes);
-
+app.use("/api/projects", projectRoutes);
 // Health check
 app.get("/health", (req, res) => {
   const healthStatus = monitor.getHealthStatus();
@@ -127,15 +129,18 @@ async function startServer() {
         `  Client Secret: ${config.GOOGLE_CLIENT_SECRET ? "✓ Set" : "✗ Not set"}`,
       );
 
-      console.log(`\nAvailable routes:`);
-      console.log(`  POST /auth/register`);
-      console.log(`  POST /auth/login`);
-      console.log(`  GET  /auth/google`);
-      console.log(`  GET  /auth/verify`);
-      console.log(`  POST /auth/refresh`);
-      console.log(`  GET  /api/users/profile`);
-      console.log(`  PUT  /api/users/profile`);
-      console.log(`  GET  /api/users`);
+      console.log(`\n---------------------- Server listening on port ${PORT} ------------------ \n`);
+
+      listEndpoints(app).forEach((route) => {
+        route.methods.forEach((method) => {
+          console.log(`✅ ${method.toUpperCase()}  ${route.path}`);
+        });
+
+        console.log();
+      });
+      console.log(`\n------ END Server listening on port ${PORT} ------- \n`);
+
+      logger.info("Server started successfully");
     });
   } catch (error) {
     logger.error("Failed to start server:", error);

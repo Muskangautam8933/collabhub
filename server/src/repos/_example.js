@@ -1,10 +1,10 @@
 /**
- * User Repository
- * Handles all database operations related to users
+ * Repository
+ * Handles all database operations
  * Based on ER Diagram Schema
  */
 
-// import User from "../models/UserSchema.js";
+// import model from "../models/UserSchema.js";
 // import { Types } from "mongoose";
 
 
