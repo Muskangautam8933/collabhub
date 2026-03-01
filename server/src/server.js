@@ -20,7 +20,8 @@ import { devFormat, prodFormat, morganOptions } from "./config/morgan.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import filterRoutes from "./routes/filterRoutes.js"
+import filterRoutes from "./routes/filterRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 import createSocketManager from "./socket/socketManager.js";
 
 // Initialize Express app
@@ -52,7 +53,8 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/filter",filterRoutes)
+app.use("/api/filters",filterRoutes);
+app.use("/api/projects/:projectId/tasks",taskRoutes);
 
 // Health check
 app.get("/health", (req, res) => {

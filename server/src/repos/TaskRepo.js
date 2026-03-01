@@ -1,41 +1,36 @@
-/**
- * User Repository
- * Handles all database operations related to users
- * Based on ER Diagram Schema
- */
-import model from "../models/filterSchema.js";
+import Task from "../models/TaskSchema.js";
 import { ObjectId } from "../utils/ObjectId.js";
 
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
-export async function create(payload) {
-  const doc = await model.create({
+export  async function createTask(payload,projectId) {
+  const createdTask = await Task.create({
     ...payload,
-    project: ObjectId(payload.project),
+    project: ObjectId(projectId),
+    filter:ObjectId(payload.filter),
+    createdBy:ObjectId(payload.createdBy)
   });
-
-  return doc;
+  return createdTask;
 }
 
 /************************************************************************
  **************************** READ **************************************
  ************************************************************************/
-export async function getByProject(projectId) {
-  const projectFilter = await model.find({ project: ObjectId(projectId) });
-  return projectFilter;
+
+export async function getTasksByProject(projectId){
+ const ProjectTasks = await Task.find({project:ObjectId(projectId)})
+ return ProjectTasks;
 }
+export async function getTasksByFilter(filterId){
+  const filterTasks = await Task.find({filter:ObjectId(filterId)})
+  return filterTasks;
+}
+
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/
-export async function updateById(filterId,updates) {
-  const filterUpdated = await model.findOneAndUpdate({_id:ObjectId(filterId)},updates,{new:true,runValidators:true});
-  return filterUpdated
-}
+
 /************************************************************************
  **************************** DELETE ************************************
  ************************************************************************/
-export async function deleteById(FilterId) {
-  const deletedFilter = await model.findByIdAndDelete(ObjectId(FilterId));
-  return deletedFilter;
-}
