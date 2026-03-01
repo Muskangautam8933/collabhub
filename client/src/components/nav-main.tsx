@@ -1,4 +1,4 @@
-import { ChevronRight, File, Plus, type LucideIcon } from "lucide-react";
+import { ChevronRight, File, Plus, Trash, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
@@ -16,7 +16,6 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router";
-import { Button } from "./ui/button";
 import { useAppContext } from "@/contexts/app.context";
 
 export function NavMain({
@@ -53,25 +52,29 @@ export function NavMain({
 
                       <ChevronRight className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
 
-                      <Button
-                        className="ml-auto cursor-pointer"
-                        size={"xs"}
+                      <div
+                        className="ml-auto cursor-pointer hover:bg-muted/50"
                         onClick={ctx.handleCreateNewPage}
-                        asChild
                       >
                         <Plus size={16} />
-                      </Button>
+                      </div>
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
 
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {ctx.pagesMeta?.map((subItem) => (
+                      {ctx.pagesMetaSortByUpdatedAt?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.clientId}>
                           <SidebarMenuSubButton asChild>
                             <Link to={`/me/pages/${subItem.clientId}`}>
                               <File />
                               <span>{subItem.title}</span>
+                              <Trash
+                                className="ml-auto cursor-pointer"
+                                size={16}
+                                color="red"
+                                onClick={ctx.handleDeletePage(subItem.clientId)}
+                              />
                             </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>

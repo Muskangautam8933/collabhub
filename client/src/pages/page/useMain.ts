@@ -1,52 +1,56 @@
-import type { InitialConfigType } from "@lexical/react/LexicalComposer";
+import React from "react";
 import * as idb from "@/lib/editorDB";
 
-import React from "react";
 import { useParams } from "react-router";
 import { useAppContext } from "@/contexts/app.context";
+import { scheduleSync } from "@/lib/scheduleSync";
+
+import type { PageMeta } from "@/hooks/use-app-data";
+import type { InitialConfigType } from "@lexical/react/LexicalComposer";
 
 export default function useMain() {
   const editorRef = React.useRef<HTMLElement | null>(null);
   const params = useParams();
   const ctx = useAppContext();
-
   const clientId = params["client-id"];
 
   const initialConfig: InitialConfigType = {
-    namespace: "MyEditor",
+    namespace: `Editor-${clientId}`,
     onError: console.error,
   };
 
-  const pageTitle = React.useMemo(() => {
-    if (!clientId) return;
-
-    return ctx.pagesMeta.find((page) => page.clientId === clientId)?.title;
-  }, [ctx.pagesMeta, clientId]);
-
-  async function handleUpdateTitle(title: string) {
-    if (!clientId) return;
-
-    const payload = await idb.getPageMeta(clientId);
-
-    await idb.setPageMeta(clientId, {
-      ...payload,
-      title,
-      updatedAt: Date.now().toString(),
-    });
-  }
-
   async function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    ctx.setPagesMeta((prev) => {
-      return prev.map((page) => {
-        if (page.clientId === clientId) {
-          return { ...page, title: e.target.value };
-        }
-        return page;
-      });
-    });
+    if (!clientId) return;
 
-    await handleUpdateTitle(e.target.value);
+    const savedMeta = await idb.getPageMeta(clientId);
+
+    const updatedAt = Date.now().toString();
+
+    const payload: Partial<PageMeta> = {
+      title: e.target.value,
+      updatedAt,
+    };
+
+    ctx.setPagesMeta((prev) =>
+      prev.map((page) =>
+        page.clientId === clientId ? { ...page, ...payload } : page,
+      ),
+    );
+
+    // Save locally
+    await idb.setPageMeta(clientId, { ...savedMeta, ...payload });
+
+    // Schedule sync
+    scheduleSync(clientId, "UPDATE_META", {
+      clientId,
+      ...payload,
+    });
   }
+
+  const pageTitle = React.useMemo(
+    () => ctx.pagesMeta.find((page) => page.clientId === clientId)?.title,
+    [clientId, ctx.pagesMeta],
+  );
 
   return {
     editorRef,

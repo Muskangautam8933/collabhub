@@ -15,6 +15,12 @@ export const dbPromise = openDB(DB_NAME, 1, {
   },
 });
 
+export async function getPage(clientId: string) {
+  const db = await dbPromise;
+
+  return db.get(OBJECT_STORE.PAGES, clientId);
+}
+
 export async function setPage(clientId: string, content: string | object) {
   const db = await dbPromise;
 
@@ -26,12 +32,6 @@ export async function setPage(clientId: string, content: string | object) {
     },
     clientId,
   );
-}
-
-export async function getPage(clientId: string) {
-  const db = await dbPromise;
-
-  return db.get(OBJECT_STORE.PAGES, clientId);
 }
 
 export async function createPageMetaWithPage(payload: PageMeta) {
@@ -49,12 +49,6 @@ export async function createPageMetaWithPage(payload: PageMeta) {
   );
 }
 
-export async function setPageMeta(clientId: string, payload: PageMeta) {
-  const db = await dbPromise;
-
-  await db.put(OBJECT_STORE.PAGES_META, payload, clientId);
-}
-
 export async function getPageMeta(clientId: string) {
   const db = await dbPromise;
 
@@ -67,11 +61,17 @@ export async function getPageMetas() {
   return db.getAll(OBJECT_STORE.PAGES_META);
 }
 
-export async function deletePageMeta(payload: PageMeta) {
+export async function setPageMeta(clientId: string, payload: PageMeta) {
+  const db = await dbPromise;
+
+  await db.put(OBJECT_STORE.PAGES_META, payload, clientId);
+}
+
+export async function deletePageMetaAndPage(clientId: string) {
   const db = await dbPromise;
 
   // Cascade delete
-  await db.delete(OBJECT_STORE.PAGES_META, payload.clientId);
+  await db.delete(OBJECT_STORE.PAGES_META, clientId);
 
-  await db.delete(OBJECT_STORE.PAGES, payload.clientId);
+  await db.delete(OBJECT_STORE.PAGES, clientId);
 }
