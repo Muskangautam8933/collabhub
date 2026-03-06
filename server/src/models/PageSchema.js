@@ -15,11 +15,6 @@ const schema = new mongoose.Schema(
       type: Object,
       required: [true, "content is required"],
     },
-    meta: {
-      type: mongoose.Types.ObjectId,
-      required: [true, "meta is required"],
-      ref: "PageMeta",
-    },
     
     isDeleted: {
       type: Boolean,

@@ -15,6 +15,8 @@ const config = {
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_EXPIRY: "7d",
 
+  JWT_INVITE_EXPIRY: "7d",
+
   // Session Configuration
   SESSION_SECRET: process.env.SESSION_SECRET,
 
@@ -27,6 +29,10 @@ const config = {
 
   // Client Origin
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+
+  // email
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASS: process.env.EMAIL_PASS,
 };
 
 export default config;

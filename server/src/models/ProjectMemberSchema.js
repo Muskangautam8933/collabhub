@@ -1,35 +1,34 @@
 /**
- * PageMeta Schema for MongoDB using Mongoose
+ * Schema for MongoDB using Mongoose
  * Based on ER Diagram - Entity
  */
 
 import mongoose from "mongoose";
+import { PROJECT_ROLE } from "../common/constants.js";
 
 const schema = new mongoose.Schema(
   {
-    clientId: {
-      type: String,
-      required: [true, "clientId is required"],
-    },
-    title: {
-      type: String,
-      required: [true, "title is required"],
-    },
-    page:{
-      type: mongoose.Types.ObjectId,
-      required: [true, "page is required"],
-      ref: "Page",
-    },
     project: {
       type: mongoose.Types.ObjectId,
       required: [true, "project is required"],
       ref: "Project",
     },
-    creator: {
+    user: {
       type: mongoose.Types.ObjectId,
-      required: [true, "creator is required"],
       ref: "User",
+      required: [true, "user is required"],
     },
+    role: {
+      type: String,
+      enum: Object.values(PROJECT_ROLE),
+      default: PROJECT_ROLE.READ,
+    },
+    invite: {
+      type: mongoose.Types.ObjectId,
+      ref: "Invite",
+      required: [true, "invite is required"],
+    },
+
     isDeleted: {
       type: Boolean,
       default: false,
@@ -53,7 +52,7 @@ const schema = new mongoose.Schema(
 /**
  * Create Account model
  */
-const Model = mongoose.model("PageMeta", schema);
+const Model = mongoose.model("ProjectMember", schema);
 
 Model.syncIndexes();
 

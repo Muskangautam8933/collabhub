@@ -4,42 +4,37 @@
  * Based on ER Diagram Schema
  */
 
-import Model from "../models/PageMetaSchema.js";
-import mongoose from "mongoose";
+import { INVITE_STATUS } from "../common/constants.js";
+import model from "../models/ProjectMemberSchema.js";
 import { ObjectId } from "../utils/ObjectId.js";
 
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
-export async function create(payload, options = {}) {
-  const doc = new Model({
+export function create(payload) {
+  return model.create({
     ...payload,
-    creator: ObjectId(payload.creator),
     project: ObjectId(payload.project),
-    page: ObjectId(payload.page),
+    sender: ObjectId(payload.sender),
   });
-
-  return await doc.save(options);
 }
 /************************************************************************
  **************************** READ **************************************
  ************************************************************************/
-export async function getById(id, options = { session: null }) {
-  if (!id) throw new Error("_id of page is required");
+export function getByUserAndProject(userId, projectId) {
+  if (!userId) throw new Error("userId is required");
+  if (!projectId) throw new Error("projectId is required");
 
-  return await Model.findOne({ _id: id, isDeleted: false }).session(
-    options.session,
-  );
-}
-
-export async function getByProjectId(projectId) {
-  if (!projectId) throw new Error("Project ID is required");
-
-  return await Model.find({ project: ObjectId(projectId), isDeleted: false });
+  return model.findOne({
+    user: ObjectId(userId),
+    project: ObjectId(projectId),
+    isDeleted: false,
+  });
 }
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/
+
 /************************************************************************
  **************************** DELETE ************************************
  ************************************************************************/
@@ -48,7 +43,7 @@ export async function softDeleteById(id, deletor, options = {}) {
 
   if (!deletor) throw new Error("deletor is required");
 
-  return await Model.updateOne(
+  return await model.updateOne(
     { _id: id },
     {
       $set: {

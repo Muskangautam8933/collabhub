@@ -6,7 +6,7 @@
 import * as userRepo from "../repos/UserRepo.js";
 import * as accountRepo from "../repos/AccountRepo.js";
 import * as loginDetailsRepo from "../repos/LoginDetailsRepo.js";
-import * as tokenService from "../utils/token-service.js";
+import * as tokenService from "../utils/token.service.js";
 import * as googleTokenRepo from "../repos/GoogleTokenRepo.js";
 import mongoose from "mongoose";
 import { AUTH_METHOD } from "../models/LoginDetailsSchema.js";
@@ -80,7 +80,7 @@ export async function login(req, res) {
   if (!account) throw new Error("Account not found");
 
   const loginDetails = await loginDetailsRepo.getLoginDetailsByAccountId(account._id);
-
+4
   if (!loginDetails) throw new Error("Login details not found");
 
   if (loginDetails.authMethod !== AUTH_METHOD.EMAIL)

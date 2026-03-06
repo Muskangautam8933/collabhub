@@ -2,7 +2,7 @@ import * as pageMetaRepo from "../repos/PageMetaRepo.js";
 import * as pageRepo from "../repos/PageRepo.js";
 import { withTransaction } from "../utils/withTransaction.js";
 
-export const create = async (req, res, next) => {
+export const create = async (req, res) => {
   let page, meta;
 
   await withTransaction(async (session) => {
@@ -18,25 +18,49 @@ export const create = async (req, res, next) => {
     if (metaPayload.clientId !== pagePayload.clientId)
       throw new Error("clientId mismatch");
 
+    page = await pageRepo.create(
+      { ...pagePayload },
+      { session },
+    );
+
     meta = await pageMetaRepo.create(
       {
         ...metaPayload,
         creator: currentUserId,
         project: projectId,
+        page: page._id,
       },
       { session },
     );
 
-    page = await pageRepo.create(
-      { ...pagePayload, meta: meta._id },
-      { session },
-    );
+    
   });
 
   return res.status(201).json({ page, meta });
 };
 
-export const deletePage = async (req, res, next) => {
+export const getPageByMeta = async (req, res, next) => {
+  const meta = req.query.meta;
+
+  if (!meta) return next();
+
+  const metaDoc = await pageMetaRepo.getById(meta);
+  const page = await pageRepo.getById(metaDoc.page);
+
+  return res.json(page);
+};
+
+export const getPagesMetaByProjectId = async (req, res) => {
+  const pagesMeta = await pageMetaRepo.getByProjectId(req.params.projectId);
+  return res.json(pagesMeta);
+};
+
+export const updateById = async (req, res) => {
+  const page = await pageRepo.updateById(req.params.id, req.body);
+  return res.json(page);
+};
+
+export const deletePage = async (req, res) => {
   await withTransaction(async (session) => {
     const page = await pageRepo.getById(req.params.id, { session });
 
@@ -50,9 +74,4 @@ export const deletePage = async (req, res, next) => {
   });
 
   return res.json({ message: "Page deleted successfully" });
-};
-
-export const getPagesMetaByProjectId = async (req, res, next) => {
-  const pagesMeta = await pageMetaRepo.getByProjectId(req.params.projectId);
-  return res.json(pagesMeta);
 };

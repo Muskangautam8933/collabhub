@@ -24,6 +24,10 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
+import inviteRoutes from "./routes/inviteRoutes.js";
+
+import { addUserRole, verifyToken } from "./middleware/authMiddleware.js";
+import asyncHandler from "./utils/asyncHandler.js";
 
 // Initialize Express app
 const app = express();
@@ -55,7 +59,13 @@ app.use(cookieParser());
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRoutes);
-app.use("/api/projects/:projectId/pages", pageRoutes);
+app.use("/api/projects/:projectId/pages", verifyToken, addUserRole, pageRoutes);
+app.use(
+  "/api/projects/:projectId/invites",
+  verifyToken,
+  addUserRole,
+  inviteRoutes,
+);
 
 // Health check
 app.get("/health", (req, res) => {
