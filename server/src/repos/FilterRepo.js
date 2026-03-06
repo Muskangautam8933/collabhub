@@ -9,10 +9,11 @@ import { ObjectId } from "../utils/ObjectId.js";
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
-export async function create(payload) {
+export async function create(projectId, payload, userId) {
   const doc = await model.create({
+    project: ObjectId(projectId),
     ...payload,
-    project: ObjectId(payload.project),
+    createdBy: ObjectId(userId),
   });
 
   return doc;
@@ -21,21 +22,31 @@ export async function create(payload) {
 /************************************************************************
  **************************** READ **************************************
  ************************************************************************/
-export async function getByProject(projectId) {
-  const projectFilter = await model.find({ project: ObjectId(projectId) });
+export async function getByProject(projectId, userId) {
+  const projectFilter = await model.find({
+    project: ObjectId(projectId),
+    createdBy: ObjectId(userId),
+  });
   return projectFilter;
 }
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/
-export async function updateById(filterId,updates) {
-  const filterUpdated = await model.findOneAndUpdate({_id:ObjectId(filterId)},updates,{new:true,runValidators:true});
-  return filterUpdated
+export async function updateById(filterId, updates, userId) {
+  const filterUpdated = await model.findOneAndUpdate(
+    { _id: ObjectId(filterId), createdBy: ObjectId(userId) },
+    updates,
+    { new: true, runValidators: true },
+  );
+  return filterUpdated;
 }
 /************************************************************************
  **************************** DELETE ************************************
  ************************************************************************/
-export async function deleteById(FilterId) {
-  const deletedFilter = await model.findByIdAndDelete(ObjectId(FilterId));
+export async function deleteById(FilterId, userId) {
+  const deletedFilter = await model.findOneAndDelete({
+    _id: ObjectId(FilterId),
+    createdBy: ObjectId(userId),
+  });
   return deletedFilter;
 }

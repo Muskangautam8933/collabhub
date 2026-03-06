@@ -15,14 +15,10 @@ const taskSchema = new mongoose.Schema(
       ref: "project",
       required: [true, "project is required"],
     },
-    filter: {
-      type: mongoose.Schema.ObjectId,
-      ref: "filters",
-      required: [true, "filter is required"],
-    },
+    
     createdBy: {
       type: mongoose.Schema.ObjectId,
-      ref: "user",
+      ref: "User",
       required: [true, "createdBy is required "],
     },
     startDate: {
@@ -35,4 +31,6 @@ const taskSchema = new mongoose.Schema(
   { timestamps: true },
 );
 const task = mongoose.model("task", taskSchema);
+task.syncIndexes();
+
 export default task;

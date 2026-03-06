@@ -21,13 +21,14 @@ import { devFormat, prodFormat, morganOptions } from "./config/morgan.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import filterRoutes from "./routes/filterRoutes.js";
+import filterValueRoutes from "./routes/filterValueRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import createSocketManager from "./socket/socketManager.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
 import listEndpoints from "express-list-endpoints";
 
 // Initialize Express app 
-const app = express();
+const app = express();       
 const server = http.createServer(app);
 
 // Initialize Socket.io
@@ -55,9 +56,11 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/filters",filterRoutes);
+app.use("/api/projects/:projectId/filters",filterRoutes);
+app.use("/api/projects/:projectId/filterValues",filterValueRoutes);
 app.use("/api/projects/:projectId/tasks",taskRoutes);
 app.use("/api/projects", projectRoutes);
+
 // Health check
 app.get("/health", (req, res) => {
   const healthStatus = monitor.getHealthStatus();

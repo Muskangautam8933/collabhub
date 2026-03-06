@@ -4,30 +4,28 @@ import { ObjectId } from "../utils/ObjectId.js";
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
-export async function createTask(payload, projectId) {
+export async function createTask(payload, projectId,userId) {
   const createdTask = await Task.create({
     ...payload,
     project: ObjectId(projectId),
-    filter: ObjectId(payload.filter),
-    createdBy: ObjectId(payload.createdBy),
+    createdBy: ObjectId(userId),
   });
   return createdTask;
-}
+}  
 
 /************************************************************************
  **************************** READ **************************************
  ************************************************************************/
 
-export async function getTasksByProject(projectId) {
-  const ProjectTasks = await Task.find({ project: ObjectId(projectId) });
+export async function getTasksByProject(projectId,userId) {
+  const ProjectTasks = await Task.find({ project: ObjectId(projectId),createdBy:ObjectId(userId) });
   return ProjectTasks;
 }
-export async function getTasksByFilter(filterId) {
-  return await Task.find({ filter: ObjectId(filterId) });
-}
-export async function getTaskByTitle(title) {
+
+export async function getTaskByTitle(title,userId) {
   return await Task.find({
-    title:title
+    title:title,
+    createdBy:ObjectId(userId)
   });
 }
 
@@ -35,8 +33,10 @@ export async function getTaskByTitle(title) {
  **************************** UPDATE ************************************
  ************************************************************************/
 
- export async function updateTask(taskId,updates) {
-   const updatedTask = await Task.findOneAndUpdate({_id:ObjectId(taskId)},updates,{new:true,runValidators:true});
+ export async function updateTask(taskId,userId,updates) {
+   const updatedTask = await Task.findOneAndUpdate({_id:ObjectId(taskId),
+    createdBy:ObjectId(userId)
+   },updates,{new:true,runValidators:true});
    return updatedTask
  }
 
@@ -44,7 +44,7 @@ export async function getTaskByTitle(title) {
  **************************** DELETE ************************************
  ************************************************************************/
 
- export async function deleteTask(taskId){
- const deletedTask =  await Task.findByIdAndDelete(taskId)
+ export async function deleteTask(taskId,userId){
+ const deletedTask =  await Task.findOneAndDelete({_id:taskId,createdBy:ObjectId(userId)})
  return deletedTask;
  }

@@ -4,12 +4,16 @@ const filterValueSchema = new mongoose.Schema(
     filter: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Filter",
-      required: true,
+      required: [true, "filter is required"],
     },
-
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "createdBy is required"],
+    },
     name: {
       type: String,
-      required: true,
+      required: [true, "name is required"],
       trim: true,
     },
     description: {
@@ -22,4 +26,4 @@ const filterValueSchema = new mongoose.Schema(
 );
 
 const FilterValue = mongoose.model("FilterValue", filterValueSchema);
-module.exports = FilterValue;
+export default FilterValue;

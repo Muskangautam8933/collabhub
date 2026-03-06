@@ -17,10 +17,15 @@ const filterSchema = new mongoose.Schema(
       ref: "Project",
       required: [true, "project is required"],
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "createdBy is required"],
+    },
   },
   { timestamps: true },
 );
 
 const Filter = mongoose.model("Filter", filterSchema);
-Filter.syncIndexes()
-export default Filter; 
+Filter.syncIndexes();
+export default Filter;
