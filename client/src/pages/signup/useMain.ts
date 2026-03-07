@@ -2,6 +2,7 @@ import localSpace from "@/services/local-space";
 import { register, type AuthResponse } from "@/services/auth";
 import React from "react";
 import { useNavigate } from "react-router";
+import { ROUTES } from "@/_routes.constants";
 
 export default function useMain() {
   const navigate = useNavigate();
@@ -44,7 +45,7 @@ export default function useMain() {
       setLoading(false);
 
       // 🚀 navigate only AFTER success
-      navigate("/me/home", { replace: true });
+      navigate(ROUTES.PRIVATE.PROJECTS.ROOT, { replace: true });
     } catch (error) {
       console.log(error);
       setError((error as Error).message);
