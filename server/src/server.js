@@ -93,6 +93,19 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   logger.error("Request error:", err);
 
+  // handle body-parser JSON errors
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    return res.status(400).json({ message: "Invalid JSON payload" });
+  }
+
+  // Mongoose validation errors
+  if (err.name === "ValidationError") {
+    return res.status(400).json({
+      message: err.message,
+      errors: err.errors,
+    });
+  }
+
   res.status(err.status || 500).json({
     message: err.message || "Internal server error",
     error: config.NODE_ENV === "development" ? err : {},
