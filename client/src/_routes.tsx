@@ -8,7 +8,7 @@ import PrivateLayout from "./private.layout";
 import { SignupPage } from "./pages/signup";
 import { ProfilePage } from "./pages/profile";
 import { ChatPage } from "./pages/chat";
-import { SettingsPage } from "./pages/settings";
+import { AccessControlPage, SettingsPage } from "./pages/settings";
 import { DashboardPage } from "./pages/dashboard";
 
 export const workspaceChilds: RouteObject[] = [
@@ -19,6 +19,24 @@ export const workspaceChilds: RouteObject[] = [
   {
     path: ":id",
     element: <div>Hello</div>,
+  },
+];
+export const settingChilds: RouteObject[] = [
+  {
+    index: true,
+    element: <Navigate to="general" replace />,
+  },
+  {
+    path: "general",
+    element: <div>General Setting Page</div>,
+  },
+  {
+    path: "filters",
+    element: <div>Filters Page</div>,
+  },
+  {
+    path: "access-control",
+    element: <AccessControlPage />,
   },
 ];
 
@@ -55,6 +73,7 @@ export const protectedChilds: RouteObject[] = [
   {
     path: "settings",
     element: <SettingsPage />,
+    children: settingChilds,
   },
 ];
 

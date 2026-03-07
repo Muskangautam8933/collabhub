@@ -5,35 +5,43 @@
  */
 
 import { INVITE_STATUS } from "../common/constants.js";
-import model from "../models/InviteSchema.js";
+import Model from "../models/InviteSchema.js";
 import { ObjectId } from "../utils/ObjectId.js";
 
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
-export function create(payload) {
-  return model.create({
+export async function create(payload) {
+  const doc = new Model.create({
     ...payload,
     project: ObjectId(payload.project),
     sender: ObjectId(payload.sender),
   });
+
+  return await doc.save();
 }
 /************************************************************************
  **************************** READ **************************************
  ************************************************************************/
 export function getByProject(projectId) {
-  return model.find({ project: ObjectId(projectId), isDeleted: false });
+  return Model.find({ project: ObjectId(projectId), isDeleted: false });
 }
+
+export function getByEmail(email) {
+  if (!email) throw new Error("email is required");
+  return Model.findOne({ email: email.toLowerCase() });
+}
+
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/
-export function updateAcceptanceById(id, payload) {
+export function updateAcceptanceByEmail(email, payload, options = {}) {
   const { receiver } = payload;
-  if (!id) throw new Error("Invite ID is required");
+  if (!email) throw new Error("email is required");
   if (!receiver) throw new Error("receiver is required");
 
-  return model.updateOne(
-    { _id: id },
+  return Model.updateOne(
+    { email },
     {
       $set: {
         receiver: ObjectId(receiver),
@@ -41,6 +49,11 @@ export function updateAcceptanceById(id, payload) {
         acceptedAt: new Date(),
       },
     },
+    {
+      upsert: true,
+      session: options.session,
+    },
+
   );
 }
 /************************************************************************
@@ -51,7 +64,7 @@ export async function softDeleteById(id, deletor, options = {}) {
 
   if (!deletor) throw new Error("deletor is required");
 
-  return await model.updateOne(
+  return await Model.updateOne(
     { _id: id },
     {
       $set: {

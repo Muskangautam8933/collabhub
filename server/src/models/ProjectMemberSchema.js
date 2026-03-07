@@ -18,15 +18,15 @@ const schema = new mongoose.Schema(
       ref: "User",
       required: [true, "user is required"],
     },
-    role: {
-      type: String,
-      enum: Object.values(PROJECT_ROLE),
-      default: PROJECT_ROLE.READ,
-    },
     invite: {
       type: mongoose.Types.ObjectId,
       ref: "Invite",
       required: [true, "invite is required"],
+    },
+     role: {
+      type: String,
+      enum: Object.values(PROJECT_ROLE),
+      default: PROJECT_ROLE.READ,
     },
 
     isDeleted: {

@@ -26,6 +26,13 @@ export async function getByEmail(email) {
   
   return await User.findOne({ email: email.toLowerCase() });
 }
+
+export async function getById(id) {
+  if (!id) throw new Error("User ID is required");
+  
+  return await User.findById(id);
+}
+
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/

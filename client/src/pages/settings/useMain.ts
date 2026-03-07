@@ -1,13 +1,23 @@
-import { DEFAULT_USER } from "@/app.constatns";
-import getNameAsAvtar from "@/services/getNameAsAvtar";
-import localSpace from "@/services/local-space";
+import { settingChilds } from "@/_routes";
+import React from "react";
+import { useLocation } from "react-router";
 
 export default function useMain() {
-  const user = localSpace.getUser() || DEFAULT_USER;
-  const fallbackAvtar = getNameAsAvtar(user?.name);
+  const location = useLocation();
+
+  const [activeTab, setActiveTab] = React.useState<string>("all");
+
+  // SET ACTIVE TAB
+  React.useEffect(() => {
+    const path = location.pathname.split("/").filter(Boolean).at(-1) ?? "general";
+    console.log(path)
+    setActiveTab(path);
+  }, [location.pathname]);
 
   return {
-    user,
-    fallbackAvtar,
+    activeTab,
+    childRoutes: settingChilds
+      .filter((c) => !!c.path)
+      .map((child) => child.path!),
   };
 }

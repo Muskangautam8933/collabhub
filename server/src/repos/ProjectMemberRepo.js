@@ -5,18 +5,21 @@
  */
 
 import { INVITE_STATUS } from "../common/constants.js";
-import model from "../models/ProjectMemberSchema.js";
+import Model from "../models/ProjectMemberSchema.js";
 import { ObjectId } from "../utils/ObjectId.js";
 
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
-export function create(payload) {
-  return model.create({
+export async function create(payload, options = {}) {
+  const doc = new Model({
     ...payload,
     project: ObjectId(payload.project),
-    sender: ObjectId(payload.sender),
+    user: ObjectId(payload.user),
+    invite: ObjectId(payload.invite),
   });
+
+  return await doc.save(options);
 }
 /************************************************************************
  **************************** READ **************************************
@@ -25,7 +28,7 @@ export function getByUserAndProject(userId, projectId) {
   if (!userId) throw new Error("userId is required");
   if (!projectId) throw new Error("projectId is required");
 
-  return model.findOne({
+  return Model.findOne({
     user: ObjectId(userId),
     project: ObjectId(projectId),
     isDeleted: false,
@@ -43,7 +46,7 @@ export async function softDeleteById(id, deletor, options = {}) {
 
   if (!deletor) throw new Error("deletor is required");
 
-  return await model.updateOne(
+  return await Model.updateOne(
     { _id: id },
     {
       $set: {
