@@ -1,107 +1,117 @@
-import { createBrowserRouter, Navigate, type RouteObject } from "react-router";
+import App from "./App";
+import PrivateLayout from "./private.layout";
+import { createBrowserRouter, Navigate } from "react-router";
 import { HomePage } from "./pages/home";
 import { LandingPage } from "./pages/landing";
-import App from "./App";
 import { LoginPage } from "./pages/login";
 import { PagesPage } from "./pages/page";
-import PrivateLayout from "./private.layout";
 import { SignupPage } from "./pages/signup";
 import { ProfilePage } from "./pages/profile";
-import { ChatPage } from "./pages/chat";
+import { CommunicationPage } from "./pages/communication";
 import { AccessControlPage, SettingsPage } from "./pages/settings";
 import { DashboardPage } from "./pages/dashboard";
-
-export const workspaceChilds: RouteObject[] = [
-  {
-    index: true,
-    element: <Navigate to=":workspace-name" replace />,
-  },
-  {
-    path: ":id",
-    element: <div>Hello</div>,
-  },
-];
-export const settingChilds: RouteObject[] = [
-  {
-    index: true,
-    element: <Navigate to="general" replace />,
-  },
-  {
-    path: "general",
-    element: <div>General Setting Page</div>,
-  },
-  {
-    path: "filters",
-    element: <div>Filters Page</div>,
-  },
-  {
-    path: "access-control",
-    element: <AccessControlPage />,
-  },
-];
-
-export const protectedChilds: RouteObject[] = [
-  {
-    index: true,
-    element: <Navigate to="home" replace />,
-  },
-  {
-    path: "home",
-    element: <HomePage />,
-  },
-  {
-    path: "workspaces",
-    element: <DashboardPage />,
-    children: workspaceChilds,
-  },
-  {
-    path: "profile",
-    element: <ProfilePage />,
-  },
-  {
-    path: "chats/:id",
-    element: <ChatPage />,
-  },
-  {
-    path: "pages/:client-id",
-    element: <PagesPage />,
-  },
-  {
-    path: "pages",
-    element: <PagesPage />,
-  },
-  {
-    path: "settings",
-    element: <SettingsPage />,
-    children: settingChilds,
-  },
-];
-
-const appChilds: RouteObject[] = [
-  {
-    index: true,
-    element: <LandingPage />,
-  },
-  {
-    path: "/me",
-    element: <PrivateLayout />,
-    children: protectedChilds,
-  },
-  {
-    path: "/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/signup",
-    element: <SignupPage />,
-  },
-];
+import { ROUTES } from "./_routes.constants";
+import { InvitePage } from "./pages/invite";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    children: appChilds,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+      {
+        path: ROUTES.PUBLIC.LOGIN,
+        element: <LoginPage />,
+      },
+      {
+        path: ROUTES.PUBLIC.SIGNUP,
+        element: <SignupPage />,
+      },
+      {
+        path: ROUTES.PUBLIC.INVITE,
+        element: <InvitePage />,
+      },
+      {
+        path: ROUTES.PRIVATE.PROJECTS.ROOT,
+        element: <PrivateLayout />,
+        children: [
+          {
+            index: true,
+            element: <HomePage />,
+          },
+          {
+            path: ":projectId",
+            children: [
+              {
+                index: true,
+                element: <Navigate to={ROUTES.PRIVATE.PROJECTS.DASHBOARD} />,
+              },
+              {
+                path: ROUTES.PRIVATE.PROJECTS.DASHBOARD,
+                element: <DashboardPage />,
+              },
+              {
+                path: ROUTES.PRIVATE.PROJECTS.PROFILE,
+                element: <ProfilePage />,
+              },
+              {
+                path: ROUTES.PRIVATE.PROJECTS.COMMUNICATIONS,
+                element: <CommunicationPage />,
+                children: [
+                  {
+                    index: true,
+                    element: <Navigate to=":id" replace />,
+                  },
+                  {
+                    path: ":id",
+                    element: <CommunicationPage />,
+                  },
+                ],
+              },
+              {
+                path: ROUTES.PRIVATE.PROJECTS.PAGES,
+                element: <PagesPage />,
+                children: [
+                  {
+                    index: true,
+                    element: <Navigate to=":client-id" replace />,
+                  },
+                  {
+                    path: ":client-id",
+                    element: <PagesPage />,
+                  },
+                ],
+              },
+              {
+                path: ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT,
+                element: <SettingsPage />,
+                children: [
+                  {
+                    index: true,
+                    element: <Navigate to="general" replace />,
+                  },
+                  {
+                    path: "general",
+                    element: <div>General Setting Page</div>,
+                  },
+                  {
+                    path: "filters",
+                    element: <div>Filters Page</div>,
+                  },
+                  {
+                    path: "access-control",
+                    element: <AccessControlPage />,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
 ]);
 

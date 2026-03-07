@@ -1,13 +1,11 @@
-import { DEFAULT_USER } from "@/app.constatns";
-import getNameAsAvtar from "@/services/getNameAsAvtar";
-import localSpace from "@/services/local-space";
+import { useParams } from "react-router";
 
 export default function useMain() {
-  const user = localSpace.getUser() || DEFAULT_USER;
-  const fallbackAvtar = getNameAsAvtar(user?.name);
+  const { projectId } = useParams();
+
+  console.log(projectId)
 
   return {
-    user,
-    fallbackAvtar,
+    projectId,
   };
 }

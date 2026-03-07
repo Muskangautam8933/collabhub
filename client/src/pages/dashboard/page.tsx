@@ -1,7 +1,11 @@
+import { usePageContext } from "./_context";
+
 export default function Page() {
-  return (
-    <div className="size-full">
-      Dashboar
-    </div>
-  );
+  const ctx = usePageContext();
+
+  if (!ctx.projectId) {
+    return <div>Project not found</div>;
+  }
+
+  return <div className="size-full">Dash boar</div>;
 }

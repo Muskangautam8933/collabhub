@@ -15,8 +15,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { useAppContext } from "@/contexts/app.context";
+import { ROUTES } from "@/_routes.constants";
 
 export function NavMain({
   items,
@@ -30,6 +31,7 @@ export function NavMain({
   }[];
 }) {
   const ctx = useAppContext();
+  const { projectId } = useParams();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Resources</SidebarGroupLabel>
@@ -66,7 +68,9 @@ export function NavMain({
                       {ctx.pagesMetaSortByUpdatedAt?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.clientId}>
                           <SidebarMenuSubButton asChild>
-                            <Link to={`/me/pages/${subItem.clientId}`}>
+                            <Link
+                              to={`${ROUTES.PRIVATE.PROJECTS.ROOT}/${projectId}/${ROUTES.PRIVATE.PROJECTS.PAGES}/${subItem.clientId}`}
+                            >
                               <File />
                               <span>{subItem.title}</span>
                               <Trash
@@ -83,7 +87,9 @@ export function NavMain({
                   </CollapsibleContent>
                 </>
               ) : (
-                <Link to={`/me/workspaces/${item.title}`}>
+                <Link
+                  to={`${ROUTES.PRIVATE.PROJECTS.ROOT}/${projectId}/${item.url}`}
+                >
                   <SidebarMenuButton className="cursor-pointer">
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>

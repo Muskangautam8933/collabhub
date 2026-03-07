@@ -12,7 +12,6 @@ export default function useAuthGuard() {
   }
 
   useLayoutEffect(() => {
-    
     checkAuth(setIsAuthenticated);
 
     window.addEventListener("auth-change", handleAuthChange);

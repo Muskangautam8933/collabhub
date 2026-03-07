@@ -6,6 +6,7 @@ import { useSocketContext } from "@/contexts/socket.context";
 import { useMessanger } from "./use-messanger";
 import { processQueue } from "@/lib/processQueue";
 import { scheduleSync } from "@/lib/scheduleSync";
+import { useParams } from "react-router";
 
 export type OnlineUser = {
   userId: string;
@@ -22,6 +23,7 @@ export type PageMeta = {
 };
 
 export default function useAppData() {
+  const { projectId } = useParams();
   const [onlineUsers, setOnlineUsers] = React.useState<OnlineUser[]>([]);
   const [pagesMeta, setPagesMeta] = React.useState<PageMeta[]>([]);
 
