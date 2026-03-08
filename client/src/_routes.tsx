@@ -8,7 +8,12 @@ import { PagesPage } from "./pages/page";
 import { SignupPage } from "./pages/signup";
 import { ProfilePage } from "./pages/profile";
 import { CommunicationPage } from "./pages/communication";
-import { AccessControlPage, SettingsPage } from "./pages/settings";
+import {
+  AccessControlPage,
+  FilterSettingPage,
+  GeneralSettingPage,
+  SettingsPage,
+} from "./pages/settings";
 import { DashboardPage } from "./pages/dashboard";
 import { ROUTES } from "./_routes.constants";
 import { InvitePage } from "./pages/invite";
@@ -95,11 +100,11 @@ const router = createBrowserRouter([
                   },
                   {
                     path: "general",
-                    element: <div>General Setting Page</div>,
+                    element: <GeneralSettingPage />,
                   },
                   {
                     path: "filters",
-                    element: <div>Filters Page</div>,
+                    element: <FilterSettingPage />,
                   },
                   {
                     path: "access-control",
