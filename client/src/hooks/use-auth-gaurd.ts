@@ -12,6 +12,7 @@ export default function useAuthGuard() {
   }
 
   useLayoutEffect(() => {
+    console.log("Checking Auth");
     checkAuth(setIsAuthenticated);
 
     window.addEventListener("auth-change", handleAuthChange);

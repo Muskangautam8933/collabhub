@@ -12,6 +12,7 @@ import mongoose from "mongoose";
 import { AUTH_METHOD } from "../models/LoginDetailsSchema.js";
 import { google } from "googleapis";
 import config from "../config/env.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const oauth2Client = new google.auth.OAuth2({
   clientId: config.GOOGLE_CLIENT_ID,
@@ -79,8 +80,10 @@ export async function login(req, res) {
 
   if (!account) throw new Error("Account not found");
 
-  const loginDetails = await loginDetailsRepo.getLoginDetailsByAccountId(account._id);
-4
+  const loginDetails = await loginDetailsRepo.getLoginDetailsByAccountId(
+    account._id,
+  );
+  4;
   if (!loginDetails) throw new Error("Login details not found");
 
   if (loginDetails.authMethod !== AUTH_METHOD.EMAIL)
@@ -265,3 +268,11 @@ async function validateCode(auth_code) {
     expiry_date: tokens.expiry_date,
   };
 }
+
+export const me = asyncHandler(async function (req, res) {
+  return res.status(200).json(req.user);
+});
+
+export const getRole = asyncHandler(async function (req, res) {
+  return res.status(200).json(req.user);
+});

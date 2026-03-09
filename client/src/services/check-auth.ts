@@ -1,5 +1,5 @@
-import navigateFromLogin from "@/services/navigate-fromLogin";
-import navigateToLogin from "@/services/navigate-toLogin";
+import navigateFromLoginToProtected from "@/services/navigate-fromLogin";
+import navigateFromProtectedToLogin from "@/services/navigate-toLogin";
 import validateToken from "@/services/validate-token";
 import localSpace from "@/services/local-space";
 
@@ -12,9 +12,9 @@ export default function checkAuth(
 
   if (isValid) {
     setIsAuthenticated(true);
-    navigateFromLogin();
+    navigateFromLoginToProtected();
   } else {
     setIsAuthenticated(false);
-    navigateToLogin();
+    navigateFromProtectedToLogin();
   }
 }

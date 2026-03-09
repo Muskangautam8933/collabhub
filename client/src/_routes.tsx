@@ -8,14 +8,28 @@ import { PagesPage } from "./pages/page";
 import { SignupPage } from "./pages/signup";
 import { ProfilePage } from "./pages/profile";
 import { CommunicationPage } from "./pages/communication";
-import { AccessControlPage, SettingsPage } from "./pages/settings";
+import {
+  AccessControlPage,
+  FilterSettingPage,
+  GeneralSettingPage,
+  SettingsPage,
+} from "./pages/settings";
 import { DashboardPage } from "./pages/dashboard";
 import { ROUTES } from "./_routes.constants";
 import { InvitePage } from "./pages/invite";
+import { ErrorPage } from "./components/error.page";
+import { loggingMiddleware } from "./middlewares/logging";
+import { AuthGuard } from "./middlewares/auth.guard";
+import { MemberGuard } from "./middlewares/members.guard";
+import { authLoader } from "./loaders/auth.loader";
+
+// Client-side timing middleware
 
 const router = createBrowserRouter([
   {
     path: "/",
+    middleware: [loggingMiddleware],
+    errorElement: <ErrorPage />,
     element: <App />,
     children: [
       {
@@ -24,6 +38,7 @@ const router = createBrowserRouter([
       },
       {
         path: ROUTES.PUBLIC.LOGIN,
+        loader: authLoader,
         element: <LoginPage />,
       },
       {
@@ -37,6 +52,7 @@ const router = createBrowserRouter([
       {
         path: ROUTES.PRIVATE.PROJECTS.ROOT,
         element: <PrivateLayout />,
+        middleware: [AuthGuard],
         children: [
           {
             index: true,
@@ -44,10 +60,11 @@ const router = createBrowserRouter([
           },
           {
             path: ":projectId",
+            middleware: [MemberGuard],
             children: [
               {
                 index: true,
-                element: <Navigate to={ROUTES.PRIVATE.PROJECTS.DASHBOARD} />,
+                element: <DashboardPage />,
               },
               {
                 path: ROUTES.PRIVATE.PROJECTS.DASHBOARD,
@@ -63,7 +80,7 @@ const router = createBrowserRouter([
                 children: [
                   {
                     index: true,
-                    element: <Navigate to=":id" replace />,
+                    element: <CommunicationPage />,
                   },
                   {
                     path: ":id",
@@ -91,15 +108,15 @@ const router = createBrowserRouter([
                 children: [
                   {
                     index: true,
-                    element: <Navigate to="general" replace />,
+                    element: <GeneralSettingPage />,
                   },
                   {
                     path: "general",
-                    element: <div>General Setting Page</div>,
+                    element: <GeneralSettingPage />,
                   },
                   {
                     path: "filters",
-                    element: <div>Filters Page</div>,
+                    element: <FilterSettingPage />,
                   },
                   {
                     path: "access-control",
