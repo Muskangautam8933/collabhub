@@ -5,8 +5,12 @@
 import express from "express";
 import * as authController from "../controllers/AuthController.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { addUserRole, verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+router.get("/me", verifyToken, authController.me);
+
 
 /**
  * Register with email and password

@@ -28,6 +28,7 @@ import inviteRoutes from "./routes/inviteRoutes.js";
 
 import { addUserRole, verifyToken } from "./middleware/authMiddleware.js";
 import asyncHandler from "./utils/asyncHandler.js";
+import { getRole } from "./controllers/AuthController.js";
 
 // Initialize Express app
 const app = express();
@@ -59,6 +60,7 @@ app.use(cookieParser());
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/projects", projectRoutes);
+app.get("/api/projects/:projectId/role", verifyToken, addUserRole, getRole);
 app.use("/api/projects/:projectId/pages", verifyToken, addUserRole, pageRoutes);
 app.use(
   "/api/projects/:projectId/invites",

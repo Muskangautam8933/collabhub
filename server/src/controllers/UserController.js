@@ -17,7 +17,7 @@ export const getUsers = asyncHandler(async (req, res) => {
       $options: "i", // case insensitive
     };
   }
-  
+
   if (name) {
     filters.name = {
       $regex: name,
@@ -44,3 +44,5 @@ export const deleteByEmail = asyncHandler(async function (req, res) {
   await userRepo.deleteByEmail(req.query.email);
   return res.sendStatus(200);
 });
+
+
