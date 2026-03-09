@@ -1,8 +1,8 @@
-
 import ProjectRepo from "../repos/ProjectRepo.js";
 
+
 export const createProject = async (req, res) => {
-  const project = await ProjectRepo.create(req.body);
+  const project = await ProjectRepo.create(req.user.userId);
   res.status(201).json(project);
 };
 

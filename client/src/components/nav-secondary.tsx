@@ -8,7 +8,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
+import { ROUTES } from "@/_routes.constants";
 
 export function NavSecondary({
   items,
@@ -21,6 +22,7 @@ export function NavSecondary({
     targetBlank?: boolean;
   }[];
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  const { projectId } = useParams();
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
@@ -28,7 +30,14 @@ export function NavSecondary({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild size="sm">
-                <Link to={item.url} target={item.targetBlank ? "_blank" : ""}>
+                <Link
+                  to={
+                    item.targetBlank
+                      ? item.url
+                      : `${ROUTES.PRIVATE.PROJECTS.ROOT}/${projectId}/${item.url}`
+                  }
+                  target={item.targetBlank ? "_blank" : ""}
+                >
                   <item.icon />
                   <span>{item.title}</span>
                 </Link>

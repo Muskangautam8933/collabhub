@@ -1,6 +1,4 @@
-"use client";
-
-import { ChevronRight, type LucideIcon } from "lucide-react";
+import { ChevronRight, File, Plus, Trash, type LucideIcon } from "lucide-react";
 
 import {
   Collapsible,
@@ -17,7 +15,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
+import { useAppContext } from "@/contexts/app.context";
+import { ROUTES } from "@/_routes.constants";
 
 export function NavMain({
   items,
@@ -27,12 +27,11 @@ export function NavMain({
     url: string;
     icon?: LucideIcon;
     isActive?: boolean;
-    items?: {
-      title: string;
-      url: string;
-    }[];
+    collapsable?: boolean;
   }[];
 }) {
+  const ctx = useAppContext();
+  const { projectId } = useParams();
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Resources</SidebarGroupLabel>
@@ -45,23 +44,42 @@ export function NavMain({
             className="group/collapsible"
           >
             <SidebarMenuItem>
-              {Array.isArray(item.items) ? (
+              {item.collapsable ? (
                 <>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton tooltip={item.title}>
                       {item.icon && <item.icon />}
+
                       <span>{item.title}</span>
-                      <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+
+                      <ChevronRight className="transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+
+                      <div
+                        className="ml-auto cursor-pointer hover:bg-muted/50"
+                        onClick={ctx.handleCreateNewPage}
+                      >
+                        <Plus size={16} />
+                      </div>
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
+
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {item.items?.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.title}>
+                      {ctx.pagesMetaSortByUpdatedAt?.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.clientId}>
                           <SidebarMenuSubButton asChild>
-                            <a href={subItem.url}>
+                            <Link
+                              to={`${ROUTES.PRIVATE.PROJECTS.ROOT}/${projectId}/${ROUTES.PRIVATE.PROJECTS.PAGES}/${subItem.clientId}`}
+                            >
+                              <File />
                               <span>{subItem.title}</span>
-                            </a>
+                              <Trash
+                                className="ml-auto cursor-pointer"
+                                size={16}
+                                color="red"
+                                onClick={ctx.handleDeletePage(subItem.clientId)}
+                              />
+                            </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
@@ -69,7 +87,9 @@ export function NavMain({
                   </CollapsibleContent>
                 </>
               ) : (
-                <Link to={`/me/workspaces/${item.title}`}>
+                <Link
+                  to={`${ROUTES.PRIVATE.PROJECTS.ROOT}/${projectId}/${item.url}`}
+                >
                   <SidebarMenuButton className="cursor-pointer">
                     {item.icon && <item.icon />}
                     <span>{item.title}</span>

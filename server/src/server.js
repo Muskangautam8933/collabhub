@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import listEndpoints from "express-list-endpoints";
 
 dotenv.config();
 
@@ -17,11 +18,17 @@ import database from "./config/database.js";
 import logger from "./utils/logger.js";
 import monitor from "./utils/monitor.js";
 import { devFormat, prodFormat, morganOptions } from "./config/morgan.js";
+import createSocketManager from "./socket/socketManager.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import createSocketManager from "./socket/socketManager.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
+import pageRoutes from "./routes/pageRoutes.js";
+import inviteRoutes from "./routes/inviteRoutes.js";
+
+import { addUserRole, verifyToken } from "./middleware/authMiddleware.js";
+import asyncHandler from "./utils/asyncHandler.js";
+
 // Initialize Express app
 const app = express();
 const server = http.createServer(app);
@@ -51,7 +58,14 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/projects", projectRoutes);
+app.use("/api/projects",verifyToken, projectRoutes);
+app.use("/api/projects/:projectId/pages", verifyToken, addUserRole, pageRoutes);
+app.use(
+  "/api/projects/:projectId/invites",
+  verifyToken,
+  addUserRole,
+  inviteRoutes,
+);
 
 // Health check
 app.get("/health", (req, res) => {
@@ -137,23 +151,20 @@ async function startServer() {
         `  Client Secret: ${config.GOOGLE_CLIENT_SECRET ? "✓ Set" : "✗ Not set"}`,
       );
 
-      console.log(`\nAvailable routes:`);
-      console.log(`  POST /auth/register`);
-      console.log(`  POST /auth/login`);
-      console.log(`  GET  /auth/google`);
-      console.log(`  GET  /auth/verify`);
-      console.log(`  POST /auth/refresh`);
-      console.log(`  GET  /api/users/profile`);
-      console.log(`  PUT  /api/users/profile`);
-      console.log(`  GET  /api/users`);
+      console.log(
+        `\n---------------------- Server listening on port ${PORT} ------------------ \n`,
+      );
 
+      listEndpoints(app).forEach((route) => {
+        route.methods.forEach((method) => {
+          console.log(`✅ ${method.toUpperCase()}  ${route.path}`);
+        });
 
-      // Project Routes
-      console.log(`  POST /api/projects`);
-      console.log(`  GET  /api/projects`);
-      console.log(`  GET  /api/projects/:id`);
-      console.log(`  PUT  /api/projects/:id`);
-      console.log(`  DELETE /api/projects/:id`);
+        console.log();
+      });
+      console.log(`\n------ END Server listening on port ${PORT} ------- \n`);
+
+      logger.info("Server started successfully");
     });
   } catch (error) {
     logger.error("Failed to start server:", error);

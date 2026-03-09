@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { InboxIcon, Plus } from "lucide-react";
-import WorkspaceCard from "./workspace-card";
 import CreateWorkspaceForm from "./create-workspace";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,9 +9,12 @@ import {
   ItemMedia,
   ItemTitle,
 } from "@/components/ui/item";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
+import { ROUTES } from "@/_routes.constants";
 
 export default function Workspaces() {
+  const { projectId } = useParams();
+
   const [showForm, setShowForm] = useState(false);
 
   // GET workspaces
@@ -79,7 +81,10 @@ export default function Workspaces() {
         </div>
 
         <div className="flex w-full flex-col gap-6">
-          <Link to={"/me/workspaces/1"}>
+          {/* <Link to={"/me/projects/69a3276fef8dabd1e64e4330"}> */}
+          <Link
+            to={`${ROUTES.PRIVATE.PROJECTS.ROOT}/${projectId || "69a3276fef8dabd1e64e4330"}`}
+          >
             <Item variant="outline">
               <ItemMedia variant="icon">
                 <Button>
@@ -87,7 +92,7 @@ export default function Workspaces() {
                 </Button>
               </ItemMedia>
               <ItemContent>
-                <ItemTitle>Workspace 1</ItemTitle>
+                <ItemTitle>Project P1</ItemTitle>
                 <ItemDescription>
                   The standard size for most use cases.
                 </ItemDescription>

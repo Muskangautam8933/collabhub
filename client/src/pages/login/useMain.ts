@@ -1,10 +1,11 @@
 import localSpace from "@/services/local-space";
-import  { login, type AuthResponse } from "@/services/auth";
+import { login, type AuthResponse } from "@/services/auth";
 import loginWithGoogle from "@/services/login-with-google";
 import getCodeFromUrl from "@/services/get-code-from-url";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { SERVER_URL } from "@/app.constatns";
+import { ROUTES } from "@/_routes.constants";
 
 export default function useMain() {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function useMain() {
       setLoading(false);
 
       // 🚀 navigate only AFTER success
-      navigate("/me/home", { replace: true });
+      navigate(ROUTES.PRIVATE.PROJECTS.ROOT, { replace: true });
     } catch (error) {
       console.log(error);
       setError((error as Error).message);
@@ -81,7 +82,7 @@ export default function useMain() {
           setLoading(false);
 
           // 🚀 navigate only AFTER success
-          navigate("/me/home", { replace: true });
+          navigate(ROUTES.PRIVATE.PROJECTS.ROOT, { replace: true });
         } catch (error) {
           console.log(error);
           setError((error as Error).message);
