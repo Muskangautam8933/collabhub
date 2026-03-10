@@ -283,7 +283,7 @@ Add `console.log` statements or use VS Code debugger:
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/src/server.js"
+      "program": "${projectFolder}/src/server.js"
     }
   ]
 }

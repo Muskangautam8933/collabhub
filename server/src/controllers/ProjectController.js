@@ -2,12 +2,20 @@ import ProjectRepo from "../repos/ProjectRepo.js";
 
 
 export const createProject = async (req, res) => {
-  const project = await ProjectRepo.create(req.user.userId);
+  const { name, description } = req.body;
+  const project = await ProjectRepo.create({
+    name,
+    description,
+    owner: req.user.userId,
+  });
   res.status(201).json(project);
 };
 
 export const getAllProjects = async (req, res) => {
-  const projects = await ProjectRepo.findAll();
+  // when user is authenticated, return their own projects by default
+  const ownerFromQuery = req.query.owner;
+  const owner = ownerFromQuery || (req.user && req.user.userId);
+  const projects = await ProjectRepo.findAll(owner);
   return res.json(projects);
 };
 

@@ -59,7 +59,7 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/projects", projectRoutes);
+app.use("/api/projects", verifyToken, projectRoutes);
 app.use("/api/projects/:projectId/pages", verifyToken, addUserRole, pageRoutes);
 app.use(
   "/api/projects/:projectId/invites",

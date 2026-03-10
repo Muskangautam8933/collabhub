@@ -13,8 +13,12 @@ class ProjectRepo {
 /************************************************************************
  **************************** FIND ALL  ************************************
  ************************************************************************/
-  async findAll() {
-    return await Project.find({ isDeleted: false });
+  async findAll(owner) {
+    const query = { isDeleted: false };
+    if (owner) {
+      query.owner = ObjectId(owner);
+    }
+    return await Project.find(query);
   }
 
 /************************************************************************

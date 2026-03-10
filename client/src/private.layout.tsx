@@ -19,7 +19,7 @@ export default function PrivateLayout() {
     <>
       <SocketContextProvider>
         <AppDataProvider>
-          <ToastContainer />
+          <ToastContainer position="top-center" />
           <SidebarProvider>
             <AppSidebar />
             <SidebarInset>

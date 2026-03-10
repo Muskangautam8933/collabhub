@@ -3,11 +3,10 @@ import { Input } from "@/components/ui/input";
 import { Field } from "./ui/field";
 import { Button } from "./ui/button";
 import type { User } from "@/services/auth";
-import type { SearchResult } from "@/pages/page/useMain";
 
 export type SearchProps = {
   query: string;
-  results: SearchResult[] | null;
+  results: User[] | null;
   loading: boolean;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelect: (user: User) => void;

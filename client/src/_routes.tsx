@@ -133,3 +133,12 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
+
+export const projectChilds = [
+  { path: "" },
+  { path: ROUTES.PRIVATE.PROJECTS.DASHBOARD },
+  { path: ROUTES.PRIVATE.PROJECTS.PROFILE },
+  { path: ROUTES.PRIVATE.PROJECTS.COMMUNICATIONS },
+  { path: ROUTES.PRIVATE.PROJECTS.PAGES },
+  { path: ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT },
+];

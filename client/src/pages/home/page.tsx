@@ -1,7 +1,7 @@
 import Header from "./components/header";
-import SearchWorkspace from "./components/search";
+import SearchProject from "./components/search";
 import WelcomMessage from "./components/welcome-message";
-import Workspaces from "./components/workspaces";
+import Projects from "./components/projects";
 
 export default function Page() {
   
@@ -9,8 +9,8 @@ export default function Page() {
     <div className="size-full">
       <Header />
       <WelcomMessage />
-      <SearchWorkspace />
-      <Workspaces />
+      <SearchProject />
+      <Projects  />
     </div>
   );
 }

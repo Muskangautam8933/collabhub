@@ -86,7 +86,7 @@ export const ErrorPage = () => {
                 1
               </span>
               <span className="text-muted-foreground">
-                Try searching for the project or workspace in CollabHub
+                Try searching for the project or project in CollabHub
               </span>
             </li>
 

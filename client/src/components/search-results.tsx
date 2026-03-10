@@ -2,12 +2,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Loader2, Search } from "lucide-react";
 import { UserListItem } from "./user-list-item";
-import type { SearchResult } from "@/pages/page/useMain";
+import type { User } from "@/services/auth";
 
 type SearchResultsProps = {
-  results: SearchResult[] | null;
+  results: User[] | null;
   loading?: boolean;
-  onSelect?: (item: SearchResult) => void;
+  onSelect?: (item: User) => void;
   error: string | null;
 };
 
