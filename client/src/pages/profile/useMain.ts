@@ -1,6 +1,9 @@
 import { useGlobalContext } from "@/contexts/global.context";
 import useAsyncState from "@/hooks/use-async-state";
-import { getUserProfile, type UserProfileResponse } from "@/services/get-userProfile";
+import {
+  getUserProfile,
+  type UserProfileResponse,
+} from "@/services/get-userProfile";
 import { useEffect } from "react";
 
 export default function useMain() {

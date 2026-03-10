@@ -27,7 +27,6 @@ import pageRoutes from "./routes/pageRoutes.js";
 import inviteRoutes from "./routes/inviteRoutes.js";
 
 import { addUserRole, verifyToken } from "./middleware/authMiddleware.js";
-import asyncHandler from "./utils/asyncHandler.js";
 import { getRole } from "./controllers/AuthController.js";
 
 // Initialize Express app
@@ -59,7 +58,7 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/projects", projectRoutes);
+app.use("/api/projects", verifyToken, projectRoutes);
 app.get("/api/projects/:projectId/role", verifyToken, addUserRole, getRole);
 app.use("/api/projects/:projectId/pages", verifyToken, addUserRole, pageRoutes);
 app.use(
@@ -145,6 +144,8 @@ async function startServer() {
       );
 
       listEndpoints(app).forEach((route) => {
+        console.log(JSON.stringify(route, null, 2));
+
         route.methods.forEach((method) => {
           console.log(`✅ ${method.toUpperCase()}  ${route.path}`);
         });

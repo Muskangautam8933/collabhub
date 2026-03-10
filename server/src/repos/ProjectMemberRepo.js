@@ -6,6 +6,7 @@
 
 import { INVITE_STATUS } from "../common/constants.js";
 import Model from "../models/ProjectMemberSchema.js";
+import { handleMongoDbErrors } from "../utils/handleMongoDBError.js";
 import { ObjectId } from "../utils/ObjectId.js";
 
 /************************************************************************
@@ -19,7 +20,7 @@ export async function create(payload, options = {}) {
     invite: ObjectId(payload.invite),
   });
 
-  return await doc.save(options);
+  return await handleMongoDbErrors(() => doc.save(options));
 }
 /************************************************************************
  **************************** READ **************************************

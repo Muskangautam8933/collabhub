@@ -22,6 +22,8 @@ import { loggingMiddleware } from "./middlewares/logging";
 import { AuthGuard } from "./middlewares/auth.guard";
 import { MemberGuard } from "./middlewares/members.guard";
 import { authLoader } from "./loaders/auth.loader";
+import getProjects from "./services/get-projects";
+import getProject from "./services/get-project";
 
 // Client-side timing middleware
 
@@ -52,7 +54,12 @@ const router = createBrowserRouter([
       {
         path: ROUTES.PRIVATE.PROJECTS.ROOT,
         element: <PrivateLayout />,
-        middleware: [AuthGuard],
+        // middleware: [AuthGuard],
+        loader: async () => {
+          const res = await getProjects();
+
+          console.log("projects : ", res);
+        },
         children: [
           {
             index: true,
@@ -60,7 +67,13 @@ const router = createBrowserRouter([
           },
           {
             path: ":projectId",
-            middleware: [MemberGuard],
+            // middleware: [MemberGuard],
+            loader: async ({ params }) => {
+              const projectId = params.projectId;
+
+              const res = await getProject(projectId);
+              console.log("project : ", res);
+            },
             children: [
               {
                 index: true,
@@ -120,6 +133,16 @@ const router = createBrowserRouter([
                   },
                   {
                     path: "access-control",
+                    loader: async ({ params }) => {
+                      const projectId = params.projectId;
+
+                      const res = new Promise((resolve) => {
+                        setTimeout(() => {
+                          resolve({ user: { name: "John Doe Testing...." } });
+                        }, 5000);
+                      });
+                      return { user: res };
+                    },
                     element: <AccessControlPage />,
                   },
                 ],

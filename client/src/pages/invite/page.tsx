@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 export default function Page() {
   const ctx = usePageContext();
 
+  if (ctx.error) {
+    throw new Error(ctx.error);
+  }
+
   // Invite code not found
   if (!ctx.inviteCode) {
     return (
@@ -24,7 +28,7 @@ export default function Page() {
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-        <Button>Join the Project</Button>
+      <Button onClick={ctx.handleJoinProjectClick}>Join the Project</Button>
     </div>
   );
 }

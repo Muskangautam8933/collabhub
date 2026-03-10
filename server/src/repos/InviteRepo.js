@@ -12,7 +12,7 @@ import { ObjectId } from "../utils/ObjectId.js";
  **************************** CREATE ************************************
  ************************************************************************/
 export async function create(payload) {
-  const doc = new Model.create({
+  const doc = new Model({
     ...payload,
     project: ObjectId(payload.project),
     sender: ObjectId(payload.sender),

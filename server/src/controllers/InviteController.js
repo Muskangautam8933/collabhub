@@ -10,23 +10,26 @@ import { withTransaction } from "../utils/withTransaction.js";
  * Create Invite with email
  */
 export const create = asyncHandler(async (req, res) => {
+  const email = req.query.email;
+  const role = req.query.role;
+
   const inviteCode = tokenService.generateInviteToken({
     sender: req.user.userId,
-    email: req.body.email,
-    role: req.body.role || PROJECT_ROLE.READ,
+    email,
+    role: role ?? PROJECT_ROLE.READ,
     project: req.params.projectId,
   });
 
   const invite = await inviteRepo.create({
     sender: req.user.userId,
-    email: req.body.email,
-    role: req.body.role || PROJECT_ROLE.READ,
+    email,
+    role: role ?? PROJECT_ROLE.READ,
     project: req.params.projectId,
     code: inviteCode,
   });
 
   // Async send email
-  sendInviteEmail(req.body.email, inviteCode, req.params.projectId);
+  sendInviteEmail(email, inviteCode, req.params.projectId);
 
   return res.status(201).json(invite);
 });
@@ -50,9 +53,9 @@ export const accept = asyncHandler(async (req, res) => {
 
   const invite = await inviteRepo.getByEmail(payload.email);
 
-  const newMember = null;
+  let newMember = null;
 
-  withTransaction(async (session) => {
+  await withTransaction(async (session) => {
     newMember = await projectMemberRepo.create(
       {
         project: payload.project,
@@ -71,8 +74,6 @@ export const accept = asyncHandler(async (req, res) => {
       { session },
     );
   });
-
-  if (!newMember) throw new Error("Failed to create project member");
 
   res.status(200).json(newMember);
 });
