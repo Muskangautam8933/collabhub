@@ -27,7 +27,6 @@ import pageRoutes from "./routes/pageRoutes.js";
 import inviteRoutes from "./routes/inviteRoutes.js";
 
 import { addUserRole, verifyToken } from "./middleware/authMiddleware.js";
-import asyncHandler from "./utils/asyncHandler.js";
 import { getRole } from "./controllers/AuthController.js";
 
 // Initialize Express app
@@ -157,6 +156,8 @@ async function startServer() {
       );
 
       listEndpoints(app).forEach((route) => {
+        console.log(JSON.stringify(route, null, 2));
+
         route.methods.forEach((method) => {
           console.log(`✅ ${method.toUpperCase()}  ${route.path}`);
         });

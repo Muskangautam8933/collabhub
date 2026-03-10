@@ -2,6 +2,25 @@ import type { User } from "@/services/auth";
 import { getQueryUsers } from "@/services/get-queryUsers";
 import React from "react";
 import debounce from "lodash.debounce";
+import { postInvite } from "@/services/post-invite";
+import { useParams } from "react-router";
+
+export const PROJECT_ROLE_MAP = {
+  OWNER: "owner",
+  ADMIN: "admin",
+  WRITE: "write",
+  READ: "read",
+  OTHERS: "others",
+} as const;
+
+export type PROJECT_ROLE =
+  (typeof PROJECT_ROLE_MAP)[keyof typeof PROJECT_ROLE_MAP];
+
+const shouldEndWith = (str: string, suffix: string) => {
+  if (!str) return undefined;
+  if (str.endsWith(suffix)) return str;
+  return str + suffix;
+};
 
 export const useAccessControlPage = () => {
   /**********************************************************************
@@ -12,7 +31,14 @@ export const useAccessControlPage = () => {
   const [usersError, setUsersError] = React.useState<string | null>(null);
 
   const [query, setQuery] = React.useState<string>("");
-  const [role, setRole] = React.useState<string>("");
+  const [role, setRole] = React.useState<PROJECT_ROLE>(PROJECT_ROLE_MAP.READ);
+
+  const [sendInviteLoading, setSendInviteLoading] = React.useState(true);
+  const [sendInviteError, setSendInviteError] = React.useState<string | null>(
+    null,
+  );
+
+  const { projectId } = useParams();
 
   /**********************************************************************
    ************************* SEARCH FUNCTION ****************************
@@ -61,12 +87,31 @@ export const useAccessControlPage = () => {
     setQuery(e.target.value);
   };
 
-  const handleInviteClick = () => {
-    setQuery("");
-    console.log(role)
+  const handleInviteClick = async () => {
+    try {
+      setSendInviteLoading(true);
+      const email = shouldEndWith(query, "@gmail.com");
+
+      if (!email || !projectId) return;
+
+      setQuery(email ?? "");
+
+      await postInvite(projectId, email, role);
+
+      console.log({ role, email });
+
+      setSendInviteLoading(false);
+    } catch (error) {
+      setSendInviteLoading(false);
+      setSendInviteError(
+        error instanceof Error ? error.message : "Failed to invite user",
+      );
+    } finally {
+      setSendInviteLoading(false);
+    }
   };
 
-  const handleRoleChange = (d: string) => {
+  const handleRoleChange = (d: PROJECT_ROLE) => {
     setRole(d);
   };
 
@@ -84,6 +129,7 @@ export const useAccessControlPage = () => {
     usersLoading,
     usersError,
     query,
+    sendInviteError,
     handleInputChange,
     handleInviteClick,
     handleRoleChange,

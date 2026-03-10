@@ -61,6 +61,8 @@ export async function register(req, res, next) {
       trialEndAt: account.trialEndAt,
     });
 
+    res.cookie("token", token);
+
     return res.status(201).json({ user: user.toJSON(), token });
   } catch (error) {
     await session.abortTransaction();
@@ -100,6 +102,8 @@ export async function login(req, res) {
     name: user.name,
     trialEndAt: account.trialEndAt,
   });
+
+  res.cookie("token", token);
 
   return res.status(200).json({ user: user.toJSON(), token });
 }
@@ -152,6 +156,8 @@ export async function googleAuth(req, res, next) {
       name: existingUser.name,
       trialEndAt: null,
     });
+
+    res.cookie("token", token);
 
     return res.status(200).json({ user: existingUser.toJSON(), token });
   }

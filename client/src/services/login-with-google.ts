@@ -13,6 +13,10 @@ export default async function loginWithGoogle(code: string) {
   try {
     const res = await fetch(
       `${SERVER_URL}/auth/google/oauth2callback?code=${encodeURI(code)}`,
+      {
+        method: "GET",
+        credentials: "include",
+      },
     );
 
     const data = await res.json();

@@ -16,6 +16,7 @@ import { ShieldAlert } from "lucide-react";
 import React from "react";
 import { useAccessControlPage } from "./useAccessControlPage";
 import { APP_NAME } from "@/app.constatns";
+import { useLoaderData, Await } from "react-router-dom";
 
 export const PROJECT_ROLE = {
   OWNER: "owner",
@@ -29,6 +30,11 @@ export default function Page() {
   const role: (typeof PROJECT_ROLE)[keyof typeof PROJECT_ROLE] =
     PROJECT_ROLE.OWNER;
   const { users, usersLoading, ...ctx } = useAccessControlPage();
+  const { user } = useLoaderData();
+
+  if (ctx.sendInviteError) {
+    throw new Error(ctx.sendInviteError);
+  }
 
   if (role !== PROJECT_ROLE.OWNER && role !== PROJECT_ROLE.ADMIN) {
     return (
@@ -57,6 +63,9 @@ export default function Page() {
   return (
     <div className="p-2 space-y-4">
       <h3 className="text-2xl pt-4 font-semibold">Invite Members</h3>
+      <React.Suspense fallback={<p>Loading user...</p>}>
+        <Await resolve={user}>{ShowData}</Await>
+      </React.Suspense>
       <React.Fragment>
         <div className="flex gap-2">
           <Input
@@ -126,3 +135,8 @@ export default function Page() {
 }
 
 Page.displayName = "AccessControlPage";
+
+const ShowData = (d) => {
+  console.log(d);
+  return <pre>{JSON.stringify(d)}</pre>;
+};

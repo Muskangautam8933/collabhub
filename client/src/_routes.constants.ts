@@ -3,7 +3,7 @@ export const ROUTES = {
     ROOT: "/",
     LOGIN: "/login",
     SIGNUP: "/signup",
-    INVITE: "/invite",
+    INVITE: "/invites",
   },
   PRIVATE: {
     PROJECTS: {

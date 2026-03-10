@@ -55,7 +55,7 @@ export const verifySocketToken = (token) => {
 };
 
 export const addUserRole = asyncHandler(async (req, res, next) => {
-  const projectId = req.params.projectId;
+  const projectId = req.params.projectId || req.params.id;
   const userId = req.user.userId;
 
   const project = await projectRepo.findById(projectId);
