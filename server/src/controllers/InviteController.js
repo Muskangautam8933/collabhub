@@ -13,6 +13,8 @@ export const create = asyncHandler(async (req, res) => {
   const email = req.query.email;
   const role = req.query.role;
 
+  if(email === req.user.email) throw new Error("You can't invite yourself");
+
   const inviteCode = tokenService.generateInviteToken({
     sender: req.user.userId,
     email,
