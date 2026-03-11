@@ -6,7 +6,7 @@ export async function sendInviteEmail(email, code, projectId) {
   if (!code) throw new Error("code is required");
   if (!projectId) throw new Error("projectId is required");
 
-  const inviteLink = `${config.CLIENT_ORIGIN}/projects/${projectId}/invites?code=${code}`;
+  const inviteLink = `${config.CLIENT_ORIGIN}/invites?code=${code}`;
 
   const mailOptions = {
     from: `"CollabHub" <${config.EMAIL_USER}>`,
