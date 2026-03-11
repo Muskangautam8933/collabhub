@@ -16,6 +16,9 @@ import { ShieldAlert } from "lucide-react";
 import React from "react";
 import { useAccessControlPage } from "./useAccessControlPage";
 import { APP_NAME } from "@/app.constatns";
+import { Await } from "react-router-dom";
+import type { Invite } from "@/services/get-invites";
+import { Badge } from "@/components/ui/badge";
 
 export const PROJECT_ROLE = {
   OWNER: "owner",
@@ -120,10 +123,74 @@ export default function Page() {
           ))}
         </ResultList>
       </React.Fragment>
-      <h3 className="text-2xl pt-4 font-semibold">Project Members</h3>
-      <Card></Card>
+
+      {/* Invites */}
+      <React.Suspense fallback={<p>Loading invites...</p>}>
+        <Await resolve={ctx.loaderData.invites}>{ShowInvites}</Await>
+      </React.Suspense>
+
+      {/* Members */}
+      <React.Suspense fallback={<p>Loading members...</p>}>
+        <Await resolve={ctx.loaderData.invites}>{ShowMembers}</Await>
+      </React.Suspense>
     </div>
   );
 }
 
 Page.displayName = "AccessControlPage";
+
+function ShowInvites(invites: Invite[]) {
+  if (invites.length === 0) return null;
+  return (
+    <>
+      <h3 className="text-2xl pt-4 font-semibold">Pending Invites</h3>
+      <Card>
+        {invites.map((invite) => {
+          return (
+            <UserListItem
+              key={invite._id}
+              uid={invite._id}
+              user={{
+                email: invite.email,
+              }}
+              lslot={
+                <div className="flex gap-1">
+                  <Badge>{invite.role}</Badge>
+                  <Badge>{invite.status}</Badge>
+                </div>
+              }
+            />
+          );
+        })}
+      </Card>
+    </>
+  );
+}
+
+function ShowMembers(invites: Invite[]) {
+  if (invites.length === 0) return null;
+  return (
+    <>
+      <h3 className="text-2xl pt-4 font-semibold">Project Members</h3>
+      <Card>
+        {invites.map((invite) => {
+          return (
+            <UserListItem
+              key={invite._id}
+              uid={invite._id}
+              user={{
+                email: invite.email,
+              }}
+              lslot={
+                <div className="flex gap-1">
+                  <Badge>{invite.role}</Badge>
+                  <Badge>{invite.status}</Badge>
+                </div>
+              }
+            />
+          );
+        })}
+      </Card>
+    </>
+  );
+}

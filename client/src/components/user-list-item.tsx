@@ -15,8 +15,9 @@ export function UserListItem({
   onAvtarClick,
   onNameClick,
   onClick,
+  uid,
 }: {
-  user: User | null;
+  user: Partial<User> | null;
   lslot?: React.ReactNode;
   nameBadge?: React.ReactNode;
   onAvtarClick?: (e: React.MouseEvent) => void;
@@ -24,6 +25,7 @@ export function UserListItem({
   onClick?: (e: React.MouseEvent) => void;
   isOpenDialogByName?: boolean;
   isOpenDialogByAvtar?: boolean;
+  uid?: string;
 }) {
   const [isOpenDialog, setIsOpenDialog] = React.useState<boolean>(false);
   if (!user) return null;
@@ -71,16 +73,17 @@ export function UserListItem({
             onClick={handleNameClick}
             className="font-medium cursor-pointer"
           >
-            {user.name} {nameBadge}
+            {user.name || "User"} {nameBadge}
           </span>
           <p className="text-sm text-muted-foreground">{user.email}</p>
         </div>
       </div>
+
       {lslot}
 
       <Dialog open={isOpenDialog} onOpenChange={handleDialogOpenChange}>
         <DialogContent showCloseButton>
-          <UserProfile userId={user._id} />
+          <UserProfile userId={user._id || uid!} />
         </DialogContent>
       </Dialog>
     </Card>

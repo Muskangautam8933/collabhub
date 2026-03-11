@@ -1,4 +1,5 @@
-export default function getNameAsAvtar(name: string) {
+export default function getNameAsAvtar(name?: string) {
+  if (!name) return "U";
   const names = name.split(" ");
   const n = names.length;
   if (n > 3) {
