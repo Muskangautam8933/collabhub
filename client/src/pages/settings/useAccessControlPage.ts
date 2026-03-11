@@ -4,6 +4,7 @@ import React from "react";
 import debounce from "lodash.debounce";
 import { postInvite } from "@/services/post-invite";
 import { useParams } from "react-router";
+import { toast } from "react-toastify";
 
 export const PROJECT_ROLE_MAP = {
   OWNER: "owner",
@@ -98,12 +99,15 @@ export const useAccessControlPage = () => {
 
       await postInvite(projectId, email, role);
 
-      console.log({ role, email });
+      toast.success("User invited successfully");
 
       setSendInviteLoading(false);
     } catch (error) {
       setSendInviteLoading(false);
       setSendInviteError(
+        error instanceof Error ? error.message : "Failed to invite user",
+      );
+      toast.error(
         error instanceof Error ? error.message : "Failed to invite user",
       );
     } finally {
@@ -129,7 +133,7 @@ export const useAccessControlPage = () => {
     usersLoading,
     usersError,
     query,
-    sendInviteError,
+    role,
     handleInputChange,
     handleInviteClick,
     handleRoleChange,
