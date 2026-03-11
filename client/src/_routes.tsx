@@ -18,18 +18,19 @@ import { DashboardPage } from "./pages/dashboard";
 import { ROUTES } from "./_routes.constants";
 import { InvitePage } from "./pages/invite";
 import { ErrorPage } from "./components/error.page";
-import { loggingMiddleware } from "./middlewares/logging";
 import { authLoader } from "./loaders/auth.loader";
 import getProjects from "./services/get-projects";
 import getProject from "./services/get-project";
-import getInvites from "./services/get-invites";
+import { accessControllerLoader } from "./loaders/access-controler.loader";
+import { rootLoader } from "./loaders/root.loader";
+import { inviteLoader } from "./loaders/invite.loader";
 
 // Client-side timing middleware
 
 const router = createBrowserRouter([
   {
     path: "/",
-    middleware: [loggingMiddleware],
+    loader: rootLoader,
     errorElement: <ErrorPage />,
     element: <App />,
     children: [
@@ -48,12 +49,12 @@ const router = createBrowserRouter([
       },
       {
         path: ROUTES.PUBLIC.INVITE,
+        loader: inviteLoader,
         element: <InvitePage />,
       },
       {
         path: ROUTES.PRIVATE.PROJECTS.ROOT,
         element: <PrivateLayout />,
-        // middleware: [AuthGuard],
         loader: async () => {
           const res = await getProjects();
 
@@ -66,7 +67,6 @@ const router = createBrowserRouter([
           },
           {
             path: ":projectId",
-            // middleware: [MemberGuard],
             loader: async ({ params }) => {
               const projectId = params.projectId;
 
@@ -132,15 +132,7 @@ const router = createBrowserRouter([
                   },
                   {
                     path: "access-control",
-                    loader: async ({ params }) => {
-                      const projectId = params.projectId;
-
-                      const invites = await getInvites(projectId);
-
-                      // const members = await getMembers(projectId);
-
-                      return { invites };
-                    },
+                    loader: accessControllerLoader,
                     element: <AccessControlPage />,
                   },
                 ],

@@ -1,9 +1,11 @@
 import { ROUTES } from "@/_routes.constants";
+import type { Invite } from "@/services/get-invites";
 import React from "react";
 import { useLocation } from "react-router";
 
 export default function useMain() {
   const location = useLocation();
+  const [invites, setInvites] = React.useState<Invite[]>([]);
 
   const [activeTab, setActiveTab] = React.useState<string>("all");
 
@@ -22,5 +24,7 @@ export default function useMain() {
   return {
     activeTab,
     childRoutes,
+    invites,
+    setInvites,
   };
 }

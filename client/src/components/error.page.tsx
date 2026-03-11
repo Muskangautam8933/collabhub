@@ -7,7 +7,7 @@ import {
   type ClientOnErrorFunction,
 } from "react-router";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronLeft, Home } from "lucide-react";
 
 export type Error = {
   data: string;
@@ -54,13 +54,20 @@ export const ErrorPage = () => {
         {/* Action buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
           <Button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             size="lg"
             className="group gap-2"
           >
             <Home className="w-5 h-5" />
+            Go to Home Back
+          </Button>
+          <Button
+            onClick={() => navigate(-1)}
+            size="lg"
+            className="group gap-2"
+          >
+            <ChevronLeft className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             Go Back
-            <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Button>
         </div>
 

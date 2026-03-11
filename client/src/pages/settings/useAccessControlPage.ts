@@ -7,6 +7,7 @@ import { useParams } from "react-router";
 import { toast } from "react-toastify";
 import { useLoaderData } from "react-router-dom";
 import type { LoaderData } from "@/loaders/access-controler.loader";
+import { usePageContext } from "./_context";
 
 export const PROJECT_ROLE_MAP = {
   OWNER: "owner",
@@ -27,6 +28,7 @@ const shouldEndWith = (str: string, suffix: string) => {
 
 export const useAccessControlPage = () => {
   const loaderData = useLoaderData<LoaderData>();
+  const ctx = usePageContext();
 
   /**********************************************************************
    ************************* STATES *************************************
@@ -101,7 +103,14 @@ export const useAccessControlPage = () => {
 
       setQuery(email ?? "");
 
-      await postInvite(projectId, email, role);
+      const newInvite = await postInvite(projectId, email, role);
+
+      console.log(newInvite);
+
+      ctx.setInvites((p) => {
+        console.log([...p, newInvite]);
+        return [...p, newInvite]
+      });
 
       toast.success("User invited successfully");
 

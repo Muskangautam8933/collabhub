@@ -19,6 +19,7 @@ import { APP_NAME } from "@/app.constatns";
 import { Await } from "react-router-dom";
 import type { Invite } from "@/services/get-invites";
 import { Badge } from "@/components/ui/badge";
+import { usePageContext } from "./_context";
 
 export const PROJECT_ROLE = {
   OWNER: "owner",
@@ -140,12 +141,16 @@ export default function Page() {
 Page.displayName = "AccessControlPage";
 
 function ShowInvites(invites: Invite[]) {
+  const ctx = usePageContext();
+
+  const mergeInvites: Invite[] = [...ctx.invites, ...invites];
+
   if (invites.length === 0) return null;
   return (
     <>
       <h3 className="text-2xl pt-4 font-semibold">Pending Invites</h3>
       <Card>
-        {invites.map((invite) => {
+        {mergeInvites.map((invite) => {
           return (
             <UserListItem
               key={invite._id}
