@@ -31,7 +31,7 @@ const scopes = [
   "https://www.googleapis.com/auth/meetings.conference.media.readonly",
 ];
 
-export async function register(req, res, next) {
+export const register = asyncHandler(async (req, res, next) => {
   const session = await mongoose.startSession();
 
   try {
@@ -69,9 +69,9 @@ export async function register(req, res, next) {
     session.endSession();
     next(error);
   }
-}
+});
 
-export async function login(req, res) {
+export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body || {};
 
   const user = await userRepo.getByEmail(email);
@@ -106,7 +106,7 @@ export async function login(req, res) {
   res.cookie("token", token);
 
   return res.status(200).json({ user: user.toJSON(), token });
-}
+});
 
 /**
  * Get Consent of User
@@ -114,7 +114,7 @@ export async function login(req, res) {
  * @description
  * This function redirect to google_consent_page and then redirect to same clients route with `auth code`.
  */
-export function getConsent(_, res) {
+export const getConsent = asyncHandler((_, res) => {
   const authorizationUrl = oauth2Client.generateAuthUrl({
     // 'online' (default) or 'offline' (gets refresh_token)
     access_type: "offline",
@@ -129,9 +129,9 @@ export function getConsent(_, res) {
   });
 
   res.redirect(authorizationUrl);
-}
+});
 
-export async function googleAuth(req, res, next) {
+export const googleAuth = asyncHandler(async (req, res, next) => {
   const authCode = req.query.code;
 
   if (!authCode) throw new Error("Auth code is required");
@@ -233,9 +233,13 @@ export async function googleAuth(req, res, next) {
   }
 
   return res.status(200).json(googleUser);
-}
+});
 
-async function validateCode(auth_code) {
+export const me = asyncHandler(async function (req, res) {
+  return res.status(200).json(req.user);
+});
+
+const validateCode = asyncHandler(async (auth_code) => {
   if (!auth_code) {
     throw new Error("Auth code is required");
   }
@@ -273,12 +277,4 @@ async function validateCode(auth_code) {
     token_type: tokens.token_type,
     expiry_date: tokens.expiry_date,
   };
-}
-
-export const me = asyncHandler(async function (req, res) {
-  return res.status(200).json(req.user);
-});
-
-export const getRole = asyncHandler(async function (req, res) {
-  return res.status(200).json(req.user);
 });

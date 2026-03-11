@@ -1,18 +1,18 @@
-// /**
-//  * User Routes
-//  */
+/**
+ * User Routes
+ */
 import express from "express";
 import * as controller from "../controllers/InviteController.js";
-import { adminGaurd } from "../middleware/authMiddleware.js";
+import { adminGaurd, memberGaurd } from "../middleware/authMiddleware.js";
 
 const router = express.Router({ mergeParams: true });
 
-router.post("/", adminGaurd, controller.create);
+router.post("/", memberGaurd, adminGaurd, controller.create);
 
-// router.get("/", asyncHandler(controller.findAll));
+router.get("/", memberGaurd, adminGaurd, controller.getByProject);
 
 router.patch("/", controller.accept);
 
-// router.delete("/:id", asyncHandler(controller.deleteById));
+router.delete("/:id", memberGaurd, adminGaurd, controller.deleteById);
 
 export default router;

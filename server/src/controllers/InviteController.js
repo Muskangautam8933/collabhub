@@ -37,7 +37,13 @@ export const create = asyncHandler(async (req, res) => {
 /**
  * Get all project invites
  */
-export const getByProject = () => {};
+export const getByProject = asyncHandler(async (req, res) => {
+  const projectId = req.params.projectId;
+
+  const invites = await inviteRepo.getByProject(projectId);
+
+  return res.json(invites);
+});
 
 /**
  * Accept invite
@@ -81,3 +87,7 @@ export const accept = asyncHandler(async (req, res) => {
 /**
  * Delete invite
  */
+export const deleteById = asyncHandler(async (req, res) => {
+  await inviteRepo.softDeleteById(req.params.id, req.user.userId);
+  return res.json({ message: "Invite deleted successfully" });
+});

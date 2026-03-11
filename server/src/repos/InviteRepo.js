@@ -7,6 +7,7 @@
 import { INVITE_STATUS } from "../common/constants.js";
 import Model from "../models/InviteSchema.js";
 import { ObjectId } from "../utils/ObjectId.js";
+import { handleMongoDbErrors } from "../utils/handleMongoDBError.js";
 
 /************************************************************************
  **************************** CREATE ************************************
@@ -18,13 +19,19 @@ export async function create(payload) {
     sender: ObjectId(payload.sender),
   });
 
-  return await doc.save();
+  return await handleMongoDbErrors(() => doc.save());
 }
 /************************************************************************
  **************************** READ **************************************
  ************************************************************************/
 export function getByProject(projectId) {
-  return Model.find({ project: ObjectId(projectId), isDeleted: false });
+  if (!projectId) throw new Error("projectId is required");
+  return Model.find({
+    project: ObjectId(projectId),
+    isDeleted: false,
+  })
+    .populate("sender")
+    .exec();
 }
 
 export function getByEmail(email) {
@@ -53,7 +60,6 @@ export function updateAcceptanceByEmail(email, payload, options = {}) {
       upsert: true,
       session: options.session,
     },
-
   );
 }
 /************************************************************************

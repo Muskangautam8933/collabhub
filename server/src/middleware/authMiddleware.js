@@ -11,37 +11,23 @@ import asyncHandler from "../utils/asyncHandler.js";
 /**
  * Middleware to verify JWT token from Authorization header or cookies
  */
-export const verifyToken = (req, res, next) => {
-  try {
-    let token = req.headers.authorization?.split(" ")[1];
+export const AuthGuard = asyncHandler((req, res, next) => {
+  let token = req.headers.authorization?.split(" ")[1];
 
-    if (!token) {
-      token = req.cookies?.token;
-    }
-
-    if (!token) {
-      return res.status(401).json({ message: "No token provided" });
-    }
-
-    const decoded = tokenService.verifyToken(token);
-
-    req.user = decoded;
-
-    next();
-  } catch (error) {
-    res.status(401).json({ message: error.message });
+  if (!token) {
+    token = req.cookies?.token;
   }
-};
 
-/**
- * Middleware to check if user is authenticated
- */
-export const isAuthenticated = (req, res, next) => {
-  if (!req.user) {
-    return res.status(401).json({ message: "Not authenticated" });
+  if (!token) {
+    throw new Error("No token provided");
   }
+
+  const decoded = tokenService.verifyToken(token);
+
+  req.user = decoded;
+
   next();
-};
+});
 
 /**
  * Middleware to verify token for Socket.io
@@ -54,7 +40,7 @@ export const verifySocketToken = (token) => {
   }
 };
 
-export const addUserRole = asyncHandler(async (req, res, next) => {
+export const memberGaurd = asyncHandler(async (req, res, next) => {
   const projectId = req.params.projectId || req.params.id;
   const userId = req.user.userId;
 
@@ -76,14 +62,7 @@ export const addUserRole = asyncHandler(async (req, res, next) => {
     return next();
   }
 
-  req.user.role = PROJECT_ROLE.OTHERS;
-  return next();
-});
-
-export const projectMemberGaurd = asyncHandler((req, res, next) => {
-  if (req.user.role === PROJECT_ROLE.OTHERS)
-    throw new Error("Unauthorized Only Project Member Allowed");
-  next();
+  throw new Error("Unauthorized Only Project Member Allowed");
 });
 
 export const ownerGaurd = asyncHandler((req, res, next) => {
@@ -101,6 +80,18 @@ export const adminGaurd = asyncHandler((req, res, next) => {
   )
     throw new Error(
       `Unauthorized Only Project Owner or Admin Allowed not ${req.user.role}`,
+    );
+  next();
+});
+
+export const writeGaurd = asyncHandler((req, res, next) => {
+  if (
+    req.user.role !== PROJECT_ROLE.OWNER &&
+    req.user.role !== PROJECT_ROLE.ADMIN &&
+    req.user.role !== PROJECT_ROLE.WRITE
+  )
+    throw new Error(
+      `Unauthorized Only Project Owner, Admin or Write Allowed not ${req.user.role}`,
     );
   next();
 });

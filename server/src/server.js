@@ -26,8 +26,7 @@ import projectRoutes from "./routes/ProjectRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
 import inviteRoutes from "./routes/inviteRoutes.js";
 
-import { addUserRole, verifyToken } from "./middleware/authMiddleware.js";
-import { getRole } from "./controllers/AuthController.js";
+import { AuthGuard, memberGaurd } from "./middleware/authMiddleware.js";
 
 // Initialize Express app
 const app = express();
@@ -58,15 +57,9 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/projects", verifyToken, projectRoutes);
-app.get("/api/projects/:projectId/role", verifyToken, addUserRole, getRole);
-app.use("/api/projects/:projectId/pages", verifyToken, addUserRole, pageRoutes);
-app.use(
-  "/api/projects/:projectId/invites",
-  verifyToken,
-  addUserRole,
-  inviteRoutes,
-);
+app.use("/api/projects", AuthGuard, projectRoutes);
+app.use("/api/projects/:projectId/pages", AuthGuard, memberGaurd, pageRoutes);
+app.use("/api/projects/:projectId/invites", AuthGuard, inviteRoutes);
 
 // Health check
 app.get("/health", (req, res) => {

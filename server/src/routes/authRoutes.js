@@ -1,35 +1,32 @@
 /**
  * Authentication Routes
  */
-
 import express from "express";
 import * as authController from "../controllers/AuthController.js";
-import asyncHandler from "../utils/asyncHandler.js";
-import { addUserRole, verifyToken } from "../middleware/authMiddleware.js";
+import { AuthGuard } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/me", verifyToken, authController.me);
-
+router.get("/me", AuthGuard, authController.me);
 
 /**
  * Register with email and password
  */
-router.post("/register", asyncHandler(authController.register));
+router.post("/register", authController.register);
 
 /**
  * Login with email and password
  */
-router.post("/login", asyncHandler(authController.login));
+router.post("/login", authController.login);
 
 /**
  * Google OAuth Routes
  */
-router.get("/login", asyncHandler(authController.getConsent));
+router.get("/login", authController.getConsent);
 
 /**
  * Google OAuth Callback
  */
-router.get("/google/oauth2callback", asyncHandler(authController.googleAuth));
+router.get("/google/oauth2callback", authController.googleAuth);
 
 export default router;
