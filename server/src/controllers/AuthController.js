@@ -181,13 +181,16 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
   const googleUser = await validateCode(authCode);
 
   const existingUser = await userRepo.getByEmail(googleUser.email);
-  const existingAccount = await accountRepo.getAccountByUserId(
-    existingUser?._id,
-  );
+
+  console.log(JSON.stringify(existingUser, null, 2));
 
   // Update existing User
 
   if (existingUser) {
+    const existingAccount = await accountRepo.getAccountByUserId(
+      existingUser._id,
+    );
+
     if (!existingAccount.isEmailVerified)
       await accountRepo.updateIsEmailVerifiedByUserId(existingUser._id, true);
 
@@ -266,6 +269,8 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
       name: user.name,
       trialEndAt: account.trialEndAt,
     });
+
+    res.cookie("token", token, cookieOptions);
 
     return res.status(201).json({ user: user.toJSON(), token });
   } catch (error) {
