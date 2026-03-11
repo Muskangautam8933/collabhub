@@ -1,5 +1,5 @@
 import { SERVER_URL } from "@/app.constatns";
-import localSpace from "./local-space";
+// import localSpace from "./local-space";
 import { apiFetch } from "@/utils/api-fetch";
 
 /*******************************************************************
@@ -9,12 +9,10 @@ import { apiFetch } from "@/utils/api-fetch";
 /**
  * using network it fetch the data.
  */
-export default async function getChat(chatId: string) {
+export default async function getInvites(projectId?: string) {
+  if (!projectId) throw new Error("projectId is required");
   return apiFetch({
-    url: `${SERVER_URL}/chats/${chatId}`,
+    url: `${SERVER_URL}/api/projects/${projectId}/invites`,
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${localSpace.getAccessToken()}`,
-    },
   });
 }

@@ -19,11 +19,10 @@ import { ROUTES } from "./_routes.constants";
 import { InvitePage } from "./pages/invite";
 import { ErrorPage } from "./components/error.page";
 import { loggingMiddleware } from "./middlewares/logging";
-import { AuthGuard } from "./middlewares/auth.guard";
-import { MemberGuard } from "./middlewares/members.guard";
 import { authLoader } from "./loaders/auth.loader";
 import getProjects from "./services/get-projects";
 import getProject from "./services/get-project";
+import getInvites from "./services/get-invites";
 
 // Client-side timing middleware
 
@@ -136,12 +135,11 @@ const router = createBrowserRouter([
                     loader: async ({ params }) => {
                       const projectId = params.projectId;
 
-                      const res = new Promise((resolve) => {
-                        setTimeout(() => {
-                          resolve({ user: { name: "John Doe Testing...." } });
-                        }, 5000);
-                      });
-                      return { user: res };
+                      const invites = await getInvites(projectId);
+
+                      // const members = await getMembers(projectId);
+
+                      return { invites };
                     },
                     element: <AccessControlPage />,
                   },

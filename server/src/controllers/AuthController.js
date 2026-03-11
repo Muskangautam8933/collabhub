@@ -31,6 +31,8 @@ const scopes = [
   "https://www.googleapis.com/auth/meetings.conference.media.readonly",
 ];
 
+const cookieOptions = { maxAge: 7 * 24 * 60 * 60 * 1000 };
+
 export const register = asyncHandler(async (req, res, next) => {
   const session = await mongoose.startSession();
 
@@ -61,7 +63,7 @@ export const register = asyncHandler(async (req, res, next) => {
       trialEndAt: account.trialEndAt,
     });
 
-    res.cookie("token", token);
+    res.cookie("token", token, cookieOptions);
 
     return res.status(201).json({ user: user.toJSON(), token });
   } catch (error) {
@@ -103,7 +105,7 @@ export const login = asyncHandler(async (req, res) => {
     trialEndAt: account.trialEndAt,
   });
 
-  res.cookie("token", token);
+  res.cookie("token", token, cookieOptions);
 
   return res.status(200).json({ user: user.toJSON(), token });
 });
@@ -131,6 +133,46 @@ export const getConsent = asyncHandler((_, res) => {
   res.redirect(authorizationUrl);
 });
 
+const validateCode = async (auth_code) => {
+  if (!auth_code) {
+    throw new Error("Auth code is required");
+  }
+
+  // 1. Exchange auth code for tokens
+  const { tokens } = await oauth2Client.getToken(auth_code);
+
+  if (!tokens.access_token) {
+    throw new Error("Failed to get access token from Google");
+  }
+
+  // 2. Attach tokens to client
+  oauth2Client.setCredentials(tokens);
+
+  // 3. Fetch user profile
+  const oauth2 = google.oauth2({
+    auth: oauth2Client,
+    version: "v2",
+  });
+
+  const { data: profile } = await oauth2.userinfo.v2.me.get();
+
+  if (!profile || !profile.email || !profile.name || !profile.verified_email)
+    throw new Error("Failed to get user profile from Google");
+
+  return {
+    name: profile.name,
+    email: profile.email,
+    verified_email: profile.verified_email,
+    picture: profile.picture,
+    id: profile.id,
+
+    access_token: tokens.access_token,
+    refresh_token: tokens.refresh_token,
+    token_type: tokens.token_type,
+    expiry_date: tokens.expiry_date,
+  };
+};
+
 export const googleAuth = asyncHandler(async (req, res, next) => {
   const authCode = req.query.code;
 
@@ -157,7 +199,7 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
       trialEndAt: null,
     });
 
-    res.cookie("token", token);
+    res.cookie("token", token, cookieOptions);
 
     return res.status(200).json({ user: existingUser.toJSON(), token });
   }
@@ -237,44 +279,4 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
 
 export const me = asyncHandler(async function (req, res) {
   return res.status(200).json(req.user);
-});
-
-const validateCode = asyncHandler(async (auth_code) => {
-  if (!auth_code) {
-    throw new Error("Auth code is required");
-  }
-
-  // 1. Exchange auth code for tokens
-  const { tokens } = await oauth2Client.getToken(auth_code);
-
-  if (!tokens.access_token) {
-    throw new Error("Failed to get access token from Google");
-  }
-
-  // 2. Attach tokens to client
-  oauth2Client.setCredentials(tokens);
-
-  // 3. Fetch user profile
-  const oauth2 = google.oauth2({
-    auth: oauth2Client,
-    version: "v2",
-  });
-
-  const { data: profile } = await oauth2.userinfo.v2.me.get();
-
-  if (!profile || !profile.email || !profile.name || !profile.verified_email)
-    throw new Error("Failed to get user profile from Google");
-
-  return {
-    name: profile.name,
-    email: profile.email,
-    verified_email: profile.verified_email,
-    picture: profile.picture,
-    id: profile.id,
-
-    access_token: tokens.access_token,
-    refresh_token: tokens.refresh_token,
-    token_type: tokens.token_type,
-    expiry_date: tokens.expiry_date,
-  };
 });
