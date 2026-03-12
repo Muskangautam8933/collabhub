@@ -22,7 +22,7 @@ import { loggingMiddleware } from "./middlewares/logging";
 import { AuthGuard } from "./middlewares/auth.guard";
 import { MemberGuard } from "./middlewares/members.guard";
 import { authLoader } from "./loaders/auth.loader";
-import getProjects from "./services/get-projects";
+// import getProjects from "./services/get-projects";
 import getProject from "./services/get-project";
 
 // Client-side timing middleware
@@ -56,9 +56,9 @@ const router = createBrowserRouter([
         element: <PrivateLayout />,
         // middleware: [AuthGuard],
         loader: async () => {
-          const res = await getProjects();
+          // const res = await getProjects();
 
-          console.log("projects : ", res);
+          // console.log("projects : ", res);
         },
         children: [
           {

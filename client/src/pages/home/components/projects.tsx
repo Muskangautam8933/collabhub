@@ -104,17 +104,8 @@ export default function Projects() {
               <ProjectCard
                 key={proj._id}
                 ws={proj}
-                handleEdit={(id) => {
-                  const project = projects.find(p => p._id === id);
-                  setEditingProject(project);
-                  setEditForm({ name: project.name, description: project.description || '' });
-                  setShowEditForm(true);
-                }}
-                handleDelete={(id) => {
-                  const proj = projects.find(p => p._id === id);
-                  setDeletingProject(proj);
-                  setShowDeleteDialog(true);
-                }}
+              
+              
               />
             ))}
         </div>

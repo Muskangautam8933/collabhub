@@ -7,8 +7,8 @@ export default function Page() {
   const ctx = usePageContext();
 
   return (
-    <div className="size-full">
-      <Tabs defaultValue={ctx.activeTab} className="w-full">
+    <div className="w-full min-h-full overflow-y-auto">
+      <Tabs defaultValue={ctx.activeTab} className="w-full ">
         <TabsList>
           {ctx.childRoutes.map((r) => {
             return (
@@ -20,9 +20,12 @@ export default function Page() {
             );
           })}
         </TabsList>
+           <div className=" w-full">
+          <Outlet />
+        </div>
       </Tabs>
 
-      <Outlet />
+     
     </div>
   );
 }

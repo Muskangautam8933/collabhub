@@ -136,7 +136,7 @@ export default function Page() {
 
 Page.displayName = "AccessControlPage";
 
-const ShowData = (d) => {
+const ShowData = (d:any) => {
   console.log(d);
   return <pre>{JSON.stringify(d)}</pre>;
 };

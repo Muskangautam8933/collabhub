@@ -4,11 +4,9 @@ import { useNavigate } from "react-router";
 // -------------------- PROJECT CARD ---------------------
 interface ProjectCardProps {
   ws: { _id: string; name: string; description: string };
-  handleDelete: (id: string) => void;
-  handleEdit: (id: string) => void;
 }
 
-export default function ProjectCard({ ws, handleDelete, handleEdit }: ProjectCardProps) {
+export default function ProjectCard({ ws }: ProjectCardProps) {
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -49,7 +47,7 @@ export default function ProjectCard({ ws, handleDelete, handleEdit }: ProjectCar
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleEdit(ws._id);
+              // handleEdit(ws._id);
               setShowMenu(false);
             }}
             className="block w-full px-4 py-2 text-left hover:bg-gray-700 text-white"
@@ -59,7 +57,7 @@ export default function ProjectCard({ ws, handleDelete, handleEdit }: ProjectCar
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleDelete(ws._id);
+              // handleDelete(ws._id);
               setShowMenu(false);
             }}
             className="block w-full px-4 py-2 text-left hover:bg-gray-700 text-red-400"
