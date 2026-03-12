@@ -1,6 +1,7 @@
 import * as inviteRepo from "../repos/inviteRepo.js";
 import * as tokenService from "../utils/token.service.js";
 import * as projectMemberRepo from "../repos/ProjectMemberRepo.js";
+import projectRepo from "../repos/ProjectRepo.js";
 import { sendInviteEmail } from "../utils/email.service.js";
 import { PROJECT_ROLE } from "../common/constants.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -12,6 +13,14 @@ import { withTransaction } from "../utils/withTransaction.js";
 export const create = asyncHandler(async (req, res) => {
   const email = req.query.email;
   const role = req.query.role;
+  const projectId = req.params.projectId;
+
+  const members = await projectMemberRepo.getAllProjectMembers(projectId);
+
+  const teamLimit = await projectRepo.getProjectTeamLimit(projectId);
+
+  if (members.length >= teamLimit)
+    throw new Error(`Project is full ${members.length}`);
 
   if (email === req.user.email) throw new Error("You can't invite yourself");
 
@@ -19,19 +28,19 @@ export const create = asyncHandler(async (req, res) => {
     sender: req.user.userId,
     email,
     role: role ?? PROJECT_ROLE.READ,
-    project: req.params.projectId,
+    project: projectId,
   });
 
   const invite = await inviteRepo.create({
     sender: req.user.userId,
     email,
     role: role ?? PROJECT_ROLE.READ,
-    project: req.params.projectId,
+    project: projectId,
     code: inviteCode,
   });
 
   // Async send email
-  sendInviteEmail(email, inviteCode, req.params.projectId);
+  sendInviteEmail(email, inviteCode, projectId);
 
   return res.status(201).json(invite);
 });
@@ -77,7 +86,7 @@ export const accept = asyncHandler(async (req, res) => {
   const invites = await inviteRepo.getByEmail(payload.email);
 
   if (!invites.length) throw new Error("Invite not found");
-  
+
   console.log("Invite found:", invites, payload.project, payload.role);
 
   let newMember = null;
