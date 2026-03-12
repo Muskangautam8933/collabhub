@@ -43,6 +43,11 @@ export function getAllProjectMembers(projectId) {
     .populate("user")
     .exec();
 }
+
+export function getById(memberId) {
+  if (!memberId) throw new Error("memberId is required");
+  return Model.findById(ObjectId(memberId));
+}
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/
@@ -61,7 +66,7 @@ export function updateMemberRole(projectId, memberId, role) {
  **************************** DELETE ************************************
  ************************************************************************/
 export async function softDeleteById(id, deletor, options = {}) {
-  if (!id) throw new Error("Page ID is required");
+  if (!id) throw new Error("memberId is required");
 
   if (!deletor) throw new Error("deletor is required");
 

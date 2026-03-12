@@ -72,7 +72,7 @@ export function updateAcceptanceByEmail(email, payload, options = {}) {
  **************************** DELETE ************************************
  ************************************************************************/
 export async function softDeleteById(id, deletor, options = {}) {
-  if (!id) throw new Error("Page ID is required");
+  if (!id) throw new Error("inviteId is required");
 
   if (!deletor) throw new Error("deletor is required");
 
