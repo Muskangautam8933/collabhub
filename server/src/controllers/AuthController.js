@@ -285,3 +285,8 @@ export const googleAuth = asyncHandler(async (req, res, next) => {
 export const me = asyncHandler(async function (req, res) {
   return res.status(200).json(req.user);
 });
+
+export const logout = asyncHandler(async function (req, res) {
+  res.clearCookie("token");
+  return res.status(200).json({ message: "Logged out successfully" });
+});

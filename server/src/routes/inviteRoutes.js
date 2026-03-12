@@ -9,6 +9,8 @@ const router = express.Router({ mergeParams: true });
 
 router.post("/", memberGaurd, adminGaurd, controller.create);
 
+router.get("/", controller.getByEmail);
+
 router.get("/", memberGaurd, adminGaurd, controller.getByProject);
 
 router.patch("/", controller.accept);

@@ -13,7 +13,7 @@ export const create = asyncHandler(async (req, res) => {
   const email = req.query.email;
   const role = req.query.role;
 
-  if(email === req.user.email) throw new Error("You can't invite yourself");
+  if (email === req.user.email) throw new Error("You can't invite yourself");
 
   const inviteCode = tokenService.generateInviteToken({
     sender: req.user.userId,
@@ -34,6 +34,21 @@ export const create = asyncHandler(async (req, res) => {
   sendInviteEmail(email, inviteCode, req.params.projectId);
 
   return res.status(201).json(invite);
+});
+
+export const getById = asyncHandler(async (req, res) => {
+  const invite = await inviteRepo.getById(req.params.inviteId);
+  return res.json(invite);
+});
+
+export const getByEmail = asyncHandler(async (req, res, next) => {
+  const email = req.query.email;
+
+  if (!email) return next();
+
+  const invite = await inviteRepo.getByEmail(email);
+
+  return res.json(invite);
 });
 
 /**
@@ -59,7 +74,11 @@ export const accept = asyncHandler(async (req, res) => {
 
   if (!isValidRecipientEmail) throw new Error("Invalid recipient email");
 
-  const invite = await inviteRepo.getByEmail(payload.email);
+  const invites = await inviteRepo.getByEmail(payload.email);
+
+  if (!invites.length) throw new Error("Invite not found");
+  
+  console.log("Invite found:", invites, payload.project, payload.role);
 
   let newMember = null;
 
@@ -67,7 +86,7 @@ export const accept = asyncHandler(async (req, res) => {
     newMember = await projectMemberRepo.create(
       {
         project: payload.project,
-        invite: invite._id,
+        invite: invites[0]._id,
         user: req.user.userId,
         role: payload.role,
       },

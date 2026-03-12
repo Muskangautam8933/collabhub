@@ -1,42 +1,39 @@
+import type { LoaderData } from "@/loaders/invite.loader";
+import localSpace from "@/services/local-space";
 import { patchJoinInvite } from "@/services/patch-join-invite";
-import { jwtDecode } from "jwt-decode";
 import React from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useLoaderData } from "react-router";
+import { toast } from "react-toastify";
 
 export default function useMain() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const inviteCode = searchParams.get("code");
+  const { invite, inviteCode } = useLoaderData() as LoaderData;
 
   /****************************************************
    * ****************** States ************************
    * *****************************************************/
-  const [response, setResponse] = React.useState<null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
-
-  React.useEffect(() => {
-    if (inviteCode) {
-      console.log(jwtDecode(inviteCode));
-    }
-  }, [inviteCode]);
 
   const handleJoinProjectClick = async () => {
     try {
       if (inviteCode) {
         setLoading(true);
 
-        const payload = jwtDecode(inviteCode);
+        await patchJoinInvite(invite.project, inviteCode);
 
-        await patchJoinInvite(payload.project, inviteCode);
+        toast.success("Successfully joined project");
+
+        localSpace.removeInviteToken();
 
         setLoading(false);
       }
     } catch (error) {
       setLoading(false);
       setError(error as string);
-    }finally {
+      toast.error(error as string);
+      localSpace.removeInviteToken();
+      throw error;
+    } finally {
       setLoading(false);
     }
   };
@@ -44,8 +41,7 @@ export default function useMain() {
   return {
     loading,
     error,
-    response,
-    inviteCode,
+    invite,
     handleJoinProjectClick,
   };
 }

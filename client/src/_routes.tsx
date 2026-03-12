@@ -19,11 +19,12 @@ import { ROUTES } from "./_routes.constants";
 import { InvitePage } from "./pages/invite";
 import { ErrorPage } from "./components/error.page";
 import { authLoader } from "./loaders/auth.loader";
-import getProjects from "./services/get-projects";
-import getProject from "./services/get-project";
 import { accessControllerLoader } from "./loaders/access-controler.loader";
 import { rootLoader } from "./loaders/root.loader";
 import { inviteLoader } from "./loaders/invite.loader";
+import PublicLayout from "./public.layout";
+import { projectLoader } from "./loaders/project.loader";
+import { projectsLoader } from "./loaders/projects.loader";
 
 // Client-side timing middleware
 
@@ -35,105 +36,101 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        index: true,
-        element: <LandingPage />,
-      },
-      {
-        path: ROUTES.PUBLIC.LOGIN,
-        loader: authLoader,
-        element: <LoginPage />,
-      },
-      {
-        path: ROUTES.PUBLIC.SIGNUP,
-        element: <SignupPage />,
-      },
-      {
-        path: ROUTES.PUBLIC.INVITE,
-        loader: inviteLoader,
-        element: <InvitePage />,
-      },
-      {
-        path: ROUTES.PRIVATE.PROJECTS.ROOT,
-        element: <PrivateLayout />,
-        loader: async () => {
-          const res = await getProjects();
-
-          console.log("projects : ", res);
-        },
+        element: <PublicLayout />,
         children: [
           {
-            index: true,
-            element: <HomePage />,
+            path: ROUTES.PUBLIC.ROOT,
+            element: <LandingPage />,
           },
           {
-            path: ":projectId",
-            loader: async ({ params }) => {
-              const projectId = params.projectId;
-
-              const res = await getProject(projectId);
-              console.log("project : ", res);
-            },
+            path: ROUTES.PUBLIC.LOGIN,
+            loader: authLoader,
+            element: <LoginPage />,
+          },
+          {
+            path: ROUTES.PUBLIC.SIGNUP,
+            element: <SignupPage />,
+          },
+          {
+            path: ROUTES.PUBLIC.INVITE,
+            loader: inviteLoader,
+            element: <InvitePage />,
+          },
+          {
+            path: ROUTES.PRIVATE.PROJECTS.ROOT,
+            element: <PrivateLayout />,
+            loader: projectsLoader,
             children: [
               {
                 index: true,
-                element: <DashboardPage />,
+                element: <HomePage />,
               },
               {
-                path: ROUTES.PRIVATE.PROJECTS.DASHBOARD,
-                element: <DashboardPage />,
-              },
-              {
-                path: ROUTES.PRIVATE.PROJECTS.PROFILE,
-                element: <ProfilePage />,
-              },
-              {
-                path: ROUTES.PRIVATE.PROJECTS.COMMUNICATIONS,
-                element: <CommunicationPage />,
+                path: ":projectId",
+                loader: projectLoader,
                 children: [
                   {
                     index: true,
+                    element: <DashboardPage />,
+                  },
+                  {
+                    path: ROUTES.PRIVATE.PROJECTS.DASHBOARD,
+                    element: <DashboardPage />,
+                  },
+                  {
+                    path: ROUTES.PRIVATE.PROJECTS.PROFILE,
+                    element: <ProfilePage />,
+                  },
+                  {
+                    path: ROUTES.PRIVATE.PROJECTS.COMMUNICATIONS,
                     element: <CommunicationPage />,
+                    children: [
+                      {
+                        index: true,
+                        element: <CommunicationPage />,
+                      },
+                      {
+                        path: ":id",
+                        element: <CommunicationPage />,
+                      },
+                    ],
                   },
                   {
-                    path: ":id",
-                    element: <CommunicationPage />,
-                  },
-                ],
-              },
-              {
-                path: ROUTES.PRIVATE.PROJECTS.PAGES,
-                element: <PagesPage />,
-                children: [
-                  {
-                    index: true,
-                    element: <Navigate to=":client-id" replace />,
-                  },
-                  {
-                    path: ":client-id",
+                    path: ROUTES.PRIVATE.PROJECTS.PAGES,
                     element: <PagesPage />,
-                  },
-                ],
-              },
-              {
-                path: ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT,
-                element: <SettingsPage />,
-                children: [
-                  {
-                    index: true,
-                    element: <GeneralSettingPage />,
-                  },
-                  {
-                    path: "general",
-                    element: <GeneralSettingPage />,
+                    children: [
+                      {
+                        index: true,
+                        element: <Navigate to=":client-id" replace />,
+                      },
+                      {
+                        path: ":client-id",
+                        element: <PagesPage />,
+                      },
+                    ],
                   },
                   {
-                    path: "filters",
-                    element: <FilterSettingPage />,
-                  },
-                  {
-                    path: "access-control",
-                    loader: accessControllerLoader,
-                    element: <AccessControlPage />,
+                    path: ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT,
+                    element: <SettingsPage />,
+                    children: [
+                      {
+                        index: true,
+                        element: <GeneralSettingPage />,
+                      },
+                      {
+                        path: "general",
+                        element: <GeneralSettingPage />,
+                      },
+                      {
+                        path: "filters",
+                        element: <FilterSettingPage />,
+                      },
+                      {
+                        path: "access-control",
+                        loader: accessControllerLoader,
+                        element: <AccessControlPage />,
+                      },
+                    ],
                   },
                 ],
               },

@@ -12,14 +12,12 @@ import { PathNameBreadcrumb } from "./components/pathname-breadcrumb";
 import SocketContextProvider from "./providers/socket";
 import AppDataProvider from "./providers/app-data";
 import { RightSidebar } from "./components/right-sidebar";
-import { ToastContainer } from "react-toastify";
 
 export default function PrivateLayout() {
   return (
     <>
       <SocketContextProvider>
         <AppDataProvider>
-          <ToastContainer />
           <SidebarProvider>
             <AppSidebar />
             <SidebarInset>

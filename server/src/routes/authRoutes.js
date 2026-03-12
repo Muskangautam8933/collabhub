@@ -25,6 +25,11 @@ router.post("/login", authController.login);
 router.get("/login", authController.getConsent);
 
 /**
+ * Logout
+ */
+router.get("/logout", authController.logout);
+
+/**
  * Google OAuth Callback
  */
 router.get("/google/oauth2callback", authController.googleAuth);

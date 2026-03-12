@@ -9,6 +9,10 @@ export type JwtPayload = {
 };
 
 class LocalSpace {
+  /**
+   * Gets local storage items
+   */
+
   getAccessToken(): string | null {
     return localStorage.getItem("accessToken");
   }
@@ -26,6 +30,18 @@ class LocalSpace {
     return user ? JSON.parse(user) : null;
   }
 
+  getInviteToken(): string | null {
+    return localStorage.getItem("invite-token");
+  }
+
+  /**
+   * Sets local storage items
+   */
+
+  setInviteToken(token: string): void {
+    localStorage.setItem("invite-token", token);
+  }
+
   setAccessToken(token: string): void {
     localStorage.setItem("accessToken", token);
     window.dispatchEvent(new Event("auth-change"));
@@ -41,6 +57,14 @@ class LocalSpace {
   setUser(user: User): void {
     localStorage.setItem("user", JSON.stringify(user));
     window.dispatchEvent(new Event("auth-change"));
+  }
+
+  /**
+   * Removes all local storage items
+   */
+
+  removeInviteToken(): void {
+    localStorage.removeItem("invite-token");
   }
 
   removeAccessToken(): void {

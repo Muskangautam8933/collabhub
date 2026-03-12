@@ -1,19 +1,16 @@
-import{ type User } from "@/services/get-me";
-import getProjects from "@/services/get-projects";
-import { createContext, type LoaderFunction } from "react-router";
+import { type User } from "@/services/get-me";
+import getProject from "@/services/get-project";
+import { type LoaderFunction } from "react-router";
 
-export const userContext = createContext<User | null>(null);
+export const projectLoader: LoaderFunction = async ({ params }) => {
+  const projectId = params.projectId;
 
-export const projectLoader: LoaderFunction = async ({ context }) => {
-  const user = context.get(userContext);
+  const project = await getProject(projectId);
+  console.log("project : ", project);
 
-  if (!user) throw new Error("You are not logged in");
-
-  const res = await getProjects();
-
-  console.log("projects : ", res);
+  return { project };
 };
 
 export type LoaderData = {
-  user: Promise<User | null>;
+  project: Promise<User | null>;
 };
