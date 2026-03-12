@@ -10,6 +10,7 @@ import {
 
 import { PathNameBreadcrumb } from "./components/pathname-breadcrumb";
 import { RightSidebar } from "./components/right-sidebar";
+import { ROUTES } from "./_routes.constants";
 
 export default function AppLayout() {
   return (
@@ -18,12 +19,12 @@ export default function AppLayout() {
         <SidebarProvider>
           <AppSidebar />
           <SidebarInset>
-            <Header />
+            <ShowHeader />
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0 ">
               <Outlet />
             </div>
           </SidebarInset>
-          <RightSidebar />
+          <ShowRightSidebar />
         </SidebarProvider>
       </AppDataProvider>
     </>
@@ -31,6 +32,22 @@ export default function AppLayout() {
 }
 
 function Header() {
+  return (
+    <header className="flex h-16 shrink-0 items-center gap-2 sticky top-0">
+      <div className="flex items-center gap-2 p-4">
+        <SidebarTrigger className="-ml-1" />
+        <Separator
+          orientation="vertical"
+          className="mr-2 data-[orientation=vertical]:h-4"
+        />
+
+        <PathNameBreadcrumb />
+      </div>
+    </header>
+  );
+}
+
+function ShowHeader() {
   const location = useLocation();
   const excludePatterns = [
     /^\/me\/chats$/,
@@ -46,17 +63,15 @@ function Header() {
     return null;
   }
 
-  return (
-    <header className="flex h-16 shrink-0 items-center gap-2 sticky top-0">
-      <div className="flex items-center gap-2 p-4">
-        <SidebarTrigger className="-ml-1" />
-        <Separator
-          orientation="vertical"
-          className="mr-2 data-[orientation=vertical]:h-4"
-        />
+  return <Header />;
+}
 
-        <PathNameBreadcrumb />
-      </div>
-    </header>
-  );
+function ShowRightSidebar() {
+  const location = useLocation();
+
+  if (!location.pathname.includes(ROUTES.PRIVATE.PROJECTS.COMMUNICATIONS)) {
+    return null;
+  }
+
+  return <RightSidebar />;
 }

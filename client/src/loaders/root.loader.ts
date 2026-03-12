@@ -9,17 +9,12 @@ export const rootLoader: LoaderFunction = async ({ context, request }) => {
     const user = await me();
     context.set(userContext, user);
 
-    console.log("ROOT LOADER");
-
     const inviteToken = localSpace.getInviteToken();
-
-    console.log("invite code  ", inviteToken);
 
     const url = new URL(request.url);
     const pathname = url.pathname;
 
     if (inviteToken && !pathname.includes("invites")) {
-      console.log("REDIRECTING...");
       return redirect(`/invites?code=${inviteToken}`);
     }
 

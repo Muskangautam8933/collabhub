@@ -139,7 +139,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           </Badge>
                         </SidebarGroupLabel>
                         {members.map((member) => (
-                          <SidebarMenuButton className="flex justify-between">
+                          <SidebarMenuButton
+                            key={member._id}
+                            className="flex justify-between"
+                          >
                             <div className="flex items-center gap-2">
                               <User size={18} />
                               <span>{member.user.email}</span>

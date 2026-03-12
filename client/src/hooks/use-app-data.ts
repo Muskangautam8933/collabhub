@@ -30,8 +30,6 @@ export default function useAppData() {
 
   const loaderData = useLoaderData() as LoaderData;
 
-  console.log("loaderData", loaderData);
-
   const { socket } = useSocketContext();
 
   useMessanger();

@@ -5,7 +5,7 @@ export default function PrivateLayout() {
   return (
     <>
       <SocketContextProvider>
-          <Outlet />
+        <Outlet />
       </SocketContextProvider>
     </>
   );
