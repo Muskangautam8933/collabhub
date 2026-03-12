@@ -2,7 +2,7 @@ import type { LoaderData } from "@/loaders/invite.loader";
 import localSpace from "@/services/local-space";
 import { patchJoinInvite } from "@/services/patch-join-invite";
 import React from "react";
-import { useLoaderData } from "react-router";
+import { redirect, useLoaderData } from "react-router";
 import { toast } from "react-toastify";
 
 export default function useMain() {
@@ -26,6 +26,8 @@ export default function useMain() {
         localSpace.removeInviteToken();
 
         setLoading(false);
+
+        return redirect(`/projects/${invite.project}`);
       }
     } catch (error) {
       setLoading(false);
