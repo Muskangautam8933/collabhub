@@ -1,10 +1,10 @@
-import * as inviteRepo from "../repos/inviteRepo.js";
+import * as inviteRepo from "../repos/InviteRepo.js";
 import * as tokenService from "../utils/token.service.js";
 import * as projectMemberRepo from "../repos/ProjectMemberRepo.js";
 import projectRepo from "../repos/ProjectRepo.js";
+import asyncHandler from "../utils/asyncHandler.js";
 import { sendInviteEmail } from "../utils/email.service.js";
 import { PROJECT_ROLE } from "../common/constants.js";
-import asyncHandler from "../utils/asyncHandler.js";
 import { withTransaction } from "../utils/withTransaction.js";
 
 /**
@@ -31,13 +31,27 @@ export const create = asyncHandler(async (req, res) => {
     project: projectId,
   });
 
-  const invite = await inviteRepo.create({
-    sender: req.user.userId,
-    email,
-    role: role ?? PROJECT_ROLE.READ,
-    project: projectId,
-    code: inviteCode,
-  });
+  let invite = null;
+
+  const existingDeletedInvite = await inviteRepo.getDeletedByEmail(email);
+
+  if (existingDeletedInvite) {
+    // Restore
+    invite = await inviteRepo.restoreById(existingDeletedInvite._id, {
+      sender: req.user.userId,
+      role: role ?? PROJECT_ROLE.READ,
+      code: inviteCode,
+    });
+  } else {
+    // Create New one
+    invite = await inviteRepo.create({
+      sender: req.user.userId,
+      email,
+      role: role ?? PROJECT_ROLE.READ,
+      project: projectId,
+      code: inviteCode,
+    });
+  }
 
   // Async send email
   sendInviteEmail(email, inviteCode, projectId);
@@ -87,29 +101,56 @@ export const accept = asyncHandler(async (req, res) => {
 
   if (!invites.length) throw new Error("Invite not found");
 
-  console.log("Invite found:", invites, payload.project, payload.role);
-
   let newMember = null;
 
-  await withTransaction(async (session) => {
-    newMember = await projectMemberRepo.create(
-      {
-        project: payload.project,
-        invite: invites[0]._id,
-        user: req.user.userId,
-        role: payload.role,
-      },
-      { session },
+  const existingMember =
+    await projectMemberRepo.getDeletedMemberByProjectAndUser(
+      payload.project,
+      req.user.userId,
     );
 
-    await inviteRepo.updateAcceptanceByEmail(
-      payload.email,
-      {
-        receiver: req.user.userId,
-      },
-      { session },
-    );
-  });
+  if (existingMember) {
+    // Restore Project member
+    await withTransaction(async (session) => {
+      newMember = await projectMemberRepo.restoreById(
+        existingMember._id,
+        {
+          user: req.user.userId,
+          role: payload.role,
+        },
+        { session },
+      );
+
+      await inviteRepo.updateAcceptanceByEmail(
+        payload.email,
+        {
+          receiver: req.user.userId,
+        },
+        { session },
+      );
+    });
+  } else {
+    // Create New project member
+    await withTransaction(async (session) => {
+      newMember = await projectMemberRepo.create(
+        {
+          project: payload.project,
+          invite: invites[0]._id,
+          user: req.user.userId,
+          role: payload.role,
+        },
+        { session },
+      );
+
+      await inviteRepo.updateAcceptanceByEmail(
+        payload.email,
+        {
+          receiver: req.user.userId,
+        },
+        { session },
+      );
+    });
+  }
 
   res.status(200).json(newMember);
 });

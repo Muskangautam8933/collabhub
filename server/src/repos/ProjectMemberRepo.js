@@ -48,6 +48,16 @@ export function getById(memberId) {
   if (!memberId) throw new Error("memberId is required");
   return Model.findById(ObjectId(memberId));
 }
+
+export function getDeletedMemberByProjectAndUser(projectId, user) {
+  if (!projectId) throw new Error("projectId is required");
+  if (!user) throw new Error("user is required");
+  return Model.findOne({
+    project: ObjectId(projectId),
+    user: ObjectId(user),
+    isDeleted: true,
+  });
+}
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/
@@ -60,6 +70,26 @@ export function updateMemberRole(projectId, memberId, role) {
     { project: ObjectId(projectId), _id: ObjectId(memberId) },
     { $set: { role } },
     { new: true },
+  );
+}
+
+export async function restoreById(id, payload = {}, options = {}) {
+  if (!id) throw new Error("memberId is required");
+
+  return await handleMongoDbErrors(() =>
+    Model.findOneAndUpdate(
+      { _id: ObjectId(id) },
+      {
+        $set: {
+          ...payload,
+          user: ObjectId(payload.user),
+          isDeleted: false,
+          deletedAt: null,
+          deletor: null,
+        },
+      },
+      { new: true, session: options.session },
+    ),
   );
 }
 /************************************************************************

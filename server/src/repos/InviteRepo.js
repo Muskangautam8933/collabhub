@@ -40,6 +40,11 @@ export function getByEmail(email) {
   return Model.find({ email: email.toLowerCase() });
 }
 
+export function getDeletedByEmail(email) {
+  if (!email) throw new Error("email is required");
+  return Model.findOne({ email: email.toLowerCase(), isDeleted: true });
+}
+
 export function getById(id) {
   if (!id) throw new Error("Invite ID is required");
   return Model.findById(id);
@@ -66,6 +71,27 @@ export function updateAcceptanceByEmail(email, payload, options = {}) {
       upsert: true,
       session: options.session,
     },
+  );
+}
+
+export async function restoreById(id, payload = {}, options = {}) {
+  if (!id) throw new Error("inviteId is required");
+
+  return await handleMongoDbErrors(() =>
+    Model.findOneAndUpdate(
+      { _id: ObjectId(id) },
+      {
+        $set: {
+          ...payload,
+          sender: ObjectId(payload.sender),
+          status: INVITE_STATUS.PENDING,
+          isDeleted: false,
+          deletedAt: null,
+          deletor: null,
+        },
+      },
+      { new: true, session: options.session },
+    ),
   );
 }
 /************************************************************************
