@@ -35,6 +35,14 @@ export function getByUserAndProject(userId, projectId) {
     isDeleted: false,
   });
 }
+
+export function getAllProjectMembers(projectId) {
+  if (!projectId) throw new Error("projectId is required");
+
+  return Model.find({ project: ObjectId(projectId), isDeleted: false })
+    .populate("user")
+    .exec();
+}
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/

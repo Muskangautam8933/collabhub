@@ -3,16 +3,15 @@
 //  */
 // import express from "express";
 // import * as controller from "../controllers/UserController.js";
-// import asyncHandler from "../utils/asyncHandler.js";
 
 // const router = express.Router({ mergeParams: true });
 
-// router.get("/", asyncHandler(controller.findAll));
+// router.get("/", controller.findAll);
 
-// router.post("/", asyncHandler(controller.create));
+// router.post("/", controller.create);
 
-// router.put("/:id", asyncHandler(controller.updateById));
+// router.put("/:id", controller.updateById);
 
-// router.delete("/:id", asyncHandler(controller.deleteById));
+// router.delete("/:id", controller.deleteById);
 
 // export default router;

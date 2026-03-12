@@ -25,6 +25,7 @@ import userRoutes from "./routes/userRoutes.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
 import inviteRoutes from "./routes/inviteRoutes.js";
+import memberRotues from "./routes/memberRoutes.js";
 
 import { AuthGuard, memberGaurd } from "./middleware/authMiddleware.js";
 
@@ -60,6 +61,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/projects", AuthGuard, projectRoutes);
 app.use("/api/projects/:projectId/pages", AuthGuard, memberGaurd, pageRoutes);
 app.use("/api/projects/:projectId/invites", AuthGuard, inviteRoutes);
+app.use("/api/projects/:projectId/members", AuthGuard, memberRotues);
 
 // Health check
 app.get("/health", (req, res) => {

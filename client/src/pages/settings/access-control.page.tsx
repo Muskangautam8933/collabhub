@@ -20,6 +20,7 @@ import { Await } from "react-router-dom";
 import type { Invite } from "@/services/get-invites";
 import { Badge } from "@/components/ui/badge";
 import { usePageContext } from "./_context";
+import type { Member } from "@/services/get-members";
 
 export const PROJECT_ROLE = {
   OWNER: "owner",
@@ -132,7 +133,7 @@ export default function Page() {
 
       {/* Members */}
       <React.Suspense fallback={<p>Loading members...</p>}>
-        <Await resolve={ctx.loaderData.invites}>{ShowMembers}</Await>
+        <Await resolve={ctx.loaderData.members}>{ShowMembers}</Await>
       </React.Suspense>
     </div>
   );
@@ -172,24 +173,21 @@ function ShowInvites(invites: Invite[]) {
   );
 }
 
-function ShowMembers(invites: Invite[]) {
-  if (invites.length === 0) return null;
+function ShowMembers(members: Member[]) {
+  if (members.length === 0) return null;
   return (
     <>
       <h3 className="text-2xl pt-4 font-semibold">Project Members</h3>
       <Card>
-        {invites.map((invite) => {
+        {members.map((member) => {
           return (
             <UserListItem
-              key={invite._id}
-              uid={invite._id}
-              user={{
-                email: invite.email,
-              }}
+              key={member._id}
+              uid={member._id}
+              user={member.user}
               lslot={
                 <div className="flex gap-1">
-                  <Badge>{invite.role}</Badge>
-                  <Badge>{invite.status}</Badge>
+                  <Badge>{member.role}</Badge>
                 </div>
               }
             />
