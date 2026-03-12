@@ -6,6 +6,19 @@ import { apiFetch } from "@/utils/api-fetch";
  *********************************** Types *************************
  *******************************************************************/
 
+export type Project = {
+  _id: string;
+  name: string;
+  description: string | null;
+  owner: string;
+  teamLimit: number;
+  isDeleted: false;
+  deletedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+};
+
 /**
  * Get participant chat
  * -----------------------

@@ -25,6 +25,7 @@ import { inviteLoader } from "./loaders/invite.loader";
 import PublicLayout from "./public.layout";
 import { projectLoader } from "./loaders/project.loader";
 import { projectsLoader } from "./loaders/projects.loader";
+import AppLayout from "./app.layout";
 
 // Client-side timing middleware
 
@@ -58,8 +59,8 @@ const router = createBrowserRouter([
           },
           {
             path: ROUTES.PRIVATE.PROJECTS.ROOT,
-            element: <PrivateLayout />,
             loader: projectsLoader,
+            element: <PrivateLayout />,
             children: [
               {
                 index: true,
@@ -68,6 +69,7 @@ const router = createBrowserRouter([
               {
                 path: ":projectId",
                 loader: projectLoader,
+                element: <AppLayout />,
                 children: [
                   {
                     index: true,

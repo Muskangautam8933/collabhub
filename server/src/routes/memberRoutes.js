@@ -7,7 +7,7 @@ import { adminGaurd, memberGaurd } from "../middleware/authMiddleware.js";
 
 const router = express.Router({ mergeParams: true });
 
-router.get("/", memberGaurd, adminGaurd, controller.getAllProjectMembers);
+router.get("/", memberGaurd, controller.getAllProjectMembers);
 
 // router.post("/", controller.create);
 

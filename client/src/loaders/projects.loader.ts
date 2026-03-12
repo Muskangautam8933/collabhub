@@ -5,7 +5,6 @@ import { type LoaderFunction } from "react-router";
 export const projectsLoader: LoaderFunction = async () => {
   const projects = await getProjects();
 
-  console.log("projects : ", projects);
 
   return { projects };
 };

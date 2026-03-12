@@ -29,11 +29,12 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useGlobalContext } from "@/contexts/global.context";
-import { Link, useLocation, useParams } from "react-router";
+import { Await, Link, useParams } from "react-router";
 import { APP_NAME } from "@/app.constatns";
 import { Badge } from "./ui/badge";
 import { ScrollArea } from "./ui/scroll-area";
 import { ROUTES } from "@/_routes.constants";
+import { useAppContext } from "@/contexts/app.context";
 
 const data = {
   navMain: [
@@ -71,21 +72,10 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const location = useLocation();
   const ctx = useGlobalContext();
   const { projectId } = useParams();
+  const appCtx = useAppContext();
 
-  const excludePatterns = [
-    /^\/projects$/, // match only /projects
-  ];
-
-  const shouldExclude = excludePatterns.some((pattern) =>
-    pattern.test(location.pathname),
-  );
-
-  if (shouldExclude) {
-    return null;
-  }
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -131,30 +121,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <NavMain items={data.navMain} />
 
           <SidebarGroup>
-            <SidebarGroupLabel className="space-x-4">
-              <span>Team members</span>
-              <Badge variant={"outline"}>0/6</Badge>
-            </SidebarGroupLabel>
             <SidebarMenu>
-              {[
-                { name: "Sahil Verma", role: "Admin", to: "/me/chats/sahil" },
-                { name: "Sonal Verma", role: "Write", to: "/me/chats/sonal" },
-                { name: "Muskan Gautam", role: "Read", to: "/me/chats/muskan" },
-                { name: "Vansh Nigam", role: "Read", to: "/me/chats/vansh" },
-                { name: "Sakshi Verma", role: "Read", to: "/me/chats/sakshi" },
-                { name: "Atul Verma", role: "Read", to: "/me/chats/atul" },
-              ].map((item) => {
-                return (
-                  <Link key={item.name} to={item.to}>
-                    <SidebarMenuButton className="flex justify-between">
-                      <div className="flex items-center gap-2">
-                        <User size={18} />
-                        <span>{item.name}</span>
-                      </div>
-                    </SidebarMenuButton>
-                  </Link>
-                );
-              })}
+              <React.Suspense fallback={<div>Loading...</div>}>
+                <Await resolve={appCtx.loaderData.members}>
+                  {(members) => {
+                    return (
+                      <>
+                        <SidebarGroupLabel className="space-x-4">
+                          <span>Team members</span>
+                          <Badge variant={"outline"}>
+                            {members.length}/
+                            <React.Suspense fallback={<div>Loading...</div>}>
+                              <Await resolve={appCtx.loaderData.project}>
+                                {(project) => <span>{project.teamLimit}</span>}
+                              </Await>
+                            </React.Suspense>
+                          </Badge>
+                        </SidebarGroupLabel>
+                        {members.map((member) => (
+                          <SidebarMenuButton className="flex justify-between">
+                            <div className="flex items-center gap-2">
+                              <User size={18} />
+                              <span>{member.user.email}</span>
+                            </div>
+                          </SidebarMenuButton>
+                        ))}
+                      </>
+                    );
+                  }}
+                </Await>
+              </React.Suspense>
             </SidebarMenu>
           </SidebarGroup>
         </ScrollArea>
