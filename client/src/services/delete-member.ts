@@ -8,9 +8,12 @@ import { apiFetch } from "@/utils/api-fetch";
 /**
  * using network it fetch the data.
  */
-export default async function getChat(chatId: string) {
+export default async function deleteMember(
+  projectId?: string,
+  memberId?: string,
+) {
   return apiFetch({
-    url: `${SERVER_URL}/chats/${chatId}`,
-    method: "GET",
+    url: `${SERVER_URL}/api/projects/${projectId}/members/${memberId}`,
+    method: "DELETE",
   });
 }

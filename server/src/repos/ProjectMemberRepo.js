@@ -46,7 +46,17 @@ export function getAllProjectMembers(projectId) {
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/
+export function updateMemberRole(projectId, memberId, role) {
+  if (!projectId) throw new Error("projectId is required");
+  if (!memberId) throw new Error("memberId is required");
+  if (!role) throw new Error("role is required");
 
+  return Model.updateOne(
+    { project: ObjectId(projectId), _id: ObjectId(memberId) },
+    { $set: { role } },
+    { new: true },
+  );
+}
 /************************************************************************
  **************************** DELETE ************************************
  ************************************************************************/

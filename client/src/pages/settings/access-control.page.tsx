@@ -33,7 +33,8 @@ export const PROJECT_ROLE = {
 export default function Page() {
   const role: (typeof PROJECT_ROLE)[keyof typeof PROJECT_ROLE] =
     PROJECT_ROLE.OWNER;
-  const { users, usersLoading, ...ctx } = useAccessControlPage();
+  const ctx = useAccessControlPage();
+  const { users, usersLoading } = ctx;
 
   if (role !== PROJECT_ROLE.OWNER && role !== PROJECT_ROLE.ADMIN) {
     return (
@@ -133,7 +134,7 @@ export default function Page() {
 
       {/* Members */}
       <React.Suspense fallback={<p>Loading members...</p>}>
-        <Await resolve={ctx.loaderData.members}>{ShowMembers}</Await>
+        <Await resolve={ctx.loaderData.members}>{ShowMembers(ctx)}</Await>
       </React.Suspense>
     </div>
   );
@@ -173,27 +174,59 @@ function ShowInvites(invites: Invite[]) {
   );
 }
 
-function ShowMembers(members: Member[]) {
-  if (members.length === 0) return null;
-  return (
-    <>
-      <h3 className="text-2xl pt-4 font-semibold">Project Members</h3>
-      <Card>
-        {members.map((member) => {
-          return (
-            <UserListItem
-              key={member._id}
-              uid={member._id}
-              user={member.user}
-              lslot={
-                <div className="flex gap-1">
-                  <Badge>{member.role}</Badge>
-                </div>
-              }
-            />
-          );
-        })}
-      </Card>
-    </>
-  );
+function ShowMembers(ctx: ReturnType<typeof useAccessControlPage>) {
+  return (members: Member[]) => {
+    if (members.length === 0) return null;
+    return (
+      <>
+        <h3 className="text-2xl pt-4 font-semibold">Project Members</h3>
+        <Card>
+          {members.map((member) => {
+            return (
+              <UserListItem
+                key={member._id}
+                uid={member._id}
+                user={member.user}
+                lslot={
+                  <div className="flex gap-1">
+                    <Select
+                      onValueChange={ctx.handleUpdateMemberRole(member._id)}
+                      defaultValue={member.role}
+                    >
+                      <SelectTrigger className="w-full max-w-48">
+                        <SelectValue placeholder="Select a Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Roles</SelectLabel>
+                          {Object.values(PROJECT_ROLE)
+                            .filter(
+                              (r) =>
+                                r !== PROJECT_ROLE.OTHERS &&
+                                r !== PROJECT_ROLE.OWNER,
+                            )
+                            .map((role) => (
+                              <SelectItem key={role} value={role}>
+                                {role}
+                              </SelectItem>
+                            ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      disabled={ctx.removeLoading}
+                      onClick={ctx.handleRemoveMember(member._id)}
+                      variant={"destructive"}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                }
+              />
+            );
+          })}
+        </Card>
+      </>
+    );
+  };
 }

@@ -8,6 +8,8 @@ import { toast } from "react-toastify";
 import { useLoaderData } from "react-router-dom";
 import type { LoaderData } from "@/loaders/access-controler.loader";
 import { usePageContext } from "./_context";
+import patchMemberRole from "@/services/patch-memberRole";
+import deleteMember from "@/services/delete-member";
 
 export const PROJECT_ROLE_MAP = {
   OWNER: "owner",
@@ -41,9 +43,8 @@ export const useAccessControlPage = () => {
   const [role, setRole] = React.useState<PROJECT_ROLE>(PROJECT_ROLE_MAP.READ);
 
   const [sendInviteLoading, setSendInviteLoading] = React.useState(true);
-  const [sendInviteError, setSendInviteError] = React.useState<string | null>(
-    null,
-  );
+
+  const [removeLoading, setRemoveLoading] = React.useState(false);
 
   const { projectId } = useParams();
 
@@ -109,7 +110,7 @@ export const useAccessControlPage = () => {
 
       ctx.setInvites((p) => {
         console.log([...p, newInvite]);
-        return [...p, newInvite]
+        return [...p, newInvite];
       });
 
       toast.success("User invited successfully");
@@ -117,9 +118,6 @@ export const useAccessControlPage = () => {
       setSendInviteLoading(false);
     } catch (error) {
       setSendInviteLoading(false);
-      setSendInviteError(
-        error instanceof Error ? error.message : "Failed to invite user",
-      );
       toast.error(
         error instanceof Error ? error.message : "Failed to invite user",
       );
@@ -141,6 +139,33 @@ export const useAccessControlPage = () => {
     setQuery("");
   };
 
+  const handleUpdateMemberRole = (id: string) => async (role: PROJECT_ROLE) => {
+    try {
+      await patchMemberRole(projectId, id, role);
+
+      toast.success("User role updated successfully");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update user role",
+      );
+    }
+  };
+
+  const handleRemoveMember = (id: string) => async () => {
+    try {
+      setRemoveLoading(true);
+      await deleteMember(projectId, id);
+
+      setRemoveLoading(false);
+      toast.success("User role updated successfully");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to update user role",
+      );
+      setRemoveLoading(false);
+    }
+  };
+
   return {
     users,
     usersLoading,
@@ -148,10 +173,14 @@ export const useAccessControlPage = () => {
     query,
     role,
     loaderData,
+    sendInviteLoading,
+    removeLoading,
     handleInputChange,
     handleInviteClick,
     handleRoleChange,
     onClickUser,
     handleNewUserInviteClick,
+    handleUpdateMemberRole,
+    handleRemoveMember,
   };
 };

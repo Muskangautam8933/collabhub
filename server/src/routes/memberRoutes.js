@@ -11,8 +11,8 @@ router.get("/", memberGaurd, adminGaurd, controller.getAllProjectMembers);
 
 // router.post("/", controller.create);
 
-// router.put("/:id", controller.updateById);
+router.patch("/:memberId", memberGaurd, adminGaurd, controller.updateById);
 
-// router.delete("/:id", controller.deleteById);
+router.delete("/:memberId", memberGaurd, adminGaurd, controller.deleteById);
 
 export default router;
