@@ -83,7 +83,7 @@ export default function Projects() {
   };
 
   return (
-    <section className="w-full px-6 py-6">
+    <section className="w-full  px-6  py-6  ">
       <div className="min-h-screen px-6 py-6">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-semibold">Your Projects</h2>

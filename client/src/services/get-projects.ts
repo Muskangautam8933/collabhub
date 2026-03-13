@@ -39,6 +39,34 @@ export const getProjects = async (ownerId?: string): Promise<Project[]> => {
   }
 };
 
+export const searchProjects = async (query: string): Promise<Project[]> => {
+  const token = localSpace.getAccessToken();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const response = await fetch(`/api/projects/search?q=${encodeURIComponent(query)}`, {
+    method: 'GET',
+    headers,
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    console.error('searchProjects error body', text);
+    throw new Error(`Failed to search projects: ${response.status}`);
+  }
+
+  try {
+    return await response.json();
+  } catch (err) {
+    const text = await response.text();
+    console.error('searchProjects parse failure, body:', text);
+    throw err;
+  }
+};
+
 export const getProjectById = async (id: string): Promise<Project> => {
   const token = localSpace.getAccessToken();
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };

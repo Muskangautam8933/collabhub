@@ -21,6 +21,18 @@ class ProjectRepo {
     return await Project.find(query);
   }
 
+  async search(owner, query) {
+    const searchQuery = { isDeleted: false };
+    if (owner) {
+      searchQuery.owner = ObjectId(owner);
+    }
+    searchQuery.$or = [
+      { name: { $regex: query, $options: 'i' } },
+      { description: { $regex: query, $options: 'i' } }
+    ];
+    return await Project.find(searchQuery);
+  }
+
 /************************************************************************
  **************************** FIND BY ID ************************************
  ************************************************************************/

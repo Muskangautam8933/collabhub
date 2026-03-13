@@ -19,6 +19,16 @@ export const getAllProjects = async (req, res) => {
   return res.json(projects);
 };
 
+export const searchProjects = async (req, res) => {
+  const { q } = req.query;
+  const owner = req.user && req.user.userId;
+  if (!q) {
+    return res.status(400).json({ message: "Search query is required" });
+  }
+  const projects = await ProjectRepo.search(owner, q);
+  return res.json(projects);
+};
+
 export const getProject = async (req, res) => {
   try {
     const project = await ProjectRepo.findById(req.params.id);
