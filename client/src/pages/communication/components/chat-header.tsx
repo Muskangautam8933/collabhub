@@ -1,4 +1,4 @@
-import { Phone, Video, MoreVertical, Search } from "lucide-react";
+import { Phone, Video, MoreVertical, Search, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -9,16 +9,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserStatusItem } from "@/components/user-status-item";
 import type { User } from "@/services/auth";
+import { useNavigate } from "react-router";
 
 interface ChatHeaderProps {
   user?: User;
 }
 
 export function ChatHeader({ user }: ChatHeaderProps) {
+  const navigator = useNavigate();
   return (
     <div className="flex items-center justify-between border-b bg-card p-4">
       {/* Left: User Profile Section */}
-      <UserStatusItem user={user} />
+      <div className="flex items-center gap-2">
+        <Button onClick={() => navigator(-1)}>
+          <ArrowLeft />
+        </Button>
+        <UserStatusItem user={user} />
+      </div>
 
       {/* Right: Action Buttons */}
       <div className="flex items-center gap-2">

@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router";
+import { Outlet, useLocation, useParams } from "react-router";
 import { AppSidebar } from "@/components/app-sidebar";
 import AppDataProvider from "./providers/app-data";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +10,6 @@ import {
 
 import { PathNameBreadcrumb } from "./components/pathname-breadcrumb";
 import { RightSidebar } from "./components/right-sidebar";
-import { ROUTES } from "./_routes.constants";
 
 export default function AppLayout() {
   return (
@@ -49,11 +48,9 @@ function Header() {
 
 function ShowHeader() {
   const location = useLocation();
-  const excludePatterns = [
-    /^\/me\/chats$/,
-    /^\/me\/home$/,
-    /^\/projects$/, // match only /projects
-  ];
+  const excludePatterns = [/^.*\/communications\/.*$/];
+
+  console.log(excludePatterns[0].test("abc/communications/abc"))
 
   const shouldExclude = excludePatterns.some((pattern) =>
     pattern.test(location.pathname),
@@ -67,9 +64,9 @@ function ShowHeader() {
 }
 
 function ShowRightSidebar() {
-  const location = useLocation();
+  const { chatId } = useParams();
 
-  if (!location.pathname.includes(ROUTES.PRIVATE.PROJECTS.COMMUNICATIONS)) {
+  if (!chatId) {
     return null;
   }
 

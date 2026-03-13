@@ -7,7 +7,7 @@ import { LoginPage } from "./pages/login";
 import { PagesPage } from "./pages/page";
 import { SignupPage } from "./pages/signup";
 import { ProfilePage } from "./pages/profile";
-import { CommunicationPage } from "./pages/communication";
+import { ChattingPage, CommunicationPage } from "./pages/communication";
 import {
   AccessControlPage,
   FilterSettingPage,
@@ -85,15 +85,14 @@ const router = createBrowserRouter([
                   },
                   {
                     path: ROUTES.PRIVATE.PROJECTS.COMMUNICATIONS,
-                    element: <CommunicationPage />,
                     children: [
                       {
                         index: true,
                         element: <CommunicationPage />,
                       },
                       {
-                        path: ":id",
-                        element: <CommunicationPage />,
+                        path: ":chatId",
+                        element: <ChattingPage />,
                       },
                     ],
                   },
