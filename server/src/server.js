@@ -10,6 +10,7 @@ import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import listEndpoints from "express-list-endpoints";
+import swaggerUi from "swagger-ui-express";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ import config from "./config/env.js";
 import database from "./config/database.js";
 import logger from "./utils/logger.js";
 import monitor from "./utils/monitor.js";
+import swaggerSpec from "./config/swagger.js";
 import { devFormat, prodFormat, morganOptions } from "./config/morgan.js";
 import createSocketManager from "./socket/socketManager.js";
 
@@ -62,6 +64,15 @@ app.use("/api/projects", AuthGuard, projectRoutes);
 app.use("/api/projects/:projectId/pages", AuthGuard, memberGaurd, pageRoutes);
 app.use("/api/projects/:projectId/invites", AuthGuard, inviteRoutes);
 app.use("/api/projects/:projectId/members", AuthGuard, memberRotues);
+
+// Swagger Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Swagger JSON endpoint
+app.get("/api-docs.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 
 // Health check
 app.get("/health", (req, res) => {
@@ -138,17 +149,13 @@ async function startServer() {
         `\n---------------------- Server listening on port ${PORT} ------------------ \n`,
       );
 
-      listEndpoints(app).forEach((route) => {
-        console.log(JSON.stringify(route, null, 2));
-
-        route.methods.forEach((method) => {
-          console.log(`✅ ${method.toUpperCase()}  ${route.path}`);
-        });
-
-        console.log();
-      });
-      console.log(`\n------ END Server listening on port ${PORT} ------- \n`);
-
+      console.log(
+        `🚀 API Documentation available at: http://localhost:${PORT}/api-docs`,
+      );
+      console.log(
+        `📄 Raw Swagger JSON at: http://localhost:${PORT}/api-docs.json`,
+      );
+      console.log();
       logger.info("Server started successfully");
     });
   } catch (error) {

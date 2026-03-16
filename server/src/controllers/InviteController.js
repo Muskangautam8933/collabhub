@@ -64,14 +64,14 @@ export const getById = asyncHandler(async (req, res) => {
   return res.json(invite);
 });
 
-export const getByEmail = asyncHandler(async (req, res, next) => {
+export const getInvites = asyncHandler(async (req, res, next) => {
   const email = req.query.email;
 
   if (!email) return next();
 
-  const invite = await inviteRepo.getByEmail(email);
+  let invites = await inviteRepo.getByEmail(email);
 
-  return res.json(invite);
+  return res.json(invites);
 });
 
 /**
@@ -159,6 +159,6 @@ export const accept = asyncHandler(async (req, res) => {
  * Delete invite
  */
 export const deleteById = asyncHandler(async (req, res) => {
-  await inviteRepo.softDeleteById(req.params.id, req.user.userId);
+  await inviteRepo.softDeleteById(req.params.inviteId, req.user.userId);
   return res.json({ message: "Invite deleted successfully" });
 });

@@ -11,6 +11,27 @@ A Node.js/Express application with Socket.io for real-time communication and Goo
 - **Room-based Messaging** - Join rooms and communicate with other users
 - **Private Messaging** - Send private messages to specific users
 - **Authenticated Socket Connections** - Only authenticated users can connect to Socket.io
+- **Manual API Documentation** - Swagger/OpenAPI documentation with detailed JSDoc comments
+
+## 📖 API Documentation
+
+The API documentation is generated using Swagger/OpenAPI from JSDoc comments in the route files:
+
+- **Swagger UI**: `http://localhost:3000/api-docs`
+- **Raw JSON**: `http://localhost:3000/api-docs.json`
+
+### Features:
+
+- **Manual Documentation**: Each route is documented with detailed JSDoc comments
+- **Authentication Support**: Includes JWT Bearer token and cookie authentication schemes
+- **Interactive Testing**: Test API endpoints directly from the Swagger UI
+- **Comprehensive Schemas**: Detailed request/response schemas for all endpoints
+
+### Authentication in Swagger:
+
+1. Click the "Authorize" button in Swagger UI
+2. Enter your JWT token in the "bearerAuth" field
+3. Or set the token cookie if using cookie-based auth
 
 ## 📋 Prerequisites
 
@@ -84,7 +105,9 @@ The server will start on `http://localhost:3000`
 ```
 src/
 ├── config/              # Configuration files
-│   └── env.js          # Environment variables
+│   ├── env.js          # Environment variables
+│   ├── swagger.js      # Swagger/OpenAPI configuration
+│   └── morgan.js       # HTTP logging configuration
 ├── controllers/         # Business logic
 │   ├── AuthController.js
 │   └── UserController.js
@@ -101,7 +124,8 @@ src/
 ├── socket/             # Socket.io configuration
 │   └── socketManager.js
 ├── utils/              # Utility functions
-│   └── authService.js
+│   ├── authService.js
+│   └── logger.js
 └── server.js           # Main server file
 ```
 
