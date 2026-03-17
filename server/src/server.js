@@ -132,7 +132,7 @@ async function startServer() {
       logger.info(`CollabHub Server started on port ${PORT}`);
 
       console.log(`\nDatabase configured:`);
-      console.log(`  MongoDB URI: ${config.MONGODB_URI}`);
+      console.log(`  MongoDB: ${config.DATABASE_NAME}`);
       console.log(
         `  Status: ${database.getStatus() ? "✓ Connected" : "✗ Not connected"}`,
       );
