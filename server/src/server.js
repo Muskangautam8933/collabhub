@@ -24,6 +24,9 @@ import createSocketManager from "./socket/socketManager.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import filterRoutes from "./routes/filterRoutes.js";
+import filterValueRoutes from "./routes/filterValueRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
 import inviteRoutes from "./routes/inviteRoutes.js";
@@ -31,8 +34,8 @@ import memberRotues from "./routes/memberRoutes.js";
 
 import { AuthGuard, memberGaurd } from "./middleware/authMiddleware.js";
 
-// Initialize Express app
-const app = express();
+// Initialize Express app 
+const app = express();       
 const server = http.createServer(app);
 
 // Initialize Socket.io
@@ -73,6 +76,10 @@ app.get("/api-docs.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
+app.use("/api/projects/:projectId/filters",filterRoutes);
+app.use("/api/projects/:projectId/filterValues",filterValueRoutes);
+app.use("/api/projects/:projectId/tasks",taskRoutes);
+
 
 // Health check
 app.get("/health", (req, res) => {
