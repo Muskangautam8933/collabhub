@@ -1,10 +1,12 @@
 import { ROUTES } from "@/_routes.constants";
+import type { Invite } from "@/services/get-invites";
 import getFilterValues, { type FilterValue } from "@/services/get-filterValues";
 import React from "react";
 import { useLocation, useParams, useSearchParams } from "react-router";
 
 export default function useMain() {
   const location = useLocation();
+  const [invites, setInvites] = React.useState<Invite[]>([]);
   const { projectId } = useParams();
   const [searchParams] = useSearchParams();
 
@@ -57,6 +59,8 @@ export default function useMain() {
   return {
     activeTab,
     childRoutes,
+    invites,
+    setInvites,
     options,
     optionsLoading,
     optionsError,

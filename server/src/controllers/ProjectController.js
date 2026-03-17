@@ -20,7 +20,7 @@ export const getAllProjects = async (req, res) => {
 
 export const getProject = async (req, res) => {
   try {
-    const project = await ProjectRepo.findById(req.params.id);
+    const project = await ProjectRepo.findById(req.params.projectId);
 
     if (!project) return res.status(404).json({ message: "Project not found" });
 
@@ -32,7 +32,7 @@ export const getProject = async (req, res) => {
 
 export const updateProject = async (req, res) => {
   try {
-    const updated = await ProjectRepo.update(req.params.id, req.body);
+    const updated = await ProjectRepo.update(req.params.projectId, req.body);
     res.json(updated);
   } catch (error) {
     res.status(500).json({ message: "Error updating project" });
@@ -41,7 +41,7 @@ export const updateProject = async (req, res) => {
 
 export const deleteProject = async (req, res) => {
   try {
-    await ProjectRepo.softDelete(req.params.id);
+    await ProjectRepo.softDelete(req.params.projectId);
     res.json({ message: "Project deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting project" });

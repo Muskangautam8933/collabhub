@@ -23,6 +23,7 @@ const config = {
   // Database Configuration
   DATABASE_URL: process.env.DATABASE_URL,
   MONGODB_URI: process.env.MONGODB_URI || "mongodb://localhost:27017/collabhub",
+  DATABASE_NAME: process.env.DATABASE_NAME,
 
   // Socket.io Configuration
   SOCKET_IO_ORIGIN: process.env.SOCKET_IO_ORIGIN || "http://localhost:3000",

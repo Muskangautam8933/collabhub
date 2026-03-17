@@ -31,7 +31,9 @@ const scopes = [
   "https://www.googleapis.com/auth/meetings.conference.media.readonly",
 ];
 
-export async function register(req, res, next) {
+const cookieOptions = { maxAge: 7 * 24 * 60 * 60 * 1000 };
+
+export const register = asyncHandler(async (req, res, next) => {
   const session = await mongoose.startSession();
 
   try {
@@ -61,15 +63,17 @@ export async function register(req, res, next) {
       trialEndAt: account.trialEndAt,
     });
 
+    res.cookie("token", token, cookieOptions);
+
     return res.status(201).json({ user: user.toJSON(), token });
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
     next(error);
   }
-}
+});
 
-export async function login(req, res) {
+export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body || {};
 
   const user = await userRepo.getByEmail(email);
@@ -101,8 +105,10 @@ export async function login(req, res) {
     trialEndAt: account.trialEndAt,
   });
 
+  res.cookie("token", token, cookieOptions);
+
   return res.status(200).json({ user: user.toJSON(), token });
-}
+});
 
 /**
  * Get Consent of User
@@ -110,7 +116,7 @@ export async function login(req, res) {
  * @description
  * This function redirect to google_consent_page and then redirect to same clients route with `auth code`.
  */
-export function getConsent(_, res) {
+export const getConsent = asyncHandler((_, res) => {
   const authorizationUrl = oauth2Client.generateAuthUrl({
     // 'online' (default) or 'offline' (gets refresh_token)
     access_type: "offline",
@@ -125,9 +131,49 @@ export function getConsent(_, res) {
   });
 
   res.redirect(authorizationUrl);
-}
+});
 
-export async function googleAuth(req, res, next) {
+const validateCode = async (auth_code) => {
+  if (!auth_code) {
+    throw new Error("Auth code is required");
+  }
+
+  // 1. Exchange auth code for tokens
+  const { tokens } = await oauth2Client.getToken(auth_code);
+
+  if (!tokens.access_token) {
+    throw new Error("Failed to get access token from Google");
+  }
+
+  // 2. Attach tokens to client
+  oauth2Client.setCredentials(tokens);
+
+  // 3. Fetch user profile
+  const oauth2 = google.oauth2({
+    auth: oauth2Client,
+    version: "v2",
+  });
+
+  const { data: profile } = await oauth2.userinfo.v2.me.get();
+
+  if (!profile || !profile.email || !profile.name || !profile.verified_email)
+    throw new Error("Failed to get user profile from Google");
+
+  return {
+    name: profile.name,
+    email: profile.email,
+    verified_email: profile.verified_email,
+    picture: profile.picture,
+    id: profile.id,
+
+    access_token: tokens.access_token,
+    refresh_token: tokens.refresh_token,
+    token_type: tokens.token_type,
+    expiry_date: tokens.expiry_date,
+  };
+};
+
+export const googleAuth = asyncHandler(async (req, res, next) => {
   const authCode = req.query.code;
 
   if (!authCode) throw new Error("Auth code is required");
@@ -135,13 +181,16 @@ export async function googleAuth(req, res, next) {
   const googleUser = await validateCode(authCode);
 
   const existingUser = await userRepo.getByEmail(googleUser.email);
-  const existingAccount = await accountRepo.getAccountByUserId(
-    existingUser?._id,
-  );
+
+  console.log(JSON.stringify(existingUser, null, 2));
 
   // Update existing User
 
   if (existingUser) {
+    const existingAccount = await accountRepo.getAccountByUserId(
+      existingUser._id,
+    );
+
     if (!existingAccount.isEmailVerified)
       await accountRepo.updateIsEmailVerifiedByUserId(existingUser._id, true);
 
@@ -152,6 +201,8 @@ export async function googleAuth(req, res, next) {
       name: existingUser.name,
       trialEndAt: null,
     });
+
+    res.cookie("token", token, cookieOptions);
 
     return res.status(200).json({ user: existingUser.toJSON(), token });
   }
@@ -219,6 +270,8 @@ export async function googleAuth(req, res, next) {
       trialEndAt: account.trialEndAt,
     });
 
+    res.cookie("token", token, cookieOptions);
+
     return res.status(201).json({ user: user.toJSON(), token });
   } catch (error) {
     await session.abortTransaction();
@@ -227,52 +280,13 @@ export async function googleAuth(req, res, next) {
   }
 
   return res.status(200).json(googleUser);
-}
-
-async function validateCode(auth_code) {
-  if (!auth_code) {
-    throw new Error("Auth code is required");
-  }
-
-  // 1. Exchange auth code for tokens
-  const { tokens } = await oauth2Client.getToken(auth_code);
-
-  if (!tokens.access_token) {
-    throw new Error("Failed to get access token from Google");
-  }
-
-  // 2. Attach tokens to client
-  oauth2Client.setCredentials(tokens);
-
-  // 3. Fetch user profile
-  const oauth2 = google.oauth2({
-    auth: oauth2Client,
-    version: "v2",
-  });
-
-  const { data: profile } = await oauth2.userinfo.v2.me.get();
-
-  if (!profile || !profile.email || !profile.name || !profile.verified_email)
-    throw new Error("Failed to get user profile from Google");
-
-  return {
-    name: profile.name,
-    email: profile.email,
-    verified_email: profile.verified_email,
-    picture: profile.picture,
-    id: profile.id,
-
-    access_token: tokens.access_token,
-    refresh_token: tokens.refresh_token,
-    token_type: tokens.token_type,
-    expiry_date: tokens.expiry_date,
-  };
-}
+});
 
 export const me = asyncHandler(async function (req, res) {
   return res.status(200).json(req.user);
 });
 
-export const getRole = asyncHandler(async function (req, res) {
-  return res.status(200).json(req.user);
+export const logout = asyncHandler(async function (req, res) {
+  res.clearCookie("token");
+  return res.status(200).json({ message: "Logged out successfully" });
 });

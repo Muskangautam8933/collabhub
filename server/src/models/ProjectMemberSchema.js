@@ -23,7 +23,7 @@ const schema = new mongoose.Schema(
       ref: "Invite",
       required: [true, "invite is required"],
     },
-     role: {
+    role: {
       type: String,
       enum: Object.values(PROJECT_ROLE),
       default: PROJECT_ROLE.READ,
@@ -47,6 +47,11 @@ const schema = new mongoose.Schema(
     timestamps: true,
     methods: {},
   },
+);
+
+schema.index(
+  { project: 1, user: 1 },
+  { unique: true, partialFilterExpression: { isDeleted: false } },
 );
 
 /**

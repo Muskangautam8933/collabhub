@@ -7,7 +7,7 @@ import {
   type ClientOnErrorFunction,
 } from "react-router";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronLeft, Home } from "lucide-react";
 
 export type Error = {
   data: string;
@@ -22,7 +22,7 @@ export const ErrorPage = () => {
   const error = useRouteError() as Error;
   const navigate = useNavigate();
 
-  console.log(error)
+  console.log(error);
 
   const isNotFound = error?.status === 404;
 
@@ -39,26 +39,35 @@ export const ErrorPage = () => {
         {/* Error code section */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-accent/10 border border-accent/20 mb-6">
-            <span className="text-4xl font-black text-accent">
+            <span className="text-4xl font-black">
               {isNotFound ? "404" : "Error"}
             </span>
           </div>
 
           <h1 className="text-5xl font-black text-foreground mb-4 tracking-tight">
-            {error.error?.message || error.message || "Oops! Something went wrong"}
+            {error.error?.message ||
+              error.message ||
+              "Oops! Something went wrong"}
           </h1>
         </div>
 
         {/* Action buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
           <Button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}
             size="lg"
             className="group gap-2"
           >
             <Home className="w-5 h-5" />
-            Back to home
-            <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            Go to Home Back
+          </Button>
+          <Button
+            onClick={() => navigate(-1)}
+            size="lg"
+            className="group gap-2"
+          >
+            <ChevronLeft className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            Go Back
           </Button>
         </div>
 
@@ -126,5 +135,5 @@ export const ErrorPage = () => {
 
 export const onError: ClientOnErrorFunction = (error, errorInfo) => {
   // make sure to still log the error so you can see it
-  console.error(error, errorInfo);
+  console.log(error, errorInfo);
 };

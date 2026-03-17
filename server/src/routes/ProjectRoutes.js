@@ -5,12 +5,213 @@ import { getProject } from "../controllers/ProjectController.js";
 import { updateProject } from "../controllers/ProjectController.js";
 import { deleteProject } from "../controllers/ProjectController.js";
 import asyncHandler from "../utils/asyncHandler.js";
-const router = express.Router();
+import { memberGaurd } from "../middleware/authMiddleware.js";
+const router = express.Router({ mergeParams: true });
 
+/**
+ * @swagger
+ * /api/projects:
+ *   post:
+ *     summary: Create a new project
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Project name
+ *               description:
+ *                 type: string
+ *                 description: Project description
+ *     responses:
+ *       201:
+ *         description: Project created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 owner:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Bad request - Invalid input
+ *       401:
+ *         description: Unauthorized
+ */
 router.post("/", asyncHandler(createProject));
+
+/**
+ * @swagger
+ * /api/projects:
+ *   get:
+ *     summary: Get all projects for the authenticated user
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: List of projects retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   owner:
+ *                     type: string
+ *                   members:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *       401:
+ *         description: Unauthorized
+ */
 router.get("/", asyncHandler(getAllProjects));
-router.get("/:id", asyncHandler(getProject));
-router.put("/:id", asyncHandler(updateProject));
-router.delete("/:id", asyncHandler(deleteProject));
+
+/**
+ * @swagger
+ * /api/projects/{projectId}:
+ *   get:
+ *     summary: Get a specific project by ID
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Project ID
+ *     responses:
+ *       200:
+ *         description: Project retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 description:
+ *                   type: string
+ *                 owner:
+ *                   type: string
+ *                 members:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Not a member of this project
+ *       404:
+ *         description: Project not found
+ */
+router.get("/:projectId", memberGaurd, asyncHandler(getProject));
+
+/**
+ * @swagger
+ * /api/projects/{projectId}:
+ *   put:
+ *     summary: Update a project
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Project ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Project name
+ *               description:
+ *                 type: string
+ *                 description: Project description
+ *     responses:
+ *       200:
+ *         description: Project updated successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Not the project owner
+ *       404:
+ *         description: Project not found
+ */
+router.put("/:projectId", asyncHandler(updateProject));
+
+/**
+ * @swagger
+ * /api/projects/{projectId}:
+ *   delete:
+ *     summary: Delete a project
+ *     tags: [Projects]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Project ID
+ *     responses:
+ *       200:
+ *         description: Project deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Not the project owner
+ *       404:
+ *         description: Project not found
+ */
+router.delete("/:projectId", asyncHandler(deleteProject));
 
 export default router;

@@ -39,7 +39,7 @@ export const create = async (req, res) => {
   return res.status(201).json({ page, meta });
 };
 
-export const getPageByMeta = async (req, res, next) => {
+export const getPages = async (req, res, next) => {
   const meta = req.query.meta;
 
   if (!meta) return next();
@@ -56,13 +56,13 @@ export const getPagesMetaByProjectId = async (req, res) => {
 };
 
 export const updateById = async (req, res) => {
-  const page = await pageRepo.updateById(req.params.id, req.body);
+  const page = await pageRepo.updateById(req.params.pageId, req.body);
   return res.json(page);
 };
 
 export const deletePage = async (req, res) => {
   await withTransaction(async (session) => {
-    const page = await pageRepo.getById(req.params.id, { session });
+    const page = await pageRepo.getById(req.params.pageId, { session });
 
     if (!page) throw new Error("Page not found");
 

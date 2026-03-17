@@ -16,6 +16,11 @@ import { ShieldAlert } from "lucide-react";
 import React from "react";
 import { useAccessControlPage } from "./useAccessControlPage";
 import { APP_NAME } from "@/app.constatns";
+import { Await } from "react-router-dom";
+import type { Invite } from "@/services/get-invites";
+import { Badge } from "@/components/ui/badge";
+import { usePageContext } from "./_context";
+import type { Member } from "@/services/get-members";
 
 export const PROJECT_ROLE = {
   OWNER: "owner",
@@ -28,7 +33,8 @@ export const PROJECT_ROLE = {
 export default function Page() {
   const role: (typeof PROJECT_ROLE)[keyof typeof PROJECT_ROLE] =
     PROJECT_ROLE.OWNER;
-  const { users, usersLoading, ...ctx } = useAccessControlPage();
+  const ctx = useAccessControlPage();
+  const { users, usersLoading } = ctx;
 
   if (role !== PROJECT_ROLE.OWNER && role !== PROJECT_ROLE.ADMIN) {
     return (
@@ -64,7 +70,7 @@ export default function Page() {
             value={ctx.query}
             onChange={ctx.handleInputChange}
           />
-          <Select onValueChange={ctx.handleRoleChange}>
+          <Select onValueChange={ctx.handleRoleChange} defaultValue={ctx.role}>
             <SelectTrigger className="w-full max-w-48">
               <SelectValue placeholder="Select a Role" />
             </SelectTrigger>
@@ -88,6 +94,7 @@ export default function Page() {
             variant={"outline"}
             className="bg-green-400 text-white border border-green-600 hover:bg-green-500 hover:text-whtie font-bold"
             onClick={ctx.handleInviteClick}
+            disabled={!ctx.query.length}
           >
             Invite
           </Button>
@@ -119,10 +126,107 @@ export default function Page() {
           ))}
         </ResultList>
       </React.Fragment>
-      <h3 className="text-2xl pt-4 font-semibold">Project Members</h3>
-      <Card></Card>
+
+      {/* Invites */}
+      <React.Suspense fallback={<p>Loading invites...</p>}>
+        <Await resolve={ctx.loaderData.invites}>{ShowInvites}</Await>
+      </React.Suspense>
+
+      {/* Members */}
+      <React.Suspense fallback={<p>Loading members...</p>}>
+        <Await resolve={ctx.loaderData.members}>{ShowMembers(ctx)}</Await>
+      </React.Suspense>
     </div>
   );
 }
 
 Page.displayName = "AccessControlPage";
+
+function ShowInvites(invites: Invite[]) {
+  const ctx = usePageContext();
+
+  const mergeInvites: Invite[] = [...ctx.invites, ...invites];
+
+  if (invites.length === 0) return null;
+  return (
+    <>
+      <h3 className="text-2xl pt-4 font-semibold">Pending Invites</h3>
+      <Card>
+        {mergeInvites.map((invite) => {
+          return (
+            <UserListItem
+              key={invite._id}
+              uid={invite._id}
+              user={{
+                email: invite.email,
+              }}
+              lslot={
+                <div className="flex gap-1">
+                  <Badge>{invite.role}</Badge>
+                  <Badge>{invite.status}</Badge>
+                </div>
+              }
+            />
+          );
+        })}
+      </Card>
+    </>
+  );
+}
+
+function ShowMembers(ctx: ReturnType<typeof useAccessControlPage>) {
+  return (members: Member[]) => {
+    if (members.length === 0) return null;
+    return (
+      <>
+        <h3 className="text-2xl pt-4 font-semibold">Project Members</h3>
+        <Card>
+          {members.map((member) => {
+            return (
+              <UserListItem
+                key={member._id}
+                uid={member._id}
+                user={member.user}
+                lslot={
+                  <div className="flex gap-1">
+                    <Select
+                      onValueChange={ctx.handleUpdateMemberRole(member._id)}
+                      defaultValue={member.role}
+                    >
+                      <SelectTrigger className="w-full max-w-48">
+                        <SelectValue placeholder="Select a Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Roles</SelectLabel>
+                          {Object.values(PROJECT_ROLE)
+                            .filter(
+                              (r) =>
+                                r !== PROJECT_ROLE.OTHERS &&
+                                r !== PROJECT_ROLE.OWNER,
+                            )
+                            .map((role) => (
+                              <SelectItem key={role} value={role}>
+                                {role}
+                              </SelectItem>
+                            ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      disabled={ctx.removeLoading}
+                      onClick={ctx.handleRemoveMember(member._id)}
+                      variant={"destructive"}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                }
+              />
+            );
+          })}
+        </Card>
+      </>
+    );
+  };
+}

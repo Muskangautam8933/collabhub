@@ -78,7 +78,7 @@ const schema = new mongoose.Schema(
 
 // Partial unique index
 schema.index(
-  { code: 1, project: 1, email: 1 },
+  {  project: 1, email: 1 },
   {
     unique: true,
     partialFilterExpression: { isDeleted: false },

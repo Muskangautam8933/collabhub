@@ -10,6 +10,7 @@ import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import listEndpoints from "express-list-endpoints";
+import swaggerUi from "swagger-ui-express";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ import config from "./config/env.js";
 import database from "./config/database.js";
 import logger from "./utils/logger.js";
 import monitor from "./utils/monitor.js";
+import swaggerSpec from "./config/swagger.js";
 import { devFormat, prodFormat, morganOptions } from "./config/morgan.js";
 import createSocketManager from "./socket/socketManager.js";
 
@@ -28,10 +30,9 @@ import taskRoutes from "./routes/taskRoutes.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
 import inviteRoutes from "./routes/inviteRoutes.js";
+import memberRotues from "./routes/memberRoutes.js";
 
-import { addUserRole, verifyToken } from "./middleware/authMiddleware.js";
-import asyncHandler from "./utils/asyncHandler.js";
-import { getRole } from "./controllers/AuthController.js";
+import { AuthGuard, memberGaurd } from "./middleware/authMiddleware.js";
 
 // Initialize Express app 
 const app = express();       
@@ -62,18 +63,23 @@ app.use(cookieParser());
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/projects", AuthGuard, projectRoutes);
+app.use("/api/projects/:projectId/pages", AuthGuard, memberGaurd, pageRoutes);
+app.use("/api/projects/:projectId/invites", AuthGuard, inviteRoutes);
+app.use("/api/projects/:projectId/members", AuthGuard, memberRotues);
+
+// Swagger Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Swagger JSON endpoint
+app.get("/api-docs.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 app.use("/api/projects/:projectId/filters",filterRoutes);
 app.use("/api/projects/:projectId/filterValues",filterValueRoutes);
 app.use("/api/projects/:projectId/tasks",taskRoutes);
-app.use("/api/projects", projectRoutes);
-app.get("/api/projects/:projectId/role", verifyToken, addUserRole, getRole);
-app.use("/api/projects/:projectId/pages", verifyToken, addUserRole, pageRoutes);
-app.use(
-  "/api/projects/:projectId/invites",
-  verifyToken,
-  addUserRole,
-  inviteRoutes,
-);
+
 
 // Health check
 app.get("/health", (req, res) => {
@@ -133,7 +139,7 @@ async function startServer() {
       logger.info(`CollabHub Server started on port ${PORT}`);
 
       console.log(`\nDatabase configured:`);
-      console.log(`  MongoDB URI: ${config.MONGODB_URI}`);
+      console.log(`  MongoDB: ${config.DATABASE_NAME}`);
       console.log(
         `  Status: ${database.getStatus() ? "✓ Connected" : "✗ Not connected"}`,
       );
@@ -150,15 +156,13 @@ async function startServer() {
         `\n---------------------- Server listening on port ${PORT} ------------------ \n`,
       );
 
-      listEndpoints(app).forEach((route) => {
-        route.methods.forEach((method) => {
-          console.log(`✅ ${method.toUpperCase()}  ${route.path}`);
-        });
-
-        console.log();
-      });
-      console.log(`\n------ END Server listening on port ${PORT} ------- \n`);
-
+      console.log(
+        `🚀 API Documentation available at: http://localhost:${PORT}/api-docs`,
+      );
+      console.log(
+        `📄 Raw Swagger JSON at: http://localhost:${PORT}/api-docs.json`,
+      );
+      console.log();
       logger.info("Server started successfully");
     });
   } catch (error) {

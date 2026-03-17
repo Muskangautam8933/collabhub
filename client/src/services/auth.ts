@@ -27,9 +27,7 @@ export interface AuthResponse {
  * login user
  * -----------
  */
-export async function login({
-  payload,
-}: LoginParams): Promise<AuthResponse> {
+export async function login({ payload }: LoginParams): Promise<AuthResponse> {
   return apiFetch<AuthResponse, LoginParams["payload"]>({
     url: `${SERVER_URL}/auth/login`,
     method: "POST",
@@ -56,5 +54,12 @@ export async function register({
     url: `${SERVER_URL}/auth/register`,
     method: "POST",
     body: payload,
+  });
+}
+
+export async function logout() {
+  return apiFetch({
+    url: `${SERVER_URL}/auth/logout`,
+    method: "GET",
   });
 }

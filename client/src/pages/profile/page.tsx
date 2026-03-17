@@ -12,7 +12,11 @@ export default function Page() {
     usePageContext();
 
   if (userProfileLoading) return <div>Loading...</div>;
-  if (userProfileError || !userProfile) return <div>{userProfileError}</div>;
+  
+  if (userProfileError) throw new Error(userProfileError);
+
+  if (!userProfile) return null;
+
   return (
     <div>
       <ScrollArea className="flex-1">

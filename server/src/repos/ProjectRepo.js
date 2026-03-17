@@ -1,13 +1,25 @@
 import Project from "../models/ProjectSchema.js";
 
 class ProjectRepo {
-
   async create(data) {
     return await Project.create(data);
   }
 
   async findAll() {
     return await Project.find({ isDeleted: false });
+  }
+
+  async getProjectTeamLimit(projectId) {
+    if (!projectId) throw new Error("projectId is required");
+
+    const project = await Project.findOne({
+      _id: projectId,
+      isDeleted: false,
+    })
+      .select("teamLimit")
+      .lean();
+
+    return project?.teamLimit;
   }
 
   async findById(id) {
