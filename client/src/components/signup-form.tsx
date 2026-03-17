@@ -1,3 +1,4 @@
+import { ROUTES } from "@/_routes.constants";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,7 +18,7 @@ import { usePageContext } from "@/pages/signup/_context";
 import { Link } from "react-router";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
-  const ctx = usePageContext()
+  const ctx = usePageContext();
   return (
     <Card {...props}>
       <CardHeader>
@@ -31,7 +32,13 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           <FieldGroup>
             <Field>
               <FieldLabel htmlFor="name">Full Name</FieldLabel>
-              <Input name="name" id="name" type="text" placeholder="John Doe" required />
+              <Input
+                name="name"
+                id="name"
+                type="text"
+                placeholder="John Doe"
+                required
+              />
             </Field>
             <Field>
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -65,7 +72,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               <Field>
                 <Button type="submit">Create Account</Button>
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <Link to="/login">Sign in</Link>
+                  Already have an account?{" "}
+                  <Link to={ROUTES.PUBLIC.LOGIN}>Sign in</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

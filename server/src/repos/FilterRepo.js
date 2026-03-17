@@ -29,6 +29,12 @@ export async function getByProject(projectId, userId) {
   });
   return projectFilter;
 }
+export async function getFilterById(filterId, userId) {
+  return model.findOne({
+    _id: new ObjectId(filterId),
+    createdBy: new ObjectId(userId),
+  }).lean();
+}
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/

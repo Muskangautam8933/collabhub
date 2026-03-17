@@ -3,7 +3,6 @@
 import * as React from "react";
 import {
   BookOpen,
-  ChevronDown,
   CircleUser,
   ClipboardPlus,
   LayoutDashboard,
@@ -30,24 +29,23 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useGlobalContext } from "@/contexts/global.context";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useParams } from "react-router";
 import { APP_NAME } from "@/app.constatns";
 import { Badge } from "./ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Button } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
+import { ROUTES } from "@/_routes.constants";
 
 const data = {
   navMain: [
     {
       title: "Tasks",
-      url: "#",
+      url: ROUTES.PRIVATE.PROJECTS.TASKS,
       icon: ClipboardPlus,
       collapsable: false,
     },
     {
       title: "Pages",
-      url: "#",
+      url: ROUTES.PRIVATE.PROJECTS.PAGES,
       icon: BookOpen,
       collapsable: true,
     },
@@ -55,17 +53,17 @@ const data = {
   navSecondary: [
     {
       title: "Profile",
-      url: "/me/profile",
+      url: ROUTES.PRIVATE.PROJECTS.PROFILE,
       icon: CircleUser,
     },
     {
       title: "Settings",
-      url: "/me/settings",
+      url: ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT,
       icon: Settings,
     },
     {
       title: "Feedback",
-      url: "https://github.com/sahil-verma-9696/communication/issues",
+      url: "https://github.com/sahil-verma-9696/collabhub/issues",
       icon: Send,
       targetBlank: true,
     },
@@ -75,10 +73,17 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
   const ctx = useGlobalContext();
+  const { projectId } = useParams();
 
-  const ExcludePaths = ["/me/home"];
+  const excludePatterns = [
+    /^\/projects$/, // match only /projects
+  ];
 
-  if (ExcludePaths.includes(location.pathname)) {
+  const shouldExclude = excludePatterns.some((pattern) =>
+    pattern.test(location.pathname),
+  );
+
+  if (shouldExclude) {
     return null;
   }
   return (
@@ -87,7 +92,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link to="/me/home">
+              <Link to={`${ROUTES.PRIVATE.PROJECTS.ROOT}`}>
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   {/* <Command className="size-4" /> */}
                   <span className="font-bold">CH</span>
@@ -105,46 +110,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <ScrollArea className="h-full w-full rounded-md">
           <SidebarMenu className="p-2">
-            <Link to="/me/workspaces">
+            <Link
+              to={`${ROUTES.PRIVATE.PROJECTS.ROOT}/${projectId}/${ROUTES.PRIVATE.PROJECTS.DASHBOARD}`}
+            >
               <SidebarMenuButton className="cursor-pointer">
                 <LayoutDashboard />
                 <span>Dashboard</span>
               </SidebarMenuButton>
             </Link>
-          </SidebarMenu>
-          <SidebarGroup>
-            <SidebarGroupLabel>Communication</SidebarGroupLabel>
-            <SidebarMenu>
-              <SidebarMenuButton>
+            <Link
+              to={`${ROUTES.PRIVATE.PROJECTS.ROOT}/${projectId}/${ROUTES.PRIVATE.PROJECTS.COMMUNICATIONS}`}
+            >
+              <SidebarMenuButton className="cursor-pointer">
                 <MessageCircle />
-                <span>Everyone</span>
+                <span>Communication</span>
               </SidebarMenuButton>
+            </Link>
+          </SidebarMenu>
 
-              {[
-                { name: "Sahil Verma", role: "Admin", to: "/me/chats/sahil" },
-                { name: "Sonal Verma", role: "Write", to: "/me/chats/sonal" },
-                { name: "Muskan Gautam", role: "Read", to: "/me/chats/muskan" },
-                { name: "Vansh Nigam", role: "Read", to: "/me/chats/vansh" },
-                { name: "Sakshi Verma", role: "Read", to: "/me/chats/sakshi" },
-                { name: "Atul Verma", role: "Read", to: "/me/chats/atul" },
-              ].map((item) => {
-                return (
-                  <Link key={item.name} to={item.to}>
-                    <SidebarMenuButton key={item.name}>
-                      <MessageCircle />
-                      <span>{item.name}</span>
-                      <Badge
-                        variant={"outline"}
-                        className="border-green-500 text-green-700 bg-green-200 "
-                      >
-                        Online
-                      </Badge>
-                    </SidebarMenuButton>
-                  </Link>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroup>
           <NavMain items={data.navMain} />
 
           <SidebarGroup>
@@ -168,25 +151,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <User size={18} />
                         <span>{item.name}</span>
                       </div>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Badge variant="outline">
-                            {item.role}
-                            <ChevronDown />
-                          </Badge>
-                        </PopoverTrigger>
-                        <PopoverContent align="start" className="space-y-1 p-2">
-                          <Button variant={"outline"} className="w-full">
-                            Admin
-                          </Button>
-                          <Button variant={"outline"} className="w-full">
-                            Write
-                          </Button>
-                          <Button variant={"outline"} className="w-full">
-                            Read
-                          </Button>
-                        </PopoverContent>
-                      </Popover>
                     </SidebarMenuButton>
                   </Link>
                 );

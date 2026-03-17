@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router";
 import { usePageContext } from "@/pages/login/_context";
+import { ROUTES } from "@/_routes.constants";
 
 export function LoginForm({
   className,
@@ -70,7 +71,8 @@ export function LoginForm({
                   Continue with Google
                 </Button>
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <Link to="/signup">Sign up</Link>
+                  Don&apos;t have an account?{" "}
+                  <Link to={ROUTES.PUBLIC.SIGNUP}>Sign up</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>

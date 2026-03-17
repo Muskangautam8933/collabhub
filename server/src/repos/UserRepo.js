@@ -17,15 +17,31 @@ export async function create(user, options = {}) {
 /************************************************************************
  **************************** READ **************************************
  ************************************************************************/
+export async function getUsers(filters = {}, { page = 1, limit = 10 } = {}) {
+  const skip = (page - 1) * limit;
+
+  return await User.find(filters)
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 });
+}
+
 export async function getAll() {
   return await User.find();
 }
 
 export async function getByEmail(email) {
   if (!email) throw new Error("Email is required");
-  
+
   return await User.findOne({ email: email.toLowerCase() });
 }
+
+export async function getById(id) {
+  if (!id) throw new Error("User ID is required");
+
+  return await User.findById(id);
+}
+
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/

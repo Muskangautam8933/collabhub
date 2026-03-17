@@ -2,7 +2,7 @@ import type { User } from "./services/auth";
 
 export const APP_NAME = "Collab Hub";
 
-export const PROTECTED_ROUTES = ["home", "profile", "me", "friends"];
+export const PROTECTED_ROUTES = ["home", "profile", "projects", "friends"];
 
 export const PUBLIC_ROUTES = ["login"];
 

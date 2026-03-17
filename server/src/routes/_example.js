@@ -5,9 +5,7 @@
 // import * as controller from "../controllers/UserController.js";
 // import asyncHandler from "../utils/asyncHandler.js";
 
-const { model } = require("mongoose")
-
-// const router = express.Router();
+// const router = express.Router({ mergeParams: true });
 
 // router.get("/", asyncHandler(controller.findAll));
 

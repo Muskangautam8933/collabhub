@@ -5,12 +5,12 @@
 import express from "express";
 import * as authController from "../controllers/AuthController.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { addUserRole, verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-/**
- * Email/Password Authentication Routes
- */
+router.get("/me", verifyToken, authController.me);
+
 
 /**
  * Register with email and password
@@ -31,19 +31,5 @@ router.get("/login", asyncHandler(authController.getConsent));
  * Google OAuth Callback
  */
 router.get("/google/oauth2callback", asyncHandler(authController.googleAuth));
-
-// /**
-//  * Token verification
-//  */
-// router.get(
-//   "/verify",
-//   verifyToken,
-//   authController.verifyToken.bind(authController),
-// );
-
-/**
- * Refresh token
- */
-// router.post("/refresh", authController.refreshToken.bind(authController));
 
 export default router;

@@ -1,7 +1,7 @@
 import { SERVER_URL } from "@/app.constatns";
 import localSpace from "./local-space";
 import { apiFetch } from "@/utils/api-fetch";
-import { MESSAGE_TYPE } from "@/pages/chat/useMain";
+import { MESSAGE_TYPE } from "@/pages/communication/useMain";
 /*******************************************************************
  *********************************** Types *************************
  *******************************************************************/

@@ -4,7 +4,6 @@ import { ObjectId } from "../utils/ObjectId.js";
 export const createFilter = async (req, res) => {
   const { projectId } = req.params;
 
-  console.log("projectId:", projectId); // check this
 
   const createdFilter = await filterRepo.create(
     ObjectId(projectId),

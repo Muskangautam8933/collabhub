@@ -3,7 +3,7 @@ import * as filterValueController from "../controllers/FilterValueController.js"
 import asyncHandler from "../utils/asyncHandler.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 //***********************Create**************************** */
 router.post("/",verifyToken, asyncHandler(filterValueController.createFilterValue));

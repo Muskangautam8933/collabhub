@@ -22,8 +22,7 @@ export const getProject = async (req, res) => {
   try {
     const project = await ProjectRepo.findById(req.params.id);
 
-    if (!project)
-      return res.status(404).json({ message: "Project not found" });
+    if (!project) return res.status(404).json({ message: "Project not found" });
 
     res.json(project);
   } catch (error) {

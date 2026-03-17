@@ -1,3 +1,4 @@
+import { ROUTES } from "@/_routes.constants";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -21,7 +22,7 @@ export function PathNameBreadcrumb() {
         {/* Home */}
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link to="/me/home">Root</Link>
+            <Link to={ROUTES.PRIVATE.PROJECTS.ROOT}>Root</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
 

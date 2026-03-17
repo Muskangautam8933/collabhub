@@ -55,7 +55,7 @@ export type UserProfileOther = {
 
 export function getUserProfile(userId: string) {
   return apiFetch<UserProfileResponse>({
-    url: `${SERVER_URL}/users/${userId}/profile`,
+    url: `${SERVER_URL}/api/users/${userId}/profile`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${localSpace.getAccessToken()}`,

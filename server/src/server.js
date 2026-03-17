@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import listEndpoints from "express-list-endpoints";
 
 dotenv.config();
 
@@ -17,15 +18,20 @@ import database from "./config/database.js";
 import logger from "./utils/logger.js";
 import monitor from "./utils/monitor.js";
 import { devFormat, prodFormat, morganOptions } from "./config/morgan.js";
+import createSocketManager from "./socket/socketManager.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import filterRoutes from "./routes/filterRoutes.js";
 import filterValueRoutes from "./routes/filterValueRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
-import createSocketManager from "./socket/socketManager.js";
 import projectRoutes from "./routes/ProjectRoutes.js";
-import listEndpoints from "express-list-endpoints";
+import pageRoutes from "./routes/pageRoutes.js";
+import inviteRoutes from "./routes/inviteRoutes.js";
+
+import { addUserRole, verifyToken } from "./middleware/authMiddleware.js";
+import asyncHandler from "./utils/asyncHandler.js";
+import { getRole } from "./controllers/AuthController.js";
 
 // Initialize Express app 
 const app = express();       
@@ -60,6 +66,14 @@ app.use("/api/projects/:projectId/filters",filterRoutes);
 app.use("/api/projects/:projectId/filterValues",filterValueRoutes);
 app.use("/api/projects/:projectId/tasks",taskRoutes);
 app.use("/api/projects", projectRoutes);
+app.get("/api/projects/:projectId/role", verifyToken, addUserRole, getRole);
+app.use("/api/projects/:projectId/pages", verifyToken, addUserRole, pageRoutes);
+app.use(
+  "/api/projects/:projectId/invites",
+  verifyToken,
+  addUserRole,
+  inviteRoutes,
+);
 
 // Health check
 app.get("/health", (req, res) => {
@@ -132,7 +146,9 @@ async function startServer() {
         `  Client Secret: ${config.GOOGLE_CLIENT_SECRET ? "✓ Set" : "✗ Not set"}`,
       );
 
-      console.log(`\n---------------------- Server listening on port ${PORT} ------------------ \n`);
+      console.log(
+        `\n---------------------- Server listening on port ${PORT} ------------------ \n`,
+      );
 
       listEndpoints(app).forEach((route) => {
         route.methods.forEach((method) => {

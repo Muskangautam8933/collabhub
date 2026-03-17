@@ -38,9 +38,17 @@ export default function PrivateLayout() {
 
 function Header() {
   const location = useLocation();
-  const ExcludePaths = ["/me/chats", "/me/home"];
+  const excludePatterns = [
+    /^\/me\/chats$/,
+    /^\/me\/home$/,
+    /^\/projects$/, // match only /projects
+  ];
 
-  if (ExcludePaths.includes(location.pathname)) {
+  const shouldExclude = excludePatterns.some((pattern) =>
+    pattern.test(location.pathname),
+  );
+
+  if (shouldExclude) {
     return null;
   }
 

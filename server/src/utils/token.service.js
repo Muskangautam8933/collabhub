@@ -57,3 +57,30 @@ export function refreshToken(token) {
     expiresIn: config.JWT_EXPIRY,
   });
 }
+
+/**
+ * Generate Invite Token
+ */
+export function generateInviteToken(payload) {
+  return jwt.sign(payload, config.JWT_SECRET, {
+    expiresIn: config.JWT_INVITE_EXPIRY,
+  });
+}
+
+/**
+ * Verify Invite Token
+ */
+export function verifyInviteToken(token) {
+  try {
+    return jwt.verify(token, config.JWT_SECRET);
+  } catch {
+    throw new Error("Invalid or expired invite token");
+  }
+}
+
+/**
+ * Decode token without verification (use with caution)
+ */
+export function decodeInviteToken(token) {
+  return jwt.decode(token);
+}

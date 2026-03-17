@@ -5,11 +5,6 @@ type ApiFetchOptions<TBody> = {
   headers?: HeadersInit;
 };
 
-/**
- * API fetch wrapper
- * -----------------
- * just give the url and the method and it will return the response
- */
 export async function apiFetch<TResponse, TBody = undefined>({
   url,
   method = "GET",
@@ -34,7 +29,6 @@ export async function apiFetch<TResponse, TBody = undefined>({
 
     return data as TResponse;
   } catch (error) {
-    // 🚨 Network / CORS / Server down
     if (error instanceof TypeError) {
       throw new Error("Unable to connect to server. Server is Down.");
     }
