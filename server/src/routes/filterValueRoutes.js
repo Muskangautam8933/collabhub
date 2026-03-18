@@ -1,23 +1,22 @@
 import express from "express";
 import * as filterValueController from "../controllers/FilterValueController.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router({ mergeParams: true });
 
 //***********************Create**************************** */
-router.post("/",verifyToken, asyncHandler(filterValueController.createFilterValue));
+router.post("/", asyncHandler(filterValueController.createFilterValue));
 
 
 //***********************Read**************************** */
-router.get("/",verifyToken,asyncHandler(filterValueController.getFilterValue));
+router.get("/",asyncHandler(filterValueController.getFilterValue));
   
 
 //***********************Update**************************** */
-router.patch("/:id",verifyToken,asyncHandler(filterValueController.updateValueOfFilter));
+router.patch("/:id",asyncHandler(filterValueController.updateValueOfFilter));
 
 
 //***********************Delete**************************** */
-router.delete("/:id",verifyToken,asyncHandler(filterValueController.deleteFilterValue))
+router.delete("/:id",asyncHandler(filterValueController.deleteFilterValue))
 
 export default router;

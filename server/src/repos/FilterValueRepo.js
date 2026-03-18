@@ -18,7 +18,7 @@ export async function createFilterValue(payload, filterId, userId) {
   const createdFilterValue = await FilterValue.create({
     ...payload,
     filter: ObjectId(filterId),
-    createdBy: ObjectId(userId),
+    creator: ObjectId(userId),
   });
   return createdFilterValue;
 }
@@ -30,7 +30,7 @@ export async function createFilterValue(payload, filterId, userId) {
 export async function getFilterValueByFilter(filterId, userId) {
   const res = await FilterValue.find({
     filter: ObjectId(filterId),
-    createdBy: ObjectId(userId),
+    creator: ObjectId(userId),
   });
 
   return res;
@@ -38,7 +38,7 @@ export async function getFilterValueByFilter(filterId, userId) {
 export async function getFilterValueByName(name, userId) {
   const filterValueName = await FilterValue.findOne({
     name: name,
-    createdBy: ObjectId(userId),
+    creator: ObjectId(userId),
   });
   return filterValueName;
 }    
@@ -50,7 +50,7 @@ export async function getFilterValueByName(name, userId) {
 export async function updateFilterValue(id, updates, userId) {
   
   const filterValueUpdated = await FilterValue.findOneAndUpdate(
-    { _id: ObjectId(id), createdBy: ObjectId(userId) },
+    { _id: ObjectId(id), creator: ObjectId(userId) },
     updates,
     { new: true, runValidators: true }
   );
@@ -65,7 +65,7 @@ export async function updateFilterValue(id, updates, userId) {
 export async function deleteFilterValue(id, userId) {
   const deletedRes = await FilterValue.findOneAndDelete({
     _id: ObjectId(id),
-    createdBy: ObjectId(userId),
+    creator: ObjectId(userId),
   });
 
   return deletedRes;

@@ -13,7 +13,7 @@ export async function create(projectId, payload, userId) {
   const doc = await model.create({
     project: ObjectId(projectId),
     ...payload,
-    createdBy: ObjectId(userId),
+    creator: ObjectId(userId),
   });
 
   return doc;
@@ -25,14 +25,14 @@ export async function create(projectId, payload, userId) {
 export async function getByProject(projectId, userId) {
   const projectFilter = await model.find({
     project: ObjectId(projectId),
-    createdBy: ObjectId(userId),
+    creator: ObjectId(userId),
   });
   return projectFilter;
 }
 export async function getFilterById(filterId, userId) {
   return model.findOne({
     _id: new ObjectId(filterId),
-    createdBy: new ObjectId(userId),
+    creator: new ObjectId(userId),
   }).lean();
 }
 /************************************************************************
@@ -40,7 +40,7 @@ export async function getFilterById(filterId, userId) {
  ************************************************************************/
 export async function updateById(filterId, updates, userId) {
   const filterUpdated = await model.findOneAndUpdate(
-    { _id: ObjectId(filterId), createdBy: ObjectId(userId) },
+    { _id: ObjectId(filterId), creator: ObjectId(userId) },
     updates,
     { new: true, runValidators: true },
   );
@@ -52,7 +52,7 @@ export async function updateById(filterId, updates, userId) {
 export async function deleteById(FilterId, userId) {
   const deletedFilter = await model.findOneAndDelete({
     _id: ObjectId(FilterId),
-    createdBy: ObjectId(userId),
+    creator: ObjectId(userId),
   });
   return deletedFilter;
 }

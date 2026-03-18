@@ -6,10 +6,10 @@ const filterValueSchema = new mongoose.Schema(
       ref: "Filter",
       required: [true, "filter is required"],
     },
-    createdBy: {
+    creator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "createdBy is required"],
+      required: [true, "creator is required"],
     },
     name: {
       type: String,
@@ -18,9 +18,13 @@ const filterValueSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      default: "",
+      default: null,
     },
-    color: String,
+
+    color: {
+      type: String,
+      default: "#000000",
+    },
   },
   { timestamps: true },
 );

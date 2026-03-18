@@ -34,8 +34,8 @@ import memberRotues from "./routes/memberRoutes.js";
 
 import { AuthGuard, memberGaurd } from "./middleware/authMiddleware.js";
 
-// Initialize Express app 
-const app = express();       
+// Initialize Express app
+const app = express();
 const server = http.createServer(app);
 
 // Initialize Socket.io
@@ -67,6 +67,9 @@ app.use("/api/projects", AuthGuard, projectRoutes);
 app.use("/api/projects/:projectId/pages", AuthGuard, memberGaurd, pageRoutes);
 app.use("/api/projects/:projectId/invites", AuthGuard, inviteRoutes);
 app.use("/api/projects/:projectId/members", AuthGuard, memberRotues);
+app.use("/api/projects/:projectId/filters", AuthGuard, filterRoutes);
+app.use("/api/projects/:projectId/filterValues", AuthGuard, filterValueRoutes);
+app.use("/api/projects/:projectId/tasks", AuthGuard, memberGaurd, taskRoutes);
 
 // Swagger Documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -76,10 +79,6 @@ app.get("/api-docs.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerSpec);
 });
-app.use("/api/projects/:projectId/filters",filterRoutes);
-app.use("/api/projects/:projectId/filterValues",filterValueRoutes);
-app.use("/api/projects/:projectId/tasks",taskRoutes);
-
 
 // Health check
 app.get("/health", (req, res) => {
@@ -121,8 +120,14 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   logger.error("Request error:", err);
 
-  res.status(err.status || 500).json({
-    message: err.message || "Internal server error",
+  let InternalError = null;
+
+  try {
+    InternalError = JSON.parse(err.message);
+  } catch (error) {}
+
+  res.status(InternalError?.status || err.status || 500).json({
+    message: InternalError?.message || err.message || "Internal server error",
     error: config.NODE_ENV === "development" ? err : {},
   });
 });

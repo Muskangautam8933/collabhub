@@ -9,7 +9,7 @@ const filterSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      default: "",
+      default: null,
     },
 
     project: {
@@ -17,10 +17,10 @@ const filterSchema = new mongoose.Schema(
       ref: "Project",
       required: [true, "project is required"],
     },
-    createdBy: {
+    creator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "createdBy is required"],
+      required: [true, "creator is required"],
     },
   },
   { timestamps: true },

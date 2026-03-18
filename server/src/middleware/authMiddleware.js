@@ -19,7 +19,12 @@ export const AuthGuard = asyncHandler((req, res, next) => {
   }
 
   if (!token) {
-    throw new Error("No token provided");
+    throw new Error(
+      JSON.stringify({
+        message: "No token provided",
+        status: 401,
+      }),
+    );
   }
 
   const decoded = tokenService.verifyToken(token);
@@ -46,7 +51,13 @@ export const memberGaurd = asyncHandler(async (req, res, next) => {
 
   const project = await projectRepo.findById(projectId);
 
-  if (!project) throw new Error("Project not found");
+  if (!project)
+    throw new Error(
+      JSON.stringify({
+        message: "Project not found",
+        status: 404,
+      }),
+    );
 
   const isOwner = project.owner.toString() === userId;
 
@@ -62,13 +73,21 @@ export const memberGaurd = asyncHandler(async (req, res, next) => {
     return next();
   }
 
-  throw new Error("Unauthorized Only Project Member Allowed");
+  throw new Error(
+    JSON.stringify({
+      message: "Unauthorized Only Project Member Allowed",
+      status: 401,
+    }),
+  );
 });
 
 export const ownerGaurd = asyncHandler((req, res, next) => {
   if (req.user.role !== PROJECT_ROLE.OWNER)
     throw new Error(
-      `Unauthorized Only Project Owner Allowed not ${req.user.role}`,
+      JSON.stringify({
+        message: `Unauthorized Only Project Owner Allowed not ${req.user.role}`,
+        status: 401,
+      }),
     );
   next();
 });
@@ -79,8 +98,12 @@ export const adminGaurd = asyncHandler((req, res, next) => {
     req.user.role !== PROJECT_ROLE.ADMIN
   )
     throw new Error(
-      `Unauthorized Only Project Owner or Admin Allowed not ${req.user.role}`,
+      JSON.stringify({
+        message: `Unauthorized Only Project Owner or Admin Allowed not ${req.user.role}`,
+        status: 401,
+      }),
     );
+
   next();
 });
 
@@ -91,7 +114,11 @@ export const writeGaurd = asyncHandler((req, res, next) => {
     req.user.role !== PROJECT_ROLE.WRITE
   )
     throw new Error(
-      `Unauthorized Only Project Owner, Admin or Write Allowed not ${req.user.role}`,
+      JSON.stringify({
+        message: `Unauthorized Only Project Owner, Admin or Write Allowed not ${req.user.role}`,
+        status: 401,
+      }),
     );
+
   next();
 });

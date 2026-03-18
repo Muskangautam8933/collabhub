@@ -8,14 +8,15 @@ export async function handleMongoDbErrors(operation) {
     // Duplicate key error
     if (error instanceof MongoServerError && error.code === 11000) {
       const fields = Object.keys(error.keyPattern || {});
-      throw new Error(
-        `${fields.join(", ") || "Resource"} already exists`,
-      );
+      throw new Error(`${fields.join(", ") || "Resource"} already exists`);
     }
 
     // Validation error
     if (error instanceof MongooseError.ValidationError) {
-      throw new Error(error.message);
+      throw new Error(JSON.stringify({
+        message: error.message,
+        status: 400
+      }));
     }
 
     // Cast error (invalid ObjectId)

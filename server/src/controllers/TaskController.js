@@ -16,16 +16,13 @@ export const taskCreate = async (req, res) => {
   res.status(201).json(created);
 };
 
-export const createTaskByfv = async (req, res, next) => {
+export const createTaskWithfv = async (req, res, next) => {
   const { projectId } = req.params;
-  const { filterValueId } = req.query;
+  const { filterValue } = req.body;
 
-  if (!filterValueId) {
-    return next();
-  }
   const task = await taskRepo.createTask(req.body, projectId, req.user.userId);
 
-  await TFVRepo.create(filterValueId, task._id, req.user.userId);
+  await TFVRepo.create(filterValue, task._id, req.user.userId);
 
   res.status(201).json(task);
 };

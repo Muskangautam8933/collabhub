@@ -8,7 +8,7 @@ const taskSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      default: "",
+      default: null,
     },
     project: {
       type: mongoose.Schema.ObjectId,
@@ -16,21 +16,23 @@ const taskSchema = new mongoose.Schema(
       required: [true, "project is required"],
     },
     
-    createdBy: {
+    creator: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      required: [true, "createdBy is required "],
+      required: [true, "creator is required "],
     },
     startDate: {
       type: Date,
+      default: null,
     },
     dueDate: {
       type: Date,
+      default: null,
     },
   },
   { timestamps: true },
 );
-const task = mongoose.model("task", taskSchema);
+const task = mongoose.model("Task", taskSchema);
 task.syncIndexes();
 
 export default task;

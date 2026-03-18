@@ -25,7 +25,7 @@ import PublicLayout from "./public.layout";
 import { projectLoader } from "./loaders/project.loader";
 import { projectsLoader } from "./loaders/projects.loader";
 import AppLayout from "./app.layout";
-import FilterPage from "./pages/settings/filter.page";
+import FilterSettingPage from "./pages/settings/filter.page";
 
 // Client-side timing middleware
 
@@ -109,8 +109,6 @@ const router = createBrowserRouter([
                         element: <PagesPage />,
                       },
                     ],
-                    path: "filters",
-                    element: <FilterPage />,
                   },
                   {
                     path: ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT,

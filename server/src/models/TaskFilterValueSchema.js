@@ -3,17 +3,17 @@ const taskFilterValueSchema = new mongoose.Schema({
   task: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Task",
-    required: true,
+    required: [true, "task is required"],
   },
   filterValue: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "FilterValue",
-    required: true,
+    required: [true, "filterValue is required"],
   },
-   assignBy: {
+   assigner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "created by is required"],
+    required: [true, "assigner is required"],
   },
 });
 
