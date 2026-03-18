@@ -5,13 +5,13 @@ import { handleMongoDbErrors } from "../utils/handleMongoDBError.js";
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
-export async function createTask(payload, projectId, userId) {
+export async function createTask(payload, projectId, userId,options = {}) {
   const doc = new Task({
     ...payload,
     project: ObjectId(projectId),
     creator: ObjectId(userId),
   });
-  return await handleMongoDbErrors(() => doc.save());
+  return await handleMongoDbErrors(() => doc.save(options));
 }
 
 /************************************************************************

@@ -3,6 +3,7 @@ import FilterValue from "../models/FilterValueSchema.js";
 import task from "../models/TaskSchema.js";
 import * as TFVRepo from "../repos/TaskFilterValueRepo.js";
 import * as taskRepo from "../repos/TaskRepo.js";
+import { withTransaction } from "../utils/withTransaction.js";
 
 export const taskCreate = async (req, res) => {
   const { projectId } = req.params;
@@ -20,9 +21,15 @@ export const createTaskWithfv = async (req, res, next) => {
   const { projectId } = req.params;
   const { filterValue } = req.body;
 
-  const task = await taskRepo.createTask(req.body, projectId, req.user.userId);
+  let task = null;
 
-  await TFVRepo.create(filterValue, task._id, req.user.userId);
+  await withTransaction(async (session) => {
+    task = await taskRepo.createTask(req.body, projectId, req.user.userId, {
+      session,
+    });
+
+    await TFVRepo.create(filterValue, task._id, req.user.userId, { session });
+  });
 
   res.status(201).json(task);
 };

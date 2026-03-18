@@ -28,17 +28,22 @@ const router = express.Router({ mergeParams: true });
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - title
  *               - description
+ *               - filterValue
  *             properties:
- *               name:
+ *               title:
  *                 type: string
- *                 description: Name of the task
+ *                 description: Title of the task
  *                 example: Frontend Development
  *               description:
  *                 type: string
  *                 description: Description of the task
  *                 example: Build UI using React
+ *               filterValue:
+ *                 type: string
+ *                 description: Filter value of the task
+ *                 example: 69bacc44d80103174902cef5
  *     responses:
  *       201:
  *         description: Task created successfully
@@ -47,26 +52,31 @@ const router = express.Router({ mergeParams: true });
  *             schema:
  *               type: object
  *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   type: object
- *                   properties:
- *                     id:
+ *                     _id:
  *                       type: string
- *                     name:
+ *                     title:
  *                       type: string
  *                     description:
  *                       type: string
- *                     projectId:
+ *                     project:
  *                       type: string
- *                     createdAt:
+ *                     creator:
+ *                       type: string
+ *                       format: date-time
+ *                     startDate:
+ *                       type: string
+ *                       format: date-time
+ *                     endDate:
  *                       type: string
  *                       format: date-time
  *                     updatedAt:
  *                       type: string
  *                       format: date-time
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     __v:
+ *                       type: integer
  *       400:
  *         description: Bad request - Invalid input data
  *       401:
