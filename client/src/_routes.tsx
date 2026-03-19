@@ -26,6 +26,7 @@ import { projectLoader } from "./loaders/project.loader";
 import { projectsLoader } from "./loaders/projects.loader";
 import AppLayout from "./app.layout";
 import FilterSettingPage from "./pages/settings/filter.page";
+import { TaskPage } from "./pages/task";
 
 // Client-side timing middleware
 
@@ -110,6 +111,10 @@ const router = createBrowserRouter([
                         element: <PagesPage />,
                       },
                     ],
+                  },
+                  {
+                    path: ROUTES.PRIVATE.PROJECTS.TASKS,
+                    element: <TaskPage />,
                   },
                   {
                     path: ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT,
