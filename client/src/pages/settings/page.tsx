@@ -8,7 +8,7 @@ export default function Page() {
 
   return (
     <div className="size-full">
-      <Tabs defaultValue={ctx.activeTab} className="w-full">
+      <Tabs value={ctx.activeTab} className="w-full">
         <TabsList>
           {ctx.childRoutes.map((r) => {
             return (

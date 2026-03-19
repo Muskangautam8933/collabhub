@@ -18,7 +18,7 @@ export default function useMain() {
   const [optionsError, setOptionsError] = React.useState<string | null>(null);
 
   async function getOptions() {
-    console.log(projectId,filterId)
+    console.log(projectId, filterId);
     if (!projectId || !filterId) return;
 
     try {
@@ -46,15 +46,14 @@ export default function useMain() {
    * Detect active tab from URL
    */
   React.useEffect(() => {
-    const path =
-      location.pathname.split("/").filter(Boolean).at(-1) ?? "general";
+    const path = location.pathname.split("/").filter(Boolean).at(-1) || "";
 
     setActiveTab(path);
   }, [location.pathname]);
 
-  const childRoutes = Object.values(
-    ROUTES.PRIVATE.PROJECTS.SETTINGS
-  ).filter((r) => r !== ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT);
+  const childRoutes = Object.values(ROUTES.PRIVATE.PROJECTS.SETTINGS).filter(
+    (r) => r !== ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT,
+  );
 
   return {
     activeTab,
