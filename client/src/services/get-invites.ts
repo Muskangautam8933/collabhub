@@ -30,7 +30,7 @@ export type Invite = {
 export default async function getInvites(projectId?: string) {
   if (!projectId) throw new Error("projectId is required");
   return apiFetch<Invite[]>({
-    url: `${SERVER_URL}/api/projects/${projectId}/invites`,
+    url: `${SERVER_URL}/api/projects/${projectId}/invites?status=pending`,
     method: "GET",
   });
 }
