@@ -4,10 +4,9 @@ import { type LoaderFunction } from "react-router";
 export const projectsLoader: LoaderFunction = async () => {
   const projectsRes = await getProjects();
 
-  console.log("projectsRes", projectsRes);
   return { projectsRes };
 };
 
 export type LoaderData = {
-  projectsRes: Promise<ProjectsRes | null>;
+  projectsRes: ProjectsRes;
 };

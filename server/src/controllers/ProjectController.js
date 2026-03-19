@@ -1,12 +1,17 @@
 import ProjectRepo from "../repos/ProjectRepo.js";
 
 export const createProject = async (req, res) => {
-  const project = await ProjectRepo.create(req.body);
+  const project = await ProjectRepo.create({
+    ...req.body,
+    owner: req.user.userId,
+  });
+
   if (!project) {
     throw new Error(
       JSON.stringify({ message: "Error creating project", status: 500 }),
     );
   }
+
   res.status(201).json(project);
 };
 
