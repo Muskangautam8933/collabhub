@@ -28,13 +28,10 @@ export const getAllProjects = async (req, res) => {
 };
 
 export const getProject = async (req, res) => {
-  const project = await ProjectRepo.findById(req.params.projectId);
+  const projectId = req.params.projectId;
+  const userId = req.user.userId;
 
-  if (!project) {
-    throw new Error(
-      JSON.stringify({ message: "Project not found", status: 404 }),
-    );
-  }
+  const project = await ProjectRepo.getProjectAndUserRole(projectId, userId);
 
   res.json(project);
 };

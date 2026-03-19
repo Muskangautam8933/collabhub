@@ -1,3 +1,4 @@
+import { PROJECT_ROLE } from "../common/constants.js";
 import Project from "../models/ProjectSchema.js";
 import { ObjectId } from "../utils/ObjectId.js";
 import { handleMongoDbErrors } from "../utils/handleMongoDBError.js";
@@ -90,6 +91,73 @@ class ProjectRepo {
         },
       },
     ]).session(options.session);
+  }
+
+  async getProjectAndUserRole(projectId, userId, options = { session: null }) {
+    if (!projectId) throw new Error("projectId is required");
+    if (!userId) throw new Error("userId is required");
+
+    const result = await Project.aggregate([
+      {
+        $match: {
+          _id: ObjectId(projectId),
+          isDeleted: false,
+        },
+      },
+
+      // 🔥 lookup membership
+      {
+        $lookup: {
+          from: "projectmembers",
+          let: { projectId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$project", "$$projectId"] },
+                    { $eq: ["$user", ObjectId(userId)] },
+                    { $eq: ["$isDeleted", false] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "member",
+        },
+      },
+
+      // ✅ keep project if user is owner OR member
+      {
+        $match: {
+          $or: [
+            { owner: ObjectId(userId) }, // 👤 owner case
+            { member: { $ne: [] } }, // 👥 member case
+          ],
+        },
+      },
+
+      // 🔥 compute role
+      {
+        $addFields: {
+          role: {
+            $cond: [
+              { $eq: ["$owner", ObjectId(userId)] },
+              PROJECT_ROLE.OWNER, // 👤 owner role
+              { $arrayElemAt: ["$member.role", 0] }, // 👥 member role
+            ],
+          },
+        },
+      },
+
+      {
+        $project: {
+          member: 0,
+        },
+      },
+    ]).session(options.session);
+
+    return result[0] || null;
   }
 
   async findById(id, options = { session: null }) {
