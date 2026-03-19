@@ -1,4 +1,4 @@
-import { InboxIcon, Plus } from "lucide-react";
+import { FolderX, InboxIcon, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Item,
@@ -25,6 +25,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export default function Projects() {
   const { loaderData } = usePageContext();
@@ -81,11 +88,18 @@ export default function Projects() {
 
                   <ScrollArea className="flex w-full h-70 flex-col gap-6">
                     {projectsRes?.owned.length === 0 && (
-                      <div className="flex items-center justify-center w-full h-full">
-                        <span className="text-muted-foreground">
-                          You have no projects
-                        </span>
-                      </div>
+                      <Empty>
+                        <EmptyHeader>
+                          <EmptyMedia variant="icon">
+                            <FolderX />
+                          </EmptyMedia>
+                          <EmptyTitle>No Projects Yet</EmptyTitle>
+                          <EmptyDescription>
+                            You haven&apos;t created any projects yet. Get
+                            started by creating your first project.
+                          </EmptyDescription>
+                        </EmptyHeader>
+                      </Empty>
                     )}
                     {projectsRes?.owned.map((project) => {
                       return (
