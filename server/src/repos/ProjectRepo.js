@@ -19,8 +19,77 @@ class ProjectRepo {
   /************************************************************************
    **************************** READ **************************************
    ************************************************************************/
-  async findAll(options = { session: null }) {
-    return await Project.find({ isDeleted: false }).session(options.session);
+  async findAll(filter, options = { session: null }) {
+    return await Project.find({ ...filter, isDeleted: false }).session(
+      options.session,
+    );
+  }
+
+  async getJoinedProjects(userId, options = { session: null }) {
+    if (!userId) throw new Error("userId is required");
+
+    return await Project.aggregate([
+      {
+        $match: {
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: "projectmembers",
+          let: { projectId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$project", "$$projectId"] },
+                    { $eq: ["$user", ObjectId(userId)] },
+                    { $eq: ["$isDeleted", false] },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "member",
+        },
+      },
+      {
+        $match: {
+          member: { $ne: [] },
+        },
+      },
+
+      // ✅ Extract role
+      {
+        $addFields: {
+          role: { $arrayElemAt: ["$member.role", 0] },
+        },
+      },
+
+      // ✅ Populate owner
+      {
+        $lookup: {
+          from: "users", // collection name
+          localField: "owner", // field in Project
+          foreignField: "_id",
+          as: "owner",
+        },
+      },
+      {
+        $unwind: {
+          path: "$owner",
+          preserveNullAndEmptyArrays: true, // avoid crash if owner missing
+        },
+      },
+
+      // ✅ Cleanup
+      {
+        $project: {
+          member: 0,
+        },
+      },
+    ]).session(options.session);
   }
 
   async findById(id, options = { session: null }) {

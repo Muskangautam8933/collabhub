@@ -69,29 +69,92 @@ router.post("/", asyncHandler(createProject));
  *       - cookieAuth: []
  *     responses:
  *       200:
- *         description: List of projects retrieved successfully
+ *         description: Projects retrieved successfully
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                   name:
- *                     type: string
- *                   description:
- *                     type: string
- *                   owner:
- *                     type: string
- *                   members:
- *                     type: array
- *                     items:
- *                       type: string
- *                   createdAt:
- *                     type: string
- *                     format: date-time
+ *               type: object
+ *               properties:
+ *                 owned:
+ *                   type: array
+ *                   description: Projects owned by the user
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                         nullable: true
+ *                       owner:
+ *                         type: string
+ *                         description: Owner user ID
+ *                       teamLimit:
+ *                         type: integer
+ *                       isDeleted:
+ *                         type: boolean
+ *                       deletedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         nullable: true
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *
+ *                 joined:
+ *                   type: array
+ *                   description: Projects where user is a member
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *                         nullable: true
+ *                       owner:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                           email:
+ *                             type: string
+ *                           name:
+ *                             type: string
+ *                           avatar:
+ *                             type: string
+ *                             nullable: true
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
+ *                           updatedAt:
+ *                             type: string
+ *                             format: date-time
+ *                       teamLimit:
+ *                         type: integer
+ *                       isDeleted:
+ *                         type: boolean
+ *                       deletedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         nullable: true
+ *                       role:
+ *                         type: string
+ *                         enum: [read, write, admin]
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                       updatedAt:
+ *                         type: string
+ *                         format: date-time
+ *
  *       401:
  *         description: Unauthorized
  */
