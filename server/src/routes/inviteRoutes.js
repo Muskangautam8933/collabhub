@@ -64,6 +64,42 @@ router.post("/", memberGaurd, adminGaurd, controller.create);
  *         schema:
  *           type: string
  *         description: ID of the project
+ *         example: "69a3276fef8dabd1e64e4330"
+ *       - in: query
+ *         name: status
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [pending, accepted, rejected]
+ *         description: Filter invites by status
+ *         example: "pending"
+ *       - in: query
+ *         name: role
+ *         required: false
+ *         schema:
+ *           type: string
+ *           enum: [admin, write, read]
+ *         description: Filter invites by role
+ *         example: "admin"
+ *       - in: query
+ *         name: receiver
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Filter invites by receiver
+ *       - in: query
+ *         name: sender
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: Filter invites by sender
+ *       - in: query
+ *         name: email
+ *         required: false
+ *         schema:
+ *           type: email
+ *         description: Filter invites by email
+ * 
  *     responses:
  *       200:
  *         description: List of invitations retrieved successfully
@@ -93,7 +129,7 @@ router.post("/", memberGaurd, adminGaurd, controller.create);
  *       403:
  *         description: Forbidden - Not a project member
  */
-router.get("/", controller.getInvites);
+router.get("/", memberGaurd, controller.getInvites);
 
 /**
  * @swagger

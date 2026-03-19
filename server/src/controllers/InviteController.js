@@ -65,11 +65,13 @@ export const getById = asyncHandler(async (req, res) => {
 });
 
 export const getInvites = asyncHandler(async (req, res, next) => {
-  const email = req.query.email;
+  const projectId = req.params.projectId;
+  const query = req.query || {};
 
-  if (!email) return next();
-
-  let invites = await inviteRepo.getByEmail(email);
+  let invites = await inviteRepo.getByFilter({
+    ...query,
+    project: projectId
+  });
 
   return res.json(invites);
 });

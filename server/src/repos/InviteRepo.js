@@ -24,6 +24,11 @@ export async function create(payload) {
 /************************************************************************
  **************************** READ **************************************
  ************************************************************************/
+export function getByFilter(filter) {
+  if (!filter) throw new Error("filter is required");
+  return Model.find({ ...filter }).exec();
+}
+
 export function getByProject(projectId) {
   if (!projectId) throw new Error("projectId is required");
   return Model.find({
