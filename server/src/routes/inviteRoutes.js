@@ -99,7 +99,7 @@ router.post("/", memberGaurd, adminGaurd, controller.create);
  *         schema:
  *           type: email
  *         description: Filter invites by email
- * 
+ *
  *     responses:
  *       200:
  *         description: List of invitations retrieved successfully
@@ -129,7 +129,7 @@ router.post("/", memberGaurd, adminGaurd, controller.create);
  *       403:
  *         description: Forbidden - Not a project member
  */
-router.get("/", memberGaurd, controller.getInvites);
+router.get("/", memberGaurd, adminGaurd, controller.getInvites);
 
 /**
  * @swagger

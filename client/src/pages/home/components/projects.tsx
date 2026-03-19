@@ -36,6 +36,13 @@ export default function Projects() {
                   </div>
 
                   <ScrollArea className="flex w-full h-70 flex-col gap-6">
+                    {projectsRes?.owned.length === 0 && (
+                      <div className="flex items-center justify-center w-full h-full">
+                        <span className="text-muted-foreground">
+                          You have no projects
+                        </span>
+                      </div>
+                    )}
                     {projectsRes?.owned.map((project) => {
                       return (
                         <Link
@@ -72,6 +79,13 @@ export default function Projects() {
                   </div>
 
                   <ScrollArea className="flex w-full flex-col gap-6">
+                    {projectsRes?.joined.length === 0 && (
+                      <div className="flex items-center justify-center w-full h-full">
+                        <span className="text-muted-foreground">
+                          You have no joined projects
+                        </span>
+                      </div>
+                    )}
                     {projectsRes?.joined.map((project) => {
                       return (
                         <Link

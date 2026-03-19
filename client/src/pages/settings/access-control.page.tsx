@@ -21,6 +21,7 @@ import type { Invite } from "@/services/get-invites";
 import { Badge } from "@/components/ui/badge";
 import { usePageContext } from "./_context";
 import type { Member } from "@/services/get-members";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export const PROJECT_ROLE = {
   OWNER: "owner",
@@ -151,7 +152,7 @@ function ShowInvites(invites: Invite[]) {
   return (
     <>
       <h3 className="text-2xl pt-4 font-semibold">Pending Invites</h3>
-      <Card>
+      <ScrollArea className="h-50 space-y-4">
         {mergeInvites.map((invite) => {
           return (
             <UserListItem
@@ -169,7 +170,7 @@ function ShowInvites(invites: Invite[]) {
             />
           );
         })}
-      </Card>
+      </ScrollArea>
     </>
   );
 }
@@ -180,7 +181,7 @@ function ShowMembers(ctx: ReturnType<typeof useAccessControlPage>) {
     return (
       <>
         <h3 className="text-2xl pt-4 font-semibold">Project Members</h3>
-        <Card>
+        <ScrollArea>
           {members.map((member) => {
             return (
               <UserListItem
@@ -225,7 +226,7 @@ function ShowMembers(ctx: ReturnType<typeof useAccessControlPage>) {
               />
             );
           })}
-        </Card>
+        </ScrollArea>
       </>
     );
   };

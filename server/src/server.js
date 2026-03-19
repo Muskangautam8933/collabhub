@@ -27,7 +27,7 @@ import userRoutes from "./routes/userRoutes.js";
 import filterRoutes from "./routes/filterRoutes.js";
 import filterValueRoutes from "./routes/filterValueRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
-import projectRoutes from "./routes/ProjectRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
 import pageRoutes from "./routes/pageRoutes.js";
 import inviteRoutes from "./routes/inviteRoutes.js";
 import memberRotues from "./routes/memberRoutes.js";
