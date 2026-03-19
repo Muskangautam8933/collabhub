@@ -1,14 +1,13 @@
-import { type User } from "@/services/get-me";
-import getProjects from "@/services/get-projects";
+import getProjects, { type ProjectsRes } from "@/services/get-projects";
 import { type LoaderFunction } from "react-router";
 
 export const projectsLoader: LoaderFunction = async () => {
-  const projects = await getProjects();
+  const projectsRes = await getProjects();
 
-
-  return { projects };
+  console.log("projectsRes", projectsRes);
+  return { projectsRes };
 };
 
 export type LoaderData = {
-  projects: Promise<User | null>;
+  projectsRes: Promise<ProjectsRes | null>;
 };

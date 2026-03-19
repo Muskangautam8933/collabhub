@@ -1,6 +1,7 @@
 import { SERVER_URL } from "@/app.constatns";
 import localSpace from "./local-space";
 import { apiFetch } from "@/utils/api-fetch";
+import type { User } from "./get-me";
 
 /*******************************************************************
  *********************************** Types *************************
@@ -17,6 +18,10 @@ export type Project = {
   createdAt: string;
   updatedAt: string;
   __v: number;
+};
+
+export type ProjectWithOwner = Omit<Project, "owner"> & {
+  owner: User;
 };
 
 /**

@@ -58,6 +58,7 @@ const router = createBrowserRouter([
             element: <InvitePage />,
           },
           {
+            id: "projects",
             path: ROUTES.PRIVATE.PROJECTS.ROOT,
             loader: projectsLoader,
             element: <PrivateLayout />,
