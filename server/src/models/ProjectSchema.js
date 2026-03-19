@@ -4,9 +4,9 @@ const ProjectSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Project name is required"],
+      required: [true, "name is required"],
       trim: true,
-      maxlength: [100, "Name should not be more than 100 characters"],
+      maxlength: [30, "Name should not be more than 30 characters"],
     },
 
     description: {
@@ -19,7 +19,7 @@ const ProjectSchema = new mongoose.Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Owner is required"],
+      required: [true, "owner is required"],
       index: true,
     },
 
@@ -27,7 +27,7 @@ const ProjectSchema = new mongoose.Schema(
     teamLimit: {
       type: Number,
       default: 6,
-      min: 1,
+      max: [6, "Team limit should not exceed 6"],
     },
 
     

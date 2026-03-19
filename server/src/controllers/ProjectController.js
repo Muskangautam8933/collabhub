@@ -1,49 +1,47 @@
 import ProjectRepo from "../repos/ProjectRepo.js";
 
 export const createProject = async (req, res) => {
-  try {
-    const project = await ProjectRepo.create(req.body);
-    res.status(201).json(project);
-  } catch (error) {
-    res.status(500).json({ message: "Error creating project" });
+  const project = await ProjectRepo.create(req.body);
+  if (!project) {
+    throw new Error(JSON.stringify({ message: "Error creating project", status: 500 }));
   }
+  res.status(201).json(project);
 };
 
 export const getAllProjects = async (req, res) => {
-  try {
-    const projects = await ProjectRepo.findAll();
-    res.json(projects);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching projects" });
+  const projects = await ProjectRepo.findAll();
+  if (!projects) {
+    throw new Error(JSON.stringify({ message: "Error fetching projects", status: 500 }));
   }
+  res.json(projects);
 };
 
 export const getProject = async (req, res) => {
-  try {
-    const project = await ProjectRepo.findById(req.params.projectId);
+  const project = await ProjectRepo.findById(req.params.projectId);
 
-    if (!project) return res.status(404).json({ message: "Project not found" });
-
-    res.json(project);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching project" });
+  if (!project) {
+    throw new Error(JSON.stringify({ message: "Project not found", status: 404 }));
   }
+
+  res.json(project);
 };
 
 export const updateProject = async (req, res) => {
-  try {
-    const updated = await ProjectRepo.update(req.params.projectId, req.body);
-    res.json(updated);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating project" });
+  const updated = await ProjectRepo.update(req.params.projectId, req.body);
+
+  if (!updated) {
+    throw new Error(JSON.stringify({ message: "Error updating project", status: 500 }));
   }
+
+  res.json(updated);
 };
 
 export const deleteProject = async (req, res) => {
-  try {
-    await ProjectRepo.softDelete(req.params.projectId);
-    res.json({ message: "Project deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting project" });
+  const deleted = await ProjectRepo.softDelete(req.params.projectId);
+
+  if (!deleted) {
+    throw new Error(JSON.stringify({ message: "Error deleting project", status: 500 }));
   }
+
+  res.json({ message: "Project deleted successfully" });
 };
