@@ -1,19 +1,17 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Plus, Settings } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Column, ColumnItem } from "./components/column";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ViewMenu } from "./components/view-menu";
 
 export default function Page() {
   return (
     <>
       <Card className="p-2 border-0 shadow-none">
         <CardHeader className="flex gap-2 ">
-          <Button>
-            <Settings />
-            <span>View</span>
-          </Button>
+          <ViewMenu />
           <Input />
         </CardHeader>
         <CardContent>
