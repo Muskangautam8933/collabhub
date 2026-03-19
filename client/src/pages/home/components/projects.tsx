@@ -13,6 +13,18 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { usePageContext } from "../_context";
 import React from "react";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
+import { DialogTrigger } from "@radix-ui/react-dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Projects() {
   const { loaderData } = usePageContext();
@@ -27,12 +39,44 @@ export default function Projects() {
                 <div className="px-6 py-6">
                   <div className="flex items-center justify-between mb-3">
                     <h2 className="text-lg font-semibold">Your Projects</h2>
-                    <Button
-                      type="button"
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-[#1f1f1f] hover:bg-[#2b2b2b] border border-gray-700 text-sm"
-                    >
-                      <Plus size={16} /> New Project
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger>
+                        <Button
+                          type="button"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-md bg-[#1f1f1f] hover:bg-[#2b2b2b] border border-gray-700 text-sm"
+                        >
+                          <Plus size={16} /> New Project
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <h2 className="text-lg font-semibold">
+                            Create a new project
+                          </h2>
+                        </DialogHeader>
+                        <div className="flex gap-2">
+                          <Input placeholder="Project name" />
+                          <Select defaultValue={"6"}>
+                            <SelectTrigger className="w-full max-w-48">
+                              <SelectValue placeholder="Select a Role" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectGroup>
+                                <SelectLabel>Max Members</SelectLabel>
+                                {[1, 2, 3, 4, 5, 6].map((role) => (
+                                  <SelectItem key={role} value={String(role)}>
+                                    {role}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button>
+                          <Plus size={16} /> Create
+                        </Button>
+                      </DialogContent>
+                    </Dialog>
                   </div>
 
                   <ScrollArea className="flex w-full h-70 flex-col gap-6">
