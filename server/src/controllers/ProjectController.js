@@ -2,6 +2,7 @@ import ProjectRepo from "../repos/ProjectRepo.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import { withTransaction } from "../utils/withTransaction.js";
 import * as projectMemberRepo from "../repos/ProjectMemberRepo.js";
+import { createDefaultFiltersAndValue } from "../utils/createDefaultFiltersAndValue.js";
 import * as inviteRepo from "../repos/InviteRepo.js";
 import * as filterRepo from "../repos/FilterRepo.js";
 import * as filterValueRepo from "../repos/FilterValueRepo.js";
@@ -12,11 +13,7 @@ export const createProject = asyncHandler(async (req, res) => {
     owner: req.user.userId,
   });
 
-  if (!project) {
-    throw new Error(
-      JSON.stringify({ message: "Error creating project", status: 500 }),
-    );
-  }
+  await createDefaultFiltersAndValue(project._id, req.user.userId);
 
   res.status(201).json(project);
 });

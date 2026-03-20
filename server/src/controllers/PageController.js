@@ -11,7 +11,7 @@ export const create = async (req, res) => {
     const metaPayload = req.body.meta;
     const pagePayload = req.body.page;
 
-    if (!projectId) throw new Error("req.params.projectId is required");
+    if (!projectId) throw new Error("projectId is required");
     if (!metaPayload) throw new Error("req.body.meta is required");
     if (!pagePayload) throw new Error("req.body.page is required");
 
