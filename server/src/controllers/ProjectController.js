@@ -59,30 +59,24 @@ export const deleteProject = asyncHandler(async (req, res) => {
   const userId = req.user.userId;
 
   const result = await withTransaction(async (session) => {
-    const project = await ProjectRepo.softDeleteById(
-      projectId,
-      userId,
+    const project = await ProjectRepo.softDeleteById(projectId, userId, {
       session,
-    );
-    const members = await projectMemberRepo.deleteByProject(
-      projectId,
-      userId,
+    });
+    const members = await projectMemberRepo.deleteByProject(projectId, userId, {
       session,
-    );
-    const invites = await inviteRepo.deleteByProject(
-      projectId,
-      userId,
+    });
+    const invites = await inviteRepo.deleteByProject(projectId, userId, {
       session,
-    );
-    const filters = await filterRepo.deleteByProject(
-      projectId,
-      userId,
-      session,
-    );
+    });
 
-    console.log(JSON.stringify(filters, null, 2));
+    const filters = await filterRepo.getByProject(projectId);
 
-    return { project, members, invites, filters };
+    for (const filter of filters) {
+      await filterValueRepo.deleteByFilter(filter._id, { session });
+      await filterRepo.deleteById(filter._id, userId, { session });
+    }
+
+    return { project, members, invites };
   });
 
   res.json({ message: "Project deleted successfully", result });

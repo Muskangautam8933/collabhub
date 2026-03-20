@@ -73,7 +73,6 @@ export function useGeneralPage() {
       );
       setDeleting(false);
       setShowDeleteDialog(false);
-      return navigate(ROUTES.PRIVATE.PROJECTS.ROOT);
     }
   }
 

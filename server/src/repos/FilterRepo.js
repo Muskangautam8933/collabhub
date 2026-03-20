@@ -22,13 +22,13 @@ export async function create(projectId, payload, userId) {
 /************************************************************************
  **************************** READ **************************************
  ************************************************************************/
-export async function getByProject(projectId, userId) {
+export async function getByProject(projectId) {
   const projectFilter = await Model.find({
     project: ObjectId(projectId),
-    creator: ObjectId(userId),
   });
   return projectFilter;
 }
+
 export async function getFilterById(filterId, userId) {
   return Model.findOne({
     _id: new ObjectId(filterId),
@@ -49,11 +49,21 @@ export async function updateById(filterId, updates, userId) {
 /************************************************************************
  **************************** DELETE ************************************
  ************************************************************************/
-export async function deleteById(FilterId, userId) {
-  const deletedFilter = await Model.findOneAndDelete({
-    _id: ObjectId(FilterId),
-    creator: ObjectId(userId),
-  });
+export async function deleteById(
+  FilterId,
+  userId,
+  options = { session: null },
+) {
+  const deletedFilter = await Model.findOneAndDelete(
+    {
+      _id: ObjectId(FilterId),
+      creator: ObjectId(userId),
+    },
+    {
+      session: options?.session, // ✅ pass session here
+    },
+  );
+
   return deletedFilter;
 }
 

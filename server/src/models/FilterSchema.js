@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-const filterSchema = new mongoose.Schema(
+
+const schema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "name is required"],
-      unique: [true, "filter should be unique"],
     },
 
     description: {
@@ -40,6 +40,13 @@ const filterSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-const Filter = mongoose.model("Filter", filterSchema);
+schema.index(
+  { project: 1, name: 1 },
+  { unique: true, partialFilterExpression: { isDeleted: false } },
+);
+
+const Filter = mongoose.model("Filter", schema);
+
 Filter.syncIndexes();
+
 export default Filter;

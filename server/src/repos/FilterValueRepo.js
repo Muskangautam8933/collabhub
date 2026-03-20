@@ -67,9 +67,14 @@ export async function deleteFilterValue(id, userId) {
   return deletedRes;
 }
 
-export async function deleteByFilter(filterId, userId) {
-  const deletedFilter = await FilterValue.deleteMany({
-    filter: ObjectId(filterId),
-  });
+export async function deleteByFilter(filterId, options = { session: null }) {
+  const deletedFilter = await FilterValue.deleteMany(
+    {
+      filter: ObjectId(filterId),
+    },
+    {
+      session: options.session,
+    },
+  );
   return deletedFilter;
 }
