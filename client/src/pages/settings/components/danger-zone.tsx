@@ -27,6 +27,7 @@ export type DangerZoneProps = {
   setConfirmName: React.Dispatch<React.SetStateAction<string>>;
   confirmName: string;
   role: PROJECT_ROLE;
+  handleDeletion: (e: React.MouseEvent) => void;
 };
 
 export function DangerZone({
@@ -37,6 +38,7 @@ export function DangerZone({
   setConfirmName,
   confirmName,
   role,
+  handleDeletion
 }: DangerZoneProps) {
   if (role !== "owner") return null;
 
@@ -146,6 +148,7 @@ export function DangerZone({
             <AlertDialogAction
               variant={"destructive"}
               disabled={confirmName !== projectName || deleting}
+              onClick={handleDeletion}
             >
               {deleting ? (
                 <>

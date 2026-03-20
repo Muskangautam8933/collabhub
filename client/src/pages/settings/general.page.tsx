@@ -23,6 +23,7 @@ export default function Page() {
     setConfirmName,
     setShowDeleteDialog,
     handleSaving,
+    handleDeletion,
   } = useGeneralPage();
 
   return (
@@ -99,6 +100,7 @@ export default function Page() {
           setConfirmName={setConfirmName}
           confirmName={confirmName}
           role={project?.role || "owner"}
+          handleDeletion={handleDeletion}
         />
       </div>
     </ScrollArea>

@@ -1,8 +1,9 @@
+import { ROUTES } from "@/_routes.constants";
 import deleteProject from "@/services/delete-project";
 import type { Project } from "@/services/get-project";
 import patchProject from "@/services/patch-project";
 import React from "react";
-import { useRouteLoaderData } from "react-router";
+import { useNavigate, useRouteLoaderData } from "react-router";
 import { toast } from "react-toastify";
 
 export function useGeneralPage() {
@@ -17,6 +18,8 @@ export function useGeneralPage() {
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
   const [confirmName, setConfirmName] = React.useState("");
+
+  const navigate = useNavigate();
 
   /**
    * Handle saving
@@ -34,7 +37,7 @@ export function useGeneralPage() {
       console.log(formData);
 
       await patchProject(project?._id, formData);
-      
+
       toast.success("Project updated successfully");
       setSaving(false);
     } catch (error) {
@@ -47,7 +50,7 @@ export function useGeneralPage() {
    * Handle deletion
    * ----------------
    */
-  async function handleDeletion(e: React.FormEvent<HTMLFormElement>) {
+  async function handleDeletion(e: React.MouseEvent) {
     e.preventDefault();
 
     if (confirmName !== project?.name) return toast.error("Invalid name");
@@ -58,10 +61,19 @@ export function useGeneralPage() {
       await deleteProject(project?._id);
 
       toast.success("Project deleted successfully");
+
       setDeleting(false);
+
+      setShowDeleteDialog(false);
+
+      return navigate(ROUTES.PRIVATE.PROJECTS.ROOT);
     } catch (error) {
-      toast.error(error as string);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to fetch users",
+      );
       setDeleting(false);
+      setShowDeleteDialog(false);
+      return navigate(ROUTES.PRIVATE.PROJECTS.ROOT);
     }
   }
 
