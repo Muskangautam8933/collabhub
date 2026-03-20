@@ -195,8 +195,6 @@ class ProjectRepo {
         {
           $set: {
             ...payload,
-            // normalize refs if needed
-            // owner: ObjectId(payload.owner),
           },
         },
         { new: true, session: options.session },

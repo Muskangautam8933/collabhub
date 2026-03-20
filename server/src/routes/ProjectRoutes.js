@@ -4,8 +4,11 @@ import { getAllProjects } from "../controllers/ProjectController.js";
 import { getProject } from "../controllers/ProjectController.js";
 import { updateProject } from "../controllers/ProjectController.js";
 import { deleteProject } from "../controllers/ProjectController.js";
-import asyncHandler from "../utils/asyncHandler.js";
-import { memberGaurd } from "../middleware/authMiddleware.js";
+import {
+  adminGaurd,
+  memberGaurd,
+  ownerGaurd,
+} from "../middleware/authMiddleware.js";
 const router = express.Router({ mergeParams: true });
 
 /**
@@ -56,7 +59,7 @@ const router = express.Router({ mergeParams: true });
  *       401:
  *         description: Unauthorized
  */
-router.post("/", asyncHandler(createProject));
+router.post("/", createProject);
 
 /**
  * @swagger
@@ -158,7 +161,7 @@ router.post("/", asyncHandler(createProject));
  *       401:
  *         description: Unauthorized
  */
-router.get("/", asyncHandler(getAllProjects));
+router.get("/", getAllProjects);
 
 /**
  * @swagger
@@ -206,12 +209,12 @@ router.get("/", asyncHandler(getAllProjects));
  *       404:
  *         description: Project not found
  */
-router.get("/:projectId", memberGaurd, asyncHandler(getProject));
+router.get("/:projectId", memberGaurd, getProject);
 
 /**
  * @swagger
  * /api/projects/{projectId}:
- *   put:
+ *   patch:
  *     summary: Update a project
  *     tags: [Projects]
  *     security:
@@ -247,7 +250,7 @@ router.get("/:projectId", memberGaurd, asyncHandler(getProject));
  *       404:
  *         description: Project not found
  */
-router.put("/:projectId", asyncHandler(updateProject));
+router.patch("/:projectId", memberGaurd, adminGaurd, updateProject);
 
 /**
  * @swagger
@@ -275,6 +278,6 @@ router.put("/:projectId", asyncHandler(updateProject));
  *       404:
  *         description: Project not found
  */
-router.delete("/:projectId", asyncHandler(deleteProject));
+router.delete("/:projectId", memberGaurd, ownerGaurd, deleteProject);
 
 export default router;

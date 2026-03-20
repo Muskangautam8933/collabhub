@@ -27,12 +27,14 @@ export function useGeneralPage() {
     try {
       setSaving(true);
 
-      const formData = Object.fromEntries(new FormData(e.currentTarget));
+      const formData = Object.fromEntries(
+        new FormData(e.currentTarget),
+      ) as Partial<Project>;
 
       console.log(formData);
 
-      await patchProject(project?._id);
-
+      await patchProject(project?._id, formData);
+      
       toast.success("Project updated successfully");
       setSaving(false);
     } catch (error) {

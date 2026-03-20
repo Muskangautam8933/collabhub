@@ -1,6 +1,7 @@
 import ProjectRepo from "../repos/ProjectRepo.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
-export const createProject = async (req, res) => {
+export const createProject = asyncHandler(async (req, res) => {
   const project = await ProjectRepo.create({
     ...req.body,
     owner: req.user.userId,
@@ -13,9 +14,9 @@ export const createProject = async (req, res) => {
   }
 
   res.status(201).json(project);
-};
+});
 
-export const getAllProjects = async (req, res) => {
+export const getAllProjects = asyncHandler(async (req, res) => {
   const userId = req.user.userId;
 
   const projects = await ProjectRepo.findAll({
@@ -25,18 +26,18 @@ export const getAllProjects = async (req, res) => {
   const joinedProjects = await ProjectRepo.getJoinedProjects(userId);
 
   res.json({ owned: projects, joined: joinedProjects });
-};
+});
 
-export const getProject = async (req, res) => {
+export const getProject = asyncHandler(async (req, res) => {
   const projectId = req.params.projectId;
   const userId = req.user.userId;
 
   const project = await ProjectRepo.getProjectAndUserRole(projectId, userId);
 
   res.json(project);
-};
+});
 
-export const updateProject = async (req, res) => {
+export const updateProject = asyncHandler(async (req, res) => {
   const updated = await ProjectRepo.update(req.params.projectId, req.body);
 
   if (!updated) {
@@ -46,9 +47,9 @@ export const updateProject = async (req, res) => {
   }
 
   res.json(updated);
-};
+});
 
-export const deleteProject = async (req, res) => {
+export const deleteProject = asyncHandler(async (req, res) => {
   const deleted = await ProjectRepo.softDelete(req.params.projectId);
 
   if (!deleted) {
@@ -58,4 +59,4 @@ export const deleteProject = async (req, res) => {
   }
 
   res.json({ message: "Project deleted successfully" });
-};
+});

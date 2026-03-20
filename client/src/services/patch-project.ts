@@ -10,8 +10,13 @@ import type { Project } from "./get-project";
 /**
  * using network it fetch the data.
  */
-export default async function patchProject(projectId?: string) {
+export default async function patchProject(
+  projectId?: string,
+  payload?: Partial<Project>,
+) {
   if (!projectId) throw new Error("projectId is required");
+
+  if (!payload) throw new Error("payload is required");
 
   return apiFetch<Project, Partial<Project>>({
     url: `${SERVER_URL}/api/projects/${projectId}`,
@@ -19,5 +24,6 @@ export default async function patchProject(projectId?: string) {
     headers: {
       Authorization: `Bearer ${localSpace.getAccessToken()}`,
     },
+    body: payload,
   });
 }
