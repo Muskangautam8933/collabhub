@@ -119,3 +119,21 @@ export async function softDeleteById(id, deletor, options = {}) {
     options,
   );
 }
+
+export async function deleteByProject(projectId, deletor, options = {}) {
+  if (!projectId) throw new Error("projectId is required");
+
+  if (!deletor) throw new Error("deletor is required");
+
+  return await Model.updateMany(
+    { project: ObjectId(projectId) },
+    {
+      $set: {
+        isDeleted: true,
+        deletor: ObjectId(deletor),
+        deletedAt: new Date(),
+      },
+    },
+    options,
+  );
+}

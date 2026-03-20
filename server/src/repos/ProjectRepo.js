@@ -237,7 +237,7 @@ class ProjectRepo {
           deletedAt: new Date(),
         },
       },
-      { session: options.session },
+      { new: true, session: options.session },
     );
   }
 }

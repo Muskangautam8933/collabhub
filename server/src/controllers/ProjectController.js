@@ -1,5 +1,10 @@
 import ProjectRepo from "../repos/ProjectRepo.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { withTransaction } from "../utils/withTransaction.js";
+import * as projectMemberRepo from "../repos/ProjectMemberRepo.js";
+import * as inviteRepo from "../repos/InviteRepo.js";
+import * as filterRepo from "../repos/FilterRepo.js";
+import * as filterValueRepo from "../repos/FilterValueRepo.js";
 
 export const createProject = asyncHandler(async (req, res) => {
   const project = await ProjectRepo.create({
@@ -50,13 +55,35 @@ export const updateProject = asyncHandler(async (req, res) => {
 });
 
 export const deleteProject = asyncHandler(async (req, res) => {
-  const deleted = await ProjectRepo.softDelete(req.params.projectId);
+  const projectId = req.params.projectId;
+  const userId = req.user.userId;
 
-  if (!deleted) {
-    throw new Error(
-      JSON.stringify({ message: "Error deleting project", status: 500 }),
+  const result = await withTransaction(async (session) => {
+    const project = await ProjectRepo.softDeleteById(
+      projectId,
+      userId,
+      session,
     );
-  }
+    const members = await projectMemberRepo.deleteByProject(
+      projectId,
+      userId,
+      session,
+    );
+    const invites = await inviteRepo.deleteByProject(
+      projectId,
+      userId,
+      session,
+    );
+    const filters = await filterRepo.deleteByProject(
+      projectId,
+      userId,
+      session,
+    );
 
-  res.json({ message: "Project deleted successfully" });
+    console.log(JSON.stringify(filters, null, 2));
+
+    return { project, members, invites, filters };
+  });
+
+  res.json({ message: "Project deleted successfully", result });
 });

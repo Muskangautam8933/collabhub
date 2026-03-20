@@ -3,14 +3,14 @@
  * Handles all database operations related to users
  * Based on ER Diagram Schema
  */
-import model from "../models/filterSchema.js";
+import Model from "../models/filterSchema.js";
 import { ObjectId } from "../utils/ObjectId.js";
 
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
 export async function create(projectId, payload, userId) {
-  const doc = await model.create({
+  const doc = await Model.create({
     project: ObjectId(projectId),
     ...payload,
     creator: ObjectId(userId),
@@ -23,14 +23,14 @@ export async function create(projectId, payload, userId) {
  **************************** READ **************************************
  ************************************************************************/
 export async function getByProject(projectId, userId) {
-  const projectFilter = await model.find({
+  const projectFilter = await Model.find({
     project: ObjectId(projectId),
     creator: ObjectId(userId),
   });
   return projectFilter;
 }
 export async function getFilterById(filterId, userId) {
-  return model.findOne({
+  return Model.findOne({
     _id: new ObjectId(filterId),
     creator: new ObjectId(userId),
   }).lean();
@@ -39,7 +39,7 @@ export async function getFilterById(filterId, userId) {
  **************************** UPDATE ************************************
  ************************************************************************/
 export async function updateById(filterId, updates, userId) {
-  const filterUpdated = await model.findOneAndUpdate(
+  const filterUpdated = await Model.findOneAndUpdate(
     { _id: ObjectId(filterId), creator: ObjectId(userId) },
     updates,
     { new: true, runValidators: true },
@@ -50,9 +50,27 @@ export async function updateById(filterId, updates, userId) {
  **************************** DELETE ************************************
  ************************************************************************/
 export async function deleteById(FilterId, userId) {
-  const deletedFilter = await model.findOneAndDelete({
+  const deletedFilter = await Model.findOneAndDelete({
     _id: ObjectId(FilterId),
     creator: ObjectId(userId),
   });
   return deletedFilter;
+}
+
+export async function deleteByProject(projectId, deletor, options = {}) {
+  if (!projectId) throw new Error("projectId is required");
+
+  if (!deletor) throw new Error("deletor is required");
+
+  return await Model.updateMany(
+    { project: ObjectId(projectId) },
+    {
+      $set: {
+        isDeleted: true,
+        deletor: ObjectId(deletor),
+        deletedAt: new Date(),
+      },
+    },
+    { new: true, session: options.session },
+  );
 }

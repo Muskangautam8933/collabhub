@@ -7,9 +7,6 @@
 import FilterValue from "../models/FilterValueSchema.js";
 import { ObjectId } from "../utils/ObjectId.js";
 
-// import model from "../models/UserSchema.js";
-// import { Types } from "mongoose";
-
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
@@ -41,20 +38,19 @@ export async function getFilterValueByName(name, userId) {
     creator: ObjectId(userId),
   });
   return filterValueName;
-}    
+}
 
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/
 
 export async function updateFilterValue(id, updates, userId) {
-  
   const filterValueUpdated = await FilterValue.findOneAndUpdate(
     { _id: ObjectId(id), creator: ObjectId(userId) },
     updates,
-    { new: true, runValidators: true }
+    { new: true, runValidators: true },
   );
-    
+
   return filterValueUpdated;
 }
 
@@ -69,4 +65,11 @@ export async function deleteFilterValue(id, userId) {
   });
 
   return deletedRes;
+}
+
+export async function deleteByFilter(filterId, userId) {
+  const deletedFilter = await FilterValue.deleteMany({
+    filter: ObjectId(filterId),
+  });
+  return deletedFilter;
 }

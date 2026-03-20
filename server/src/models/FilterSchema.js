@@ -22,6 +22,20 @@ const filterSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "creator is required"],
     },
+
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletor: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true },
 );
