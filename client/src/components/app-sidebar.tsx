@@ -59,7 +59,7 @@ const data = {
     },
     {
       title: "Settings",
-      url: ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT,
+      url: `${ROUTES.PRIVATE.PROJECTS.SETTINGS.ROOT}/${ROUTES.PRIVATE.PROJECTS.SETTINGS.GENERAL}`,
       icon: Settings,
     },
     {
