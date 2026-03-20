@@ -1,3 +1,4 @@
+import { ROUTES } from "@/_routes.constants";
 import type { LoaderData } from "@/loaders/projects.loader";
 import type { Project } from "@/services/get-project";
 import { postProject, type Payload } from "@/services/post-project";
@@ -6,7 +7,7 @@ import { useRouteLoaderData } from "react-router";
 import { toast } from "react-toastify";
 
 export default function useMain() {
-  const loaderData = useRouteLoaderData("projects") as LoaderData;
+  const loaderData = useRouteLoaderData(ROUTES.PRIVATE.PROJECTS.ROOT) as LoaderData;
   const [isOpenModel, setIsOpenModel] = useState(false);
 
   const [projects, setProjects] = useState<Project[]>([]);

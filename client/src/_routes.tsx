@@ -59,7 +59,7 @@ const router = createBrowserRouter([
             element: <InvitePage />,
           },
           {
-            id: "projects",
+            id: ROUTES.PRIVATE.PROJECTS.ROOT,
             path: ROUTES.PRIVATE.PROJECTS.ROOT,
             loader: projectsLoader,
             element: <PrivateLayout />,
@@ -69,6 +69,7 @@ const router = createBrowserRouter([
                 element: <HomePage />,
               },
               {
+                id: "project",
                 path: ":projectId",
                 loader: projectLoader,
                 element: <AppLayout />,

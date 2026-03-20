@@ -2,6 +2,7 @@ import { SERVER_URL } from "@/app.constatns";
 import localSpace from "./local-space";
 import { apiFetch } from "@/utils/api-fetch";
 import type { User } from "./get-me";
+import type { PROJECT_ROLE } from "@/pages/settings/useAccessControlPage";
 
 /*******************************************************************
  *********************************** Types *************************
@@ -13,6 +14,7 @@ export type Project = {
   description: string | null;
   owner: string;
   teamLimit: number;
+  role: PROJECT_ROLE;
   isDeleted: false;
   deletedAt: string | null;
   createdAt: string;
