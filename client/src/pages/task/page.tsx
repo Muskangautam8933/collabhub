@@ -5,8 +5,10 @@ import { Plus } from "lucide-react";
 import { Column, ColumnItem } from "./components/column";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ViewMenu } from "./components/view-menu";
+import { usePageContext } from "./_context";
 
 export default function Page() {
+  const ctx = usePageContext();
   return (
     <>
       <Card className="p-2 border-0 shadow-none">
@@ -17,24 +19,15 @@ export default function Page() {
         <CardContent>
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex gap-2 w-max pb-2">
-              <Column>
-                <ColumnItem />
-                <ColumnItem />
-              </Column>
-              <Column>
-                <ColumnItem />
-                <ColumnItem />
-                <ColumnItem />
-                <ColumnItem />
-              </Column>
-              <Column>
-                <ColumnItem />
-                <ColumnItem />
-              </Column>
-              <Column>
-                <ColumnItem />
-                <ColumnItem />
-              </Column>
+              {ctx.filterValues.map((filterValue) => {
+                return (
+                  <Column
+                    key={filterValue._id}
+                    name={filterValue.name}
+                    color={filterValue.color}
+                  />
+                );
+              })}
 
               <Button size="icon" className="w-10 h-10 p-0">
                 <Plus />

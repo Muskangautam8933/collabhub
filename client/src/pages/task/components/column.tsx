@@ -17,7 +17,10 @@ export function Column({
   className,
   ...props
 }: ColumnProps) {
-  const coleredBorderAndBackground = cn(`border-${color}-500 bg-${color}-300`);
+  const coloredStyle = {
+    borderColor: color,
+    backgroundColor: `${color}10`,
+  };
   return (
     <Card className={cn("w-80 shrink-0", className)} {...props}>
       <CardHeader>
@@ -25,7 +28,8 @@ export function Column({
           <div className="flex gap-2 items-center">
             <Badge
               variant="outline"
-              className={cn("w-4 h-4 rounded-full", coleredBorderAndBackground)}
+              className={cn("w-4 h-4 rounded-full")}
+              style={coloredStyle}
             ></Badge>
             <span className="font-semibold text-xl">{name}</span>
             <Badge variant="outline">1</Badge>

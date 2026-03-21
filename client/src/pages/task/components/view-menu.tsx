@@ -13,7 +13,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Check, Settings, SquareChevronDown } from "lucide-react";
+import { usePageContext } from "../_context";
 export function ViewMenu() {
+  const ctx = usePageContext();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -30,11 +33,15 @@ export function ViewMenu() {
             <DropdownMenuSubContent>
               <DropdownMenuGroup>
                 <DropdownMenuLabel>Visible Fields</DropdownMenuLabel>
-                <DropdownMenuItem>
-                  <Check />
-                  <SquareChevronDown />
-                  <span>Status</span>
-                </DropdownMenuItem>
+                {ctx.filters.map((filter) => {
+                  return (
+                    <DropdownMenuItem key={filter._id}>
+                      <Check />
+                      <SquareChevronDown />
+                      <span>{filter.name}</span>
+                    </DropdownMenuItem>
+                  );
+                })}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
@@ -54,16 +61,19 @@ export function ViewMenu() {
             <DropdownMenuSubContent>
               <DropdownMenuGroup>
                 <DropdownMenuLabel>Column By</DropdownMenuLabel>
-
-                <DropdownMenuItem>
-                  <Check />
-                  <SquareChevronDown />
-                  <span>Size</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="pl-8">
-                  <SquareChevronDown />
-                  <span>Priority</span>
-                </DropdownMenuItem>
+                {ctx.filters.map((filter) => {
+                  return (
+                    <DropdownMenuItem
+                      key={filter._id}
+                      onClick={ctx.getColumnBySelectionHandler(filter.name)}
+                    >
+                      {ctx.columnBy === filter.name && <Check />}
+                      {ctx.columnBy !== filter.name && <div className="w-4" />}
+                      <SquareChevronDown />
+                      <span>{filter.name}</span>
+                    </DropdownMenuItem>
+                  );
+                })}
               </DropdownMenuGroup>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
