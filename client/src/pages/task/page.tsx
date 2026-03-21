@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Plus } from "lucide-react";
+// import { Plus } from "lucide-react";
 import { Column, ColumnItem } from "./components/column";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ViewMenu } from "./components/view-menu";
@@ -25,13 +25,15 @@ export default function Page() {
                     key={filterValue._id}
                     name={filterValue.name}
                     color={filterValue.color}
-                  />
+                    filterValueId={filterValue._id}
+                  >
+                    <ColumnItem />
+                  </Column>
                 );
               })}
-
-              <Button size="icon" className="w-10 h-10 p-0">
+              {/* <Button size="icon" className="w-10 h-10 p-0">
                 <Plus />
-              </Button>
+              </Button> */}
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>

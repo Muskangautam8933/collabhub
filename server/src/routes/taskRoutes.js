@@ -86,15 +86,9 @@ const router = express.Router({ mergeParams: true });
  *       500:
  *         description: Internal server error
  */
-router.post("/", asyncHandler(taskController.createTaskWithfv));
-
-// router.post("/",asyncHandler(taskController.taskCreate))
+router.post("/", asyncHandler(taskController.createTaskWithfilterValue));
 
 router.get("/", asyncHandler(taskController.getTasks));
-
-router.get("/", asyncHandler(taskController.getTasksByFilterValue));
-
-router.get("/", asyncHandler(taskController.getTaskByFilter));
 
 router.patch("/:taskId", asyncHandler(taskController.updateTask));
 

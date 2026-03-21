@@ -5,7 +5,7 @@ import { handleMongoDbErrors } from "../utils/handleMongoDBError.js";
 /************************************************************************
  **************************** CREATE ************************************
  ************************************************************************/
-export async function createTask(payload, projectId, userId,options = {}) {
+export async function createTask(payload, projectId, userId, options = {}) {
   const doc = new Task({
     ...payload,
     project: ObjectId(projectId),
@@ -18,10 +18,9 @@ export async function createTask(payload, projectId, userId,options = {}) {
  **************************** READ **************************************
  ************************************************************************/
 
-export async function getTasksByProject(projectId, userId) {
+export async function getTasksByProject(projectId) {
   const ProjectTasks = await Task.find({
     project: ObjectId(projectId),
-    creator: ObjectId(userId),
   });
   return ProjectTasks;
 }

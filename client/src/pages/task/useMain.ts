@@ -1,5 +1,7 @@
 import getFilter, { type Filter } from "@/services/get-filter";
 import getFilterValues, { type FilterValue } from "@/services/get-filterValues";
+import getTasks from "@/services/get-tasks";
+import type { Task } from "@/services/post-task";
 import React from "react";
 import { useParams, useSearchParams } from "react-router";
 import { toast } from "react-toastify";
@@ -16,6 +18,10 @@ export default function useMain() {
   const [filtersLoading, setFiltersLoading] = React.useState<boolean>(false);
   const [filtersError, setFiltersError] = React.useState<string | null>(null);
 
+  const [tasks, setTasks] = React.useState<Task[]>([]);
+  const [tasksLoading, setTasksLoading] = React.useState<boolean>(false);
+  const [tasksError, setTasksError] = React.useState<string | null>(null);
+
   const [filterValues, setFilterValues] = React.useState<FilterValue[]>([]);
   const [filterValuesLoading, setFilterValuesLoading] =
     React.useState<boolean>(false);
@@ -26,6 +32,31 @@ export default function useMain() {
   const [columnBy, setColumnBy] = React.useState<string>(
     searchParams.get("columnBy") || "",
   );
+
+  /**
+   * Get tasks
+   */
+  React.useEffect(() => {
+    (async () => {
+      if (projectId) {
+        try {
+          setTasksLoading(true);
+          const res = await getTasks(projectId as string);
+
+          console.log("tasks", res);
+
+          setTasks(res);
+          setTasksLoading(false);
+        } catch (error) {
+          toast.error(
+            error instanceof Error ? error.message : "Failed to fetch",
+          );
+          setTasksError(error as string);
+          setTasksLoading(false);
+        }
+      }
+    })();
+  }, [projectId]);
 
   /**
    * Get filters
