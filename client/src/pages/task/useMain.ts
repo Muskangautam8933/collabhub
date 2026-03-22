@@ -36,8 +36,6 @@ export default function useMain() {
     return filters.find((f) => f.name === columnBy)?._id || filters[0]?._id;
   }, [columnBy, filters]);
 
-  const filterName = searchParams.get("columnBy");
-
   /**
    * Get tasks
    */
@@ -47,18 +45,10 @@ export default function useMain() {
         try {
           setTasksLoading(true);
 
-          const filterName = searchParams.get("columnBy");
-
-          const filterId =
-            filters.find((f) => f.name === filterName)?._id || filters[0]?._id;
-
-          if (!filterId) return;
-
-          const res = await getTasks(projectId as string, filterId);
-
-          console.log("tasks", res);
+          const res = await getTasks(projectId as string);
 
           setTasks(res);
+
           setTasksLoading(false);
         } catch (error) {
           toast.error(
@@ -69,7 +59,7 @@ export default function useMain() {
         }
       }
     })();
-  }, [filters, projectId, searchParams]);
+  }, [filters, projectId, searchParams, filterId]);
 
   /**
    * Get filters
@@ -102,11 +92,6 @@ export default function useMain() {
   React.useEffect(() => {
     (async () => {
       if (projectId) {
-        const filterName = searchParams.get("columnBy");
-
-        const filterId =
-          filters.find((f) => f.name === filterName)?._id || filters[0]?._id;
-
         if (!filterId) return;
 
         try {
@@ -116,9 +101,8 @@ export default function useMain() {
             filterId as string,
           );
 
-          console.log(res);
-
           setFilterValues(res);
+
           setFilterValuesLoading(false);
         } catch (error) {
           toast.error(
@@ -129,7 +113,7 @@ export default function useMain() {
         }
       }
     })();
-  }, [filters, projectId, searchParams]);
+  }, [filters, projectId, searchParams, filterId]);
 
   React.useEffect(() => {
     setColumnBy(searchParams.get("columnBy") || filters[0]?.name || "");
@@ -152,7 +136,6 @@ export default function useMain() {
     tasksLoading,
     tasksError,
     filterId,
-    filterName,
     getColumnBySelectionHandler,
   };
 }

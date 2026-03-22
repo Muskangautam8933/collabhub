@@ -67,7 +67,7 @@ function NoFilterColumn() {
   if (filterd.length === 0) return null;
 
   return (
-    <Column name={`No ${ctx.filterName}`} items={filterd.length}>
+    <Column name={`No ${ctx.columnBy}`} items={filterd.length}>
       {filterd.map((task) => {
         return <ColumnItem key={task._id} title={task.title} task={task} />;
       })}

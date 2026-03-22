@@ -37,9 +37,9 @@ export default async function getTasks(
   }
 
   // Attach filterId separately (if needed)
-  // if (filterId) {
-  //   url.searchParams.append("filter", filterId);
-  // }
+  if (filterId) {
+    url.searchParams.append("filter", filterId);
+  }
 
   return apiFetch<Response[]>({
     url,
