@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useParams } from "react-router";
-import { postTask, type Task } from "@/services/post-task";
+import { postTask, type Payload } from "@/services/post-task";
 import { toast } from "react-toastify";
 
 export type TaskFormProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -30,7 +30,7 @@ export default function TaskForm({ children, filterValueId }: TaskFormProps) {
       await postTask(projectId, {
         ...payload,
         filterValue: filterValueId,
-      } as Task);
+      } as Payload);
 
       setShowForm(false);
       toast.success("Task created successfully");

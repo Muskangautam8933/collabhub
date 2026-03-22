@@ -14,7 +14,7 @@ export default function Page() {
       <Card className="p-2 border-0 shadow-none">
         <CardHeader className="flex gap-2 ">
           <ViewMenu />
-          <Input />
+          <Input placeholder="Search tasks" />
         </CardHeader>
         <CardContent>
           <ScrollArea className="w-full whitespace-nowrap">
@@ -34,7 +34,13 @@ export default function Page() {
                     items={filtered.length}
                   >
                     {filtered.map((task) => {
-                      return <ColumnItem key={task._id} title={task.title} />;
+                      return (
+                        <ColumnItem
+                          key={task._id}
+                          title={task.title}
+                          task={task}
+                        />
+                      );
                     })}
                   </Column>
                 );
@@ -63,7 +69,7 @@ function NoFilterColumn() {
   return (
     <Column name={`No ${ctx.filterName}`} items={filterd.length}>
       {filterd.map((task) => {
-        return <ColumnItem key={task._id} title={task.title} />;
+        return <ColumnItem key={task._id} title={task.title} task={task} />;
       })}
     </Column>
   );

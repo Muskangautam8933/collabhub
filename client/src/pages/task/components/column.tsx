@@ -12,8 +12,10 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { MoreHorizontal, Pencil, Plus, Settings, Trash } from "lucide-react";
-import React from "react";
+import React, { type CSSProperties } from "react";
 import TaskForm from "./task-form";
+import type { Response } from "@/services/get-tasks";
+import { darkenColor } from "@/utils/darkenColor";
 
 type ColumnProps = React.HTMLAttributes<HTMLDivElement> & {
   name?: string;
@@ -75,9 +77,10 @@ export function Column({
 
 export type ConlumnItemProps = React.HTMLAttributes<HTMLDivElement> & {
   title?: string;
+  task?: Response;
 };
 
-export function ColumnItem({ title }: ConlumnItemProps) {
+export function ColumnItem({ title, task }: ConlumnItemProps) {
   return (
     <Card draggable>
       <CardContent>
@@ -95,9 +98,20 @@ export function ColumnItem({ title }: ConlumnItemProps) {
           </Badge>
         </div>
         <p className="text-xs">Add Create Button </p>
-        <Badge variant="outline">Backlog</Badge>
-        <Badge variant="outline">P0</Badge>
-        <Badge variant="outline">Xl</Badge>
+        <div className="space-x-2">
+          {task?.filters.map((f) => {
+            const style: CSSProperties = {
+              borderColor: darkenColor(f.color, 0.2),
+              backgroundColor: `${f.color}10`,
+              color: darkenColor(f.color, 0.8),
+            };
+            return (
+              <Badge style={style} variant="outline">
+                {f.valueName}
+              </Badge>
+            );
+          })}
+        </div>
       </CardContent>
     </Card>
   );
