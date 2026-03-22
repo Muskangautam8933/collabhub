@@ -6,12 +6,14 @@ import type { Project } from "./get-project";
  *********************************** Types *************************
  *******************************************************************/
 export type Task = {
+  _id: string;
   title: string;
   description: string;
-  filterValue: string;
 };
 
-export type Payload = Task;
+export type Payload = Task & {
+  filterValue: string;
+};
 
 /**
  * using network it fetch the data.

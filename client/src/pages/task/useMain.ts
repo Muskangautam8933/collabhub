@@ -1,7 +1,6 @@
 import getFilter, { type Filter } from "@/services/get-filter";
 import getFilterValues, { type FilterValue } from "@/services/get-filterValues";
-import getTasks from "@/services/get-tasks";
-import type { Task } from "@/services/post-task";
+import getTasks, { type Response } from "@/services/get-tasks";
 import React from "react";
 import { useParams, useSearchParams } from "react-router";
 import { toast } from "react-toastify";
@@ -18,7 +17,7 @@ export default function useMain() {
   const [filtersLoading, setFiltersLoading] = React.useState<boolean>(false);
   const [filtersError, setFiltersError] = React.useState<string | null>(null);
 
-  const [tasks, setTasks] = React.useState<Task[]>([]);
+  const [tasks, setTasks] = React.useState<Response[]>([]);
   const [tasksLoading, setTasksLoading] = React.useState<boolean>(false);
   const [tasksError, setTasksError] = React.useState<string | null>(null);
 
@@ -33,6 +32,12 @@ export default function useMain() {
     searchParams.get("columnBy") || "",
   );
 
+  const filterId = React.useMemo(() => {
+    return filters.find((f) => f.name === columnBy)?._id || filters[0]?._id;
+  }, [columnBy, filters]);
+
+  const filterName = searchParams.get("columnBy");
+
   /**
    * Get tasks
    */
@@ -41,7 +46,15 @@ export default function useMain() {
       if (projectId) {
         try {
           setTasksLoading(true);
-          const res = await getTasks(projectId as string);
+
+          const filterName = searchParams.get("columnBy");
+
+          const filterId =
+            filters.find((f) => f.name === filterName)?._id || filters[0]?._id;
+
+          if (!filterId) return;
+
+          const res = await getTasks(projectId as string, filterId);
 
           console.log("tasks", res);
 
@@ -56,7 +69,7 @@ export default function useMain() {
         }
       }
     })();
-  }, [projectId]);
+  }, [filters, projectId, searchParams]);
 
   /**
    * Get filters
@@ -135,6 +148,11 @@ export default function useMain() {
     filterValuesLoading,
     filterValuesError,
     columnBy,
+    tasks,
+    tasksLoading,
+    tasksError,
+    filterId,
+    filterName,
     getColumnBySelectionHandler,
   };
 }

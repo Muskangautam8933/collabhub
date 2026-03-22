@@ -5,15 +5,44 @@ import type { Task } from "./post-task";
 /*******************************************************************
  *********************************** Types *************************
  *******************************************************************/
+export type Filter = {
+  filterId: string;
+  valueId: string;
+  valueName: string;
+  color: string;
+};
+export type Response = Task & {
+  filters: Filter[];
+};
 
 /**
  * using network it fetch the data.
  */
-export default async function getTasks(projectId?: string) {
+export default async function getTasks(
+  projectId?: string,
+  filterId?: string,
+  query?: Partial<Task>,
+) {
   if (!projectId) throw new Error("projectId is required");
 
-  return apiFetch<Task[]>({
-    url: `${SERVER_URL}/api/projects/${projectId}/tasks`,
+  const url = new URL(`/api/projects/${projectId}/tasks`, SERVER_URL);
+
+  // Attach query params
+  if (query) {
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, String(value));
+      }
+    });
+  }
+
+  // Attach filterId separately (if needed)
+  // if (filterId) {
+  //   url.searchParams.append("filter", filterId);
+  // }
+
+  return apiFetch<Response[]>({
+    url,
     method: "GET",
   });
 }

@@ -19,10 +19,16 @@ export const createTaskWithfilterValue = async (req, res, next) => {
   res.status(201).json(task);
 };
 
+/**
+ * ?filter=<filterId>
+ * ?title=<title>&description=<description>&startDate=<startDate>&dueDate=<dueDate>
+ */
 export const getTasks = async (req, res) => {
   const { projectId } = req.params;
 
-  let tasks = await taskRepo.getTasksByProject(projectId);
+  const { filter, ...taskParams } = req.query;
+
+  let tasks = await taskRepo.queryTasks(projectId, taskParams, filter);
 
   res.status(200).json(tasks);
 };

@@ -32,6 +32,73 @@ export async function getTaskByTitle(title, userId) {
   });
 }
 
+export async function queryTasks(projectId, taskFields = {}, filter = null) {
+  const pipeline = [];
+
+  pipeline.push({
+    $match: {
+      project: ObjectId(projectId),
+      ...taskFields,
+    },
+  });
+
+  // Join ALL filter values (not just matched)
+  pipeline.push({
+    $lookup: {
+      from: "taskfiltervalues",
+      localField: "_id",
+      foreignField: "task",
+      as: "tfv",
+    },
+  });
+
+  pipeline.push({
+    $lookup: {
+      from: "filtervalues",
+      localField: "tfv.filterValue",
+      foreignField: "_id",
+      as: "fv",
+    },
+  });
+
+  // Optional filtering (by filterId)
+  if (filter) {
+    pipeline.push({
+      $match: {
+        "fv.filter": ObjectId(filter),
+      },
+    });
+  }
+
+  // 🔥 Transform into clean structure
+  pipeline.push({
+    $addFields: {
+      filters: {
+        $map: {
+          input: "$fv",
+          as: "f",
+          in: {
+            filterId: "$$f.filter",
+            valueId: "$$f._id",
+            valueName: "$$f.name",
+            color: "$$f.color",
+          },
+        },
+      },
+    },
+  });
+
+  // ❌ remove raw fields
+  pipeline.push({
+    $project: {
+      tfv: 0,
+      fv: 0,
+    },
+  });
+
+  return await Task.aggregate(pipeline);
+}
+
 /************************************************************************
  **************************** UPDATE ************************************
  ************************************************************************/

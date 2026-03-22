@@ -1,5 +1,5 @@
 type ApiFetchOptions<TBody> = {
-  url: string;
+  url: string | URL;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: TBody;
   headers?: HeadersInit;

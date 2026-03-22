@@ -19,15 +19,37 @@ export default function Page() {
         <CardContent>
           <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex gap-2 w-max pb-2">
+              <Column
+                name={`No ${ctx.filterName}`}
+                items={
+                  ctx.tasks.filter((t) =>
+                    t.filters.find((f) => f.filterId !== ctx.filterId),
+                  ).length
+                }
+              >
+                {ctx.tasks
+                  .filter((t) =>
+                    t.filters.every((f) => f.filterId !== ctx.filterId),
+                  )
+                  .map((task) => {
+                    return <ColumnItem key={task._id} title={task.title} />;
+                  })}
+              </Column>
               {ctx.filterValues.map((filterValue) => {
+                const filtered = ctx.tasks.filter((t) =>
+                  t.filters.find((f) => f.valueId === filterValue._id),
+                );
                 return (
                   <Column
                     key={filterValue._id}
                     name={filterValue.name}
                     color={filterValue.color}
                     filterValueId={filterValue._id}
+                    items={filtered.length}
                   >
-                    <ColumnItem />
+                    {filtered.map((task) => {
+                      return <ColumnItem key={task._id} title={task.title} />;
+                    })}
                   </Column>
                 );
               })}

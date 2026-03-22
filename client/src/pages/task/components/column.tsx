@@ -18,15 +18,17 @@ import TaskForm from "./task-form";
 type ColumnProps = React.HTMLAttributes<HTMLDivElement> & {
   name?: string;
   color?: string;
-  filterValueId: string;
+  filterValueId?: string;
+  items?: string | number;
 };
 
 export function Column({
   name = "Backlog",
-  color = "red",
+  color,
   children,
   className,
   filterValueId,
+  items = "0",
   ...props
 }: ColumnProps) {
   const coloredStyle = {
@@ -38,13 +40,15 @@ export function Column({
       <CardHeader>
         <div className="flex justify-between">
           <div className="flex gap-2 items-center">
-            <Badge
-              variant="outline"
-              className={cn("w-4 h-4 rounded-full")}
-              style={coloredStyle}
-            ></Badge>
+            {color && (
+              <Badge
+                variant="outline"
+                className={cn("w-4 h-4 rounded-full")}
+                style={coloredStyle}
+              ></Badge>
+            )}
             <span className="font-semibold text-xl">{name}</span>
-            <Badge variant="outline">1</Badge>
+            <Badge variant="outline">{items}</Badge>
           </div>
 
           <Button variant="outline">
@@ -56,19 +60,24 @@ export function Column({
         <ScrollArea className="h-120">
           <div className="space-y-2">{children}</div>
         </ScrollArea>
-
-        <TaskForm filterValueId={filterValueId}>
-          <Button className="w-full">
-            <Plus />
-            <span>Add Item</span>
-          </Button>
-        </TaskForm>
+        {filterValueId && (
+          <TaskForm filterValueId={filterValueId}>
+            <Button className="w-full">
+              <Plus />
+              <span>Add Item</span>
+            </Button>
+          </TaskForm>
+        )}
       </CardContent>
     </Card>
   );
 }
 
-export function ColumnItem() {
+export type ConlumnItemProps = React.HTMLAttributes<HTMLDivElement> & {
+  title?: string;
+};
+
+export function ColumnItem({ title }: ConlumnItemProps) {
   return (
     <Card draggable>
       <CardContent>
@@ -78,7 +87,7 @@ export function ColumnItem() {
               variant={"link"}
               className="font-semibold p-0 cursor-pointer"
             >
-              Feat : live chat
+              {title || "Untitled"}
             </Button>
           </ItemInfoSheet>
           <Badge variant="outline">
