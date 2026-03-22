@@ -28,9 +28,7 @@ export default function useMain() {
     string | null
   >(null);
 
-  const [columnBy, setColumnBy] = React.useState<string>(
-    searchParams.get("columnBy") || "",
-  );
+  const [columnBy, setColumnBy] = React.useState<string>("");
 
   const filterId = React.useMemo(() => {
     return filters.find((f) => f.name === columnBy)?._id || filters[0]?._id;
@@ -70,8 +68,6 @@ export default function useMain() {
         try {
           setFiltersLoading(true);
           const res = await getFilter(projectId as string);
-
-          console.log(res);
 
           setFilters(res);
           setFiltersLoading(false);
@@ -115,6 +111,9 @@ export default function useMain() {
     })();
   }, [filters, projectId, searchParams, filterId]);
 
+  /**
+   * Set columnBy
+   */
   React.useEffect(() => {
     setColumnBy(searchParams.get("columnBy") || filters[0]?.name || "");
   }, [filters, searchParams]);
@@ -123,6 +122,66 @@ export default function useMain() {
     setSearchParams({ columnBy: value });
     setColumnBy(value);
   };
+
+  const getDropHandler =
+    (targetFilterValue: string) => (e: React.DragEvent<HTMLDivElement>) => {
+      const taskId = e.dataTransfer.getData("text/plain");
+      const targetFilterId = filterId;
+      const task = tasks.find((T) => T._id === taskId);
+
+      if (!task) return;
+
+      if (task.filters.find((f) => f.filterId === targetFilterId)) {
+        console.log("Task already has this filter");
+        setTasks((p) => [
+          ...p.map((t) => {
+            if (t._id === taskId) {
+              return {
+                ...t,
+                filters: t.filters.map((f) => {
+                  if (f.filterId === targetFilterId) {
+                    return {
+                      ...f,
+                      valueId: targetFilterValue,
+                      valueName:
+                        filterValues.find((fv) => fv._id === targetFilterValue)
+                          ?.name || "Unknown",
+                      color:
+                        filterValues.find((fv) => fv._id === targetFilterValue)
+                          ?.color || "#000000",
+                    };
+                  }
+                  return f;
+                }),
+              };
+            }
+            return t;
+          }),
+        ]);
+      } else {
+        console.log("Task doesn't have this filter");
+        setTasks((p) => [
+          ...p.map((t) => {
+            if (t._id === taskId) {
+              return {
+                ...t,
+                filters: t.filters.concat({
+                  valueId: targetFilterValue,
+                  filterId: targetFilterId,
+                  valueName:
+                    filterValues.find((fv) => fv._id === targetFilterValue)
+                      ?.name || "Unknown",
+                  color:
+                    filterValues.find((fv) => fv._id === targetFilterValue)
+                      ?.color || "#000000",
+                }),
+              };
+            }
+            return t;
+          }),
+        ]);
+      }
+    };
 
   return {
     filters,
@@ -138,5 +197,6 @@ export default function useMain() {
     filterId,
     getColumnBySelectionHandler,
     setTasks,
+    getDropHandler,
   };
 }

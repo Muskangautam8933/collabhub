@@ -2,20 +2,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+
 import { cn } from "@/lib/utils";
-import { MoreHorizontal, Pencil, Plus, Settings, Trash } from "lucide-react";
+import { MoreHorizontal, Plus } from "lucide-react";
 import React, { type CSSProperties } from "react";
 import TaskForm from "./task-form";
 import type { Response } from "@/services/get-tasks";
 import { darkenColor } from "@/utils/darkenColor";
+import { ItemInfoSheet } from "./item-info-sheet";
 
 type ColumnProps = React.HTMLAttributes<HTMLDivElement> & {
   name?: string;
@@ -34,11 +28,16 @@ export function Column({
   ...props
 }: ColumnProps) {
   const coloredStyle = {
-    borderColor: color,
+    borderColor: darkenColor(color || "#000000", 0.6),
     backgroundColor: `${color}10`,
   };
+
   return (
-    <Card className={cn("w-80 shrink-0", className)} {...props}>
+    <Card
+      data-slot="column"
+      className={cn("w-80 shrink-0", className)}
+      {...props}
+    >
       <CardHeader>
         <div className="flex justify-between">
           <div className="flex gap-2 items-center">
@@ -80,12 +79,55 @@ export type ConlumnItemProps = React.HTMLAttributes<HTMLDivElement> & {
   task?: Response;
 };
 
-export function ColumnItem({ title, task }: ConlumnItemProps) {
+export function ColumnItem({
+  title,
+  task,
+  className,
+  ...props
+}: ConlumnItemProps) {
+  const [isDragging, setIsDragging] = React.useState(false);
+
+  if (!task) return null;
+
   return (
-    <Card draggable>
+    <Card
+      data-slot="column-item"
+      draggable
+      onDragStart={(e) => {
+        setIsDragging(true);
+        e.dataTransfer.setData("text/plain", task._id);
+
+        const dragEl = document.createElement("div");
+        dragEl.innerText = title || "Untitled";
+
+        dragEl.style.padding = "8px 12px";
+        dragEl.style.background = "white";
+        dragEl.style.border = "1px solid #ddd";
+        dragEl.style.borderRadius = "8px";
+        dragEl.style.boxShadow = "0 10px 20px rgba(0,0,0,0.2)";
+        dragEl.style.position = "absolute";
+        dragEl.style.top = "-1000px"; // hide offscreen
+
+        document.body.appendChild(dragEl);
+
+        e.dataTransfer.setDragImage(dragEl, 50, 20);
+
+        // cleanup after drag
+        setTimeout(() => {
+          document.body.removeChild(dragEl);
+        }, 0);
+      }}
+      onDragEnd={() => setIsDragging(false)} // ✅ FIX
+      className={cn(
+        "transition-all duration-200",
+        isDragging && "opacity-50 scale-95 shadow-lg",
+        className,
+      )}
+      {...props}
+    >
       <CardContent>
         <div className="space-x-2">
-          <ItemInfoSheet>
+          <ItemInfoSheet task={task}>
             <Button
               variant={"link"}
               className="font-semibold p-0 cursor-pointer"
@@ -97,7 +139,7 @@ export function ColumnItem({ title, task }: ConlumnItemProps) {
             <MoreHorizontal />
           </Badge>
         </div>
-        <p className="text-xs">Add Create Button </p>
+        <p className="text-xs">{task?.description}</p>
         <div className="space-x-2">
           {task?.filters.map((f) => {
             const style: CSSProperties = {
@@ -106,7 +148,7 @@ export function ColumnItem({ title, task }: ConlumnItemProps) {
               color: darkenColor(f.color, 0.8),
             };
             return (
-              <Badge style={style} variant="outline">
+              <Badge key={f.valueId} style={style} variant="outline">
                 {f.valueName}
               </Badge>
             );
@@ -114,61 +156,5 @@ export function ColumnItem({ title, task }: ConlumnItemProps) {
         </div>
       </CardContent>
     </Card>
-  );
-}
-
-export type ItemInfoSheetProps = React.HTMLAttributes<HTMLDivElement>;
-
-export function ItemInfoSheet({ children }: ItemInfoSheetProps) {
-  const [open, setOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    if (open) {
-      console.log("sheet");
-    }
-  }, [open]);
-  return (
-    <>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>{children}</SheetTrigger>
-        <SheetContent className=" min-w-[90%]">
-          <ScrollArea className="h-screen">
-            <div>
-              <SheetHeader>
-                <SheetTitle className="flex gap-4">
-                  <span className="text-3xl">Task 1</span>
-
-                  <Button variant={"outline"}>
-                    <Pencil />
-                  </Button>
-                </SheetTitle>
-              </SheetHeader>
-
-              <Separator />
-
-              <div className="flex">
-                <Card className="w-[80%]"></Card>
-                <Card className="w-[20%]">
-                  <Button className="flex justify-between">
-                    <span>Assignee</span>
-                    <Settings />
-                  </Button>
-                  <Card></Card>
-                  <Separator className="h-2" />
-
-                  <Button
-                    variant={"destructive"}
-                    className="flex justify-start"
-                  >
-                    <Trash />
-                    <span>Delete</span>
-                  </Button>
-                </Card>
-              </div>
-            </div>
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
-    </>
   );
 }

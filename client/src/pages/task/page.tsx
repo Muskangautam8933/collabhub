@@ -31,6 +31,8 @@ export default function Page() {
                     color={filterValue.color}
                     filterValueId={filterValue._id}
                     items={filtered.length}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={ctx.getDropHandler(filterValue._id)}
                   >
                     {filtered.map((task) => {
                       return (
