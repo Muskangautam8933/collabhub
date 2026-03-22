@@ -137,5 +137,6 @@ export default function useMain() {
     tasksError,
     filterId,
     getColumnBySelectionHandler,
+    setTasks,
   };
 }

@@ -1,11 +1,10 @@
-// import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-// import { Plus } from "lucide-react";
 import { Column, ColumnItem } from "./components/column";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ViewMenu } from "./components/view-menu";
 import { usePageContext } from "./_context";
+import React from "react";
 
 export default function Page() {
   const ctx = usePageContext();
@@ -60,9 +59,11 @@ export default function Page() {
 function NoFilterColumn() {
   const ctx = usePageContext();
 
-  const filterd = ctx.tasks.filter((t) =>
-    t.filters.every((f) => f.filterId !== ctx.filterId),
-  );
+  const filterd = React.useMemo(() => {
+    return ctx.tasks.filter((t) =>
+      t.filters.every((f) => f.filterId !== ctx.filterId),
+    );
+  }, [ctx.filterId, ctx.tasks]);
 
   if (filterd.length === 0) return null;
 

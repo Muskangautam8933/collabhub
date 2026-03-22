@@ -12,6 +12,8 @@ import { DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useParams } from "react-router";
 import { postTask, type Payload } from "@/services/post-task";
 import { toast } from "react-toastify";
+import { usePageContext } from "../_context";
+import type { Response } from "@/services/get-tasks";
 
 export type TaskFormProps = React.HTMLAttributes<HTMLDivElement> & {
   filterValueId: string;
@@ -20,6 +22,7 @@ export type TaskFormProps = React.HTMLAttributes<HTMLDivElement> & {
 export default function TaskForm({ children, filterValueId }: TaskFormProps) {
   const [showForm, setShowForm] = useState(false);
   const { projectId } = useParams();
+  const ctx = usePageContext();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,12 +30,29 @@ export default function TaskForm({ children, filterValueId }: TaskFormProps) {
     try {
       const payload = Object.fromEntries(new FormData(e.currentTarget));
 
-      await postTask(projectId, {
+      const res = await postTask(projectId, {
         ...payload,
         filterValue: filterValueId,
       } as Payload);
 
+      const filter = ctx.filterValues.find((f) => f._id === filterValueId);
+
+      const task: Response = {
+        ...res,
+        filters: [
+          {
+            valueId: filterValueId,
+            filterId: ctx.columnBy,
+            valueName: filter?.name || "Unknown",
+            color: filter?.color || "#000000",
+          },
+        ],
+      };
+
+      ctx.setTasks((prev) => [...prev, task]);
+
       setShowForm(false);
+
       toast.success("Task created successfully");
     } catch (error) {
       toast.error(

@@ -1,7 +1,7 @@
 import { SERVER_URL } from "@/app.constatns";
 import { apiFetch } from "@/utils/api-fetch";
 import localSpace from "./local-space";
-import type { Project } from "./get-project";
+
 /*******************************************************************
  *********************************** Types *************************
  *******************************************************************/
@@ -22,7 +22,7 @@ export function postTask(projectId?: string, payload?: Payload) {
   if (!projectId) throw new Error("projectId is required");
   if (!payload) throw new Error("payload is required");
 
-  return apiFetch<Project, Payload>({
+  return apiFetch<Task, Payload>({
     url: `${SERVER_URL}/api/projects/${projectId}/tasks`,
     method: "POST",
     headers: {
