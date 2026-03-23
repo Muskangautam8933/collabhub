@@ -1,4 +1,3 @@
-import asyncHandler from "../utils/asyncHandler.js";
 import * as taskController from "../controllers/TaskController.js";
 import express from "express";
 
@@ -86,12 +85,298 @@ const router = express.Router({ mergeParams: true });
  *       500:
  *         description: Internal server error
  */
-router.post("/", asyncHandler(taskController.createTaskWithfilterValue));
+router.post("/", taskController.createTaskWithfilterValue);
 
-router.get("/", asyncHandler(taskController.getTasks));
+/**
+ * @swagger
+ * /api/projects/{projectId}/tasks:
+ *   get:
+ *     summary: Get all tasks of a project
+ *     description: Fetch tasks by project ID with optional filtering and search by title
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the project
+ *
+ *       - in: query
+ *         name: filter
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Filter ID (e.g., status, priority, label)
+ *
+ *       - in: query
+ *         name: title
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: Search tasks by title
+ *
+ *     responses:
+ *       200:
+ *         description: List of tasks fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   title:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   project:
+ *                     type: string
+ *                   creator:
+ *                     type: string
+ *                   startDate:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *                   dueDate:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   filters:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         filterId:
+ *                           type: string
+ *                         valueId:
+ *                           type: string
+ *                         valueName:
+ *                           type: string
+ *                         color:
+ *                           type: string
+ *                   __v:
+ *                     type: integer
+ *
+ *       400:
+ *         description: Bad request - Invalid input
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Project not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/", taskController.getTasks);
 
-router.patch("/:taskId", asyncHandler(taskController.updateTask));
+/**
+ * @swagger
+ * /api/projects/{projectId}/tasks/{taskId}/taskfiltervalues:
+ *   post:
+ *     summary: Add new filtervalue for a task
+ *     description: Fetch tasks by project ID with optional filtering and search by title
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the project
+ *
+ *       - in: path
+ *         name: taskId
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: ID of the task
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - filterValue
+ *             properties:
+ *               filterValue:
+ *                 type: string
+ *                 description: ID of the filter value
+ *     responses:
+ *       200:
+ *         description: List of tasks fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   title:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   project:
+ *                     type: string
+ *                   creator:
+ *                     type: string
+ *                   startDate:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *                   dueDate:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   filters:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         filterId:
+ *                           type: string
+ *                         valueId:
+ *                           type: string
+ *                         valueName:
+ *                           type: string
+ *                         color:
+ *                           type: string
+ *                   __v:
+ *                     type: integer
+ *
+ *       400:
+ *         description: Bad request - Invalid input
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Project not found
+ *       500:
+ *         description: Internal server error
+ */
+router.post("/:taskId/taskfiltervalues", taskController.addNewFilterValue);
 
-router.delete("/:taskId", asyncHandler(taskController.deleteTask));
+/**
+ * @swagger
+ * /api/projects/{projectId}/tasks/{taskId}/taskfiltervalues:
+ *   patch:
+ *     summary: update the existing filtervalue for a task
+ *     description: Update tasks by project ID with optional filtering and search by title
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the project
+ *
+ *       - in: path
+ *         name: taskId
+ *         schema:
+ *           type: string
+ *         required: false
+ *         description: ID of the task
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - filterValue
+ *             properties:
+ *               filterValue:
+ *                 type: string
+ *                 description: ID of the filter value
+ *     responses:
+ *       200:
+ *         description: List of tasks fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   title:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   project:
+ *                     type: string
+ *                   creator:
+ *                     type: string
+ *                   startDate:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *                   dueDate:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   filters:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         filterId:
+ *                           type: string
+ *                         valueId:
+ *                           type: string
+ *                         valueName:
+ *                           type: string
+ *                         color:
+ *                           type: string
+ *                   __v:
+ *                     type: integer
+ *
+ *       400:
+ *         description: Bad request - Invalid input
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Project not found
+ *       500:
+ *         description: Internal server error
+ */
+router.patch(
+  "/:taskId/taskfiltervalues",
+  taskController.updateExistingFilterValue,
+);
+
+router.delete("/:taskId", taskController.deleteTask);
 
 export default router;

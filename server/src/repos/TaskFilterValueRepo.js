@@ -19,3 +19,15 @@ export async function getTasksByFilterValue(taskId, filterValueId, userId) {
   });
   return res;
 }
+
+export async function updateFilterValue(filter, payload) {
+  if (!filter.task) throw new Error("task is required");
+  if (!filter.filterValue) throw new Error("filterValue is required");
+
+  const res = await TFV.findOneAndUpdate(
+    { task: ObjectId(filter.task), filterValue: ObjectId(filter.filterValue) },
+    payload,
+    { new: true },
+  );
+  return res;
+}

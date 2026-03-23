@@ -94,32 +94,13 @@ export function ColumnItem({
       data-slot="column-item"
       draggable
       onDragStart={(e) => {
-        setIsDragging(true);
         e.dataTransfer.setData("text/plain", task._id);
-
-        const dragEl = document.createElement("div");
-        dragEl.innerText = title || "Untitled";
-
-        dragEl.style.padding = "8px 12px";
-        dragEl.style.background = "white";
-        dragEl.style.border = "1px solid #ddd";
-        dragEl.style.borderRadius = "8px";
-        dragEl.style.boxShadow = "0 10px 20px rgba(0,0,0,0.2)";
-        dragEl.style.position = "absolute";
-        dragEl.style.top = "-1000px"; // hide offscreen
-
-        document.body.appendChild(dragEl);
-
-        e.dataTransfer.setDragImage(dragEl, 50, 20);
-
-        // cleanup after drag
-        setTimeout(() => {
-          document.body.removeChild(dragEl);
-        }, 0);
+        // document.body.style.cursor = "grabbing";
+        e.dataTransfer.effectAllowed = "move";
       }}
       onDragEnd={() => setIsDragging(false)} // ✅ FIX
       className={cn(
-        "transition-all duration-200",
+        "transition-all duration-200 cursor-grab active:cursor-grabbing",
         isDragging && "opacity-50 scale-95 shadow-lg",
         className,
       )}
