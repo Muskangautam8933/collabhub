@@ -52,6 +52,7 @@ export const updateTask = asyncHandler(async (req, res) => {
 
 export const updateExistingFilterValue = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
+  const { filterValue } = req.body;
   
   const updatedRes = await TFVRepo.updateFilterValue(
     { task: taskId, filterValue },

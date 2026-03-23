@@ -1,6 +1,8 @@
 import getFilter, { type Filter } from "@/services/get-filter";
 import getFilterValues, { type FilterValue } from "@/services/get-filterValues";
 import getTasks, { type Response } from "@/services/get-tasks";
+import patchTaskFilterValues from "@/services/patch-task-filterValues";
+import postTaskFilterValues from "@/services/post-task-filterValues";
 import React from "react";
 import { useParams, useSearchParams } from "react-router";
 import { toast } from "react-toastify";
@@ -124,62 +126,77 @@ export default function useMain() {
   };
 
   const getDropHandler =
-    (targetFilterValue: string) => (e: React.DragEvent<HTMLDivElement>) => {
+    (targetFilterValue: string) =>
+    async (e: React.DragEvent<HTMLDivElement>) => {
       const taskId = e.dataTransfer.getData("text/plain");
       const targetFilterId = filterId;
       const task = tasks.find((T) => T._id === taskId);
 
       if (!task) return;
 
-      if (task.filters.find((f) => f.filterId === targetFilterId)) {
-        console.log("Task already has this filter");
-        setTasks((p) => [
-          ...p.map((t) => {
-            if (t._id === taskId) {
-              return {
-                ...t,
-                filters: t.filters.map((f) => {
-                  if (f.filterId === targetFilterId) {
-                    return {
-                      ...f,
-                      valueId: targetFilterValue,
-                      valueName:
-                        filterValues.find((fv) => fv._id === targetFilterValue)
-                          ?.name || "Unknown",
-                      color:
-                        filterValues.find((fv) => fv._id === targetFilterValue)
-                          ?.color || "#000000",
-                    };
-                  }
-                  return f;
-                }),
-              };
-            }
-            return t;
-          }),
-        ]);
-      } else {
-        console.log("Task doesn't have this filter");
-        setTasks((p) => [
-          ...p.map((t) => {
-            if (t._id === taskId) {
-              return {
-                ...t,
-                filters: t.filters.concat({
-                  valueId: targetFilterValue,
-                  filterId: targetFilterId,
-                  valueName:
-                    filterValues.find((fv) => fv._id === targetFilterValue)
-                      ?.name || "Unknown",
-                  color:
-                    filterValues.find((fv) => fv._id === targetFilterValue)
-                      ?.color || "#000000",
-                }),
-              };
-            }
-            return t;
-          }),
-        ]);
+      try {
+        if (task.filters.find((f) => f.filterId === targetFilterId)) {
+          console.log("Task already has this filter");
+          setTasks((p) => [
+            ...p.map((t) => {
+              if (t._id === taskId) {
+                return {
+                  ...t,
+                  filters: t.filters.map((f) => {
+                    if (f.filterId === targetFilterId) {
+                      return {
+                        ...f,
+                        valueId: targetFilterValue,
+                        valueName:
+                          filterValues.find(
+                            (fv) => fv._id === targetFilterValue,
+                          )?.name || "Unknown",
+                        color:
+                          filterValues.find(
+                            (fv) => fv._id === targetFilterValue,
+                          )?.color || "#000000",
+                      };
+                    }
+                    return f;
+                  }),
+                };
+              }
+              return t;
+            }),
+          ]);
+
+          await patchTaskFilterValues(projectId as string, taskId, {
+            filterValue: targetFilterValue,
+          });
+        } else {
+          console.log("Task doesn't have this filter");
+          setTasks((p) => [
+            ...p.map((t) => {
+              if (t._id === taskId) {
+                return {
+                  ...t,
+                  filters: t.filters.concat({
+                    valueId: targetFilterValue,
+                    filterId: targetFilterId,
+                    valueName:
+                      filterValues.find((fv) => fv._id === targetFilterValue)
+                        ?.name || "Unknown",
+                    color:
+                      filterValues.find((fv) => fv._id === targetFilterValue)
+                        ?.color || "#000000",
+                  }),
+                };
+              }
+              return t;
+            }),
+          ]);
+
+          await postTaskFilterValues(projectId as string, taskId, {
+            filterValue: targetFilterValue,
+          });
+        }
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Failed to fetch");
       }
     };
 
