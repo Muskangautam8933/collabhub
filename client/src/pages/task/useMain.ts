@@ -137,6 +137,7 @@ export default function useMain() {
       try {
         if (task.filters.find((f) => f.filterId === targetFilterId)) {
           console.log("Task already has this filter");
+          console.log(task, targetFilterValue);
           setTasks((p) => [
             ...p.map((t) => {
               if (t._id === taskId) {
