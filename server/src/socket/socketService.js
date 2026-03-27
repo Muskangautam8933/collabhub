@@ -11,21 +11,40 @@ const onlineUsers = new Map();
  * @description Add online user to onlineUsers Map `in-memory`
  */
 export function addOnlineUser({ userId, deviceId, browserInfo, socketId }) {
-  if (!onlineUsers.has(userId)) {
-    onlineUsers.set(userId, { devices: new Map() });
-  }
+  let userEntry = onlineUsers.get(userId);
 
-  const user = onlineUsers.get(userId);
+  // First time user comes online
+  if (!userEntry) {
+    const sockets = new Set([socketId]);
 
-  if (!user.devices.has(deviceId)) {
-    user.devices.set(deviceId, {
+    const devices = new Map();
+    devices.set(deviceId, {
+      sockets,
       info: browserInfo,
-      sockets: new Set(),
       lastSeen: new Date(),
     });
+
+    onlineUsers.set(userId, { devices });
+    return;
   }
 
-  const device = user.devices.get(deviceId);
+  const devices = userEntry.devices;
+
+  // New device
+  if (!devices.has(deviceId)) {
+    const sockets = new Set([socketId]);
+
+    devices.set(deviceId, {
+      sockets,
+      info: browserInfo,
+      lastSeen: new Date(),
+    });
+
+    return;
+  }
+
+  // Existing device
+  const device = devices.get(deviceId);
   device.sockets.add(socketId);
   device.lastSeen = new Date();
 }
