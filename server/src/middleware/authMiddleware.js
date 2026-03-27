@@ -62,7 +62,12 @@ export const SocketAuthGuard = asyncHandler((socket, next) => {
    * ---------------------
    * @description Attach user to Socket in `in-memory`.
    */
-  socket.data = { userId: user.userId, deviceId, email: user.email };
+  socket.data = {
+    userId: user.userId,
+    deviceId,
+    email: user.email,
+    browserInfo,
+  };
 
   socket.userId = user.userId;
   socket.user = user;

@@ -94,6 +94,10 @@ export function brodcastOnlineUsers() {
   logger.info(`EMIT : ${SOCKET_EVENTS.ONLINE_USERS}`);
 }
 
+export function getOnlineUsers() {
+  return onlineUsers;
+}
+
 /*************************************************************************
  ************************* PRIVATE ***************************************
  *************************************************************************/

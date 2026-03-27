@@ -6,6 +6,9 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import pinoLogger from "./logger.pino.js";
+import { printTable } from "console-table-printer";
+import { colorize } from "./formatOnlineUsersTable.js";
 
 // ESM replacement for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -46,42 +49,34 @@ function writeToFile(filePath, message) {
  * Error logging
  */
 function error(message, err = null) {
-  const timestamp = getTimestamp();
-
-  const fullMessage = err
-    ? `${message} - ${err.message}\n${err.stack}`
-    : message;
-
-  console.error(`\x1b[31m[${timestamp}] ERROR: ${message}\x1b[0m`);
-  if (err) console.error(err.stack);
-
-  writeToFile(errorLogFile, fullMessage);
+  if (err) {
+    pinoLogger.error({ err }, message);
+  } else {
+    pinoLogger.error(message);
+  }
 }
 
 /**
  * Info logging
  */
+
 function info(message, data = null) {
-  const timestamp = getTimestamp();
-  const fullMessage = data ? `${message} - ${JSON.stringify(data)}` : message;
-
-  console.log(`\x1b[36m[${timestamp}] INFO: ${message}\x1b[0m`);
-  if (data) console.log(data);
-
-  writeToFile(infoLogFile, fullMessage);
+  if (data) {
+    pinoLogger.info({ data }, message);
+  } else {
+    pinoLogger.info(message);
+  }
 }
 
 /**
  * Warning logging
  */
 function warn(message, data = null) {
-  const timestamp = getTimestamp();
-  const fullMessage = data ? `${message} - ${JSON.stringify(data)}` : message;
-
-  console.warn(`\x1b[33m[${timestamp}] WARN: ${message}\x1b[0m`);
-  if (data) console.log(data);
-
-  writeToFile(infoLogFile, `WARN: ${fullMessage}`);
+  if (data) {
+    pinoLogger.warn({ data }, message);
+  } else {
+    pinoLogger.warn(message);
+  }
 }
 
 /**
@@ -89,10 +84,53 @@ function warn(message, data = null) {
  */
 function debug(message, data = null) {
   if (process.env.NODE_ENV === "development") {
-    const timestamp = getTimestamp();
-    console.log(`\x1b[35m[${timestamp}] DEBUG: ${message}\x1b[0m`);
-    if (data) console.log(JSON.stringify(data, null, 4));
+    pinoLogger.debug({ data }, message);
   }
+}
+
+function table(title, data) {
+  const timestamp = getTimestamp();
+
+  console.log(`\n\x1b[36m[${timestamp}] TABLE: ${title}\x1b[0m`);
+
+  if (!data || data.length === 0) {
+    console.log("No data to display");
+    return;
+  }
+
+  printTable(data, {
+    columns: [
+      {
+        name: "userId",
+        alignment: "left",
+        format: (val, row) => colorize(val, row.color),
+      },
+      {
+        name: "deviceId",
+        alignment: "left",
+        format: (val, row) => colorize(val, row.color),
+      },
+      {
+        name: "sockets",
+        alignment: "center",
+        format: (val, row) => colorize(val, row.color),
+      },
+      {
+        name: "lastSeen",
+        format: (val, row) => colorize(val, row.color),
+      },
+      {
+        name: "browser",
+        format: (val, row) => colorize(val, row.color),
+      },
+      {
+        name: "color",
+        format: (val, row) => colorize(val, row.color),
+      },
+    ],
+  });
+
+  writeToFile(infoLogFile, title);
 }
 
 /**
@@ -186,6 +224,7 @@ export default {
   info,
   warn,
   debug,
+  table,
   logRequest,
   logActivity,
   logDatabase,

@@ -1,7 +1,9 @@
+import { formatOnlineUsersTable } from "../utils/formatOnlineUsersTable.js";
 import logger from "../utils/logger.js";
 import {
   addOnlineUser,
   brodcastOnlineUsers,
+  getOnlineUsers,
   removeOnlineUser,
 } from "./socketService.js";
 
@@ -23,6 +25,11 @@ export function handleConnection(socket) {
     browserInfo: socket.data.browserInfo,
     socketId: socket.id,
   });
+
+  logger.table(
+    "Online Users Snapshot",
+    formatOnlineUsersTable(getOnlineUsers()),
+  );
 
   brodcastOnlineUsers();
 

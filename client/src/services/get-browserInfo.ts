@@ -3,12 +3,15 @@ import { UAParser } from "ua-parser-js";
 export type BrowserInfo = ReturnType<typeof getBrowserInfo>;
 
 export default function getBrowserInfo() {
-  const browserInfo = {
-    browser: UAParser.BROWSER.NAME,
-    browserVersion: UAParser.BROWSER.VERSION,
-    os: UAParser.OS.NAME,
-    osVersion: UAParser.OS.VERSION,
-    deviceType: UAParser.DEVICE.TYPE || "desktop",
+  const parser = new UAParser(); // ✅ create instance
+  const result = parser.getResult(); // ✅ parse UA
+
+  return {
+    browser: result.browser.name,
+    browserVersion: result.browser.version,
+    os: result.os.name,
+    osVersion: result.os.version,
+    deviceType: result.device.type || "desktop",
     userAgent: navigator.userAgent,
     language: navigator.language,
     screen: {
@@ -17,5 +20,4 @@ export default function getBrowserInfo() {
     },
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   };
-  return browserInfo;
 }
