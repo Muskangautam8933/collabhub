@@ -37,13 +37,38 @@ export const AuthGuard = asyncHandler((req, res, next) => {
 /**
  * Middleware to verify token for Socket.io
  */
-export const verifySocketToken = (token) => {
-  try {
-    return tokenService.verifyToken(token);
-  } catch (error) {
-    return null;
-  }
-};
+export const SocketAuthGuard = asyncHandler((socket, next) => {
+  const token =
+    socket.handshake.auth.token ||
+    socket.handshake.headers.authorization?.split(" ")[1];
+
+  if (!token) return next(new Error("Authentication token required"));
+
+  /**
+   * GET browserInfo and deviceId from Client
+   * ----------------------------------------
+   */
+  const { browserInfo, deviceId } = socket.handshake.auth || {};
+
+  if (!token || !deviceId || !browserInfo)
+    throw new Error(
+      "Invalid credentials. Required token, deviceId and browserInfo.",
+    );
+
+  const user = tokenService.verifyToken(token);
+
+  /**
+   * Attach user to Socket
+   * ---------------------
+   * @description Attach user to Socket in `in-memory`.
+   */
+  socket.data = { userId: user.userId, deviceId, email: user.email };
+
+  socket.userId = user.userId;
+  socket.user = user;
+
+  next();
+});
 
 export const memberGaurd = asyncHandler(async (req, res, next) => {
   const projectId = req.params.projectId || req.params.id;

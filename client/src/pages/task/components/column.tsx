@@ -121,7 +121,7 @@ export function ColumnItem({
           </Badge>
         </div>
         <p className="text-xs">{task?.description}</p>
-        <div className="space-x-2">
+        <div className="flex gap-2 flex-wrap">
           {task?.filters.map((f) => {
             const style: CSSProperties = {
               borderColor: darkenColor(f.color, 0.2),
