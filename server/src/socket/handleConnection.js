@@ -1,11 +1,6 @@
 import { formatOnlineUsersTable } from "../utils/formatOnlineUsersTable.js";
 import logger from "../utils/logger.js";
-import {
-  addOnlineUser,
-  brodcastOnlineUsers,
-  getOnlineUsers,
-  removeOnlineUser,
-} from "./socketService.js";
+import * as socketService from "./socketService.js";
 
 /**
  * handleConnection
@@ -19,7 +14,7 @@ export function handleConnection(socket) {
     `[ON : connection] :: name: ${socket.user.name} email: ${socket.user.email} userId: ${socket.userId}`,
   );
 
-  addOnlineUser({
+  socketService.addActiveUser({
     userId: socket.userId,
     deviceId: socket.data.deviceId,
     browserInfo: socket.data.browserInfo,
@@ -28,10 +23,10 @@ export function handleConnection(socket) {
 
   logger.table(
     "Online Users Snapshot",
-    formatOnlineUsersTable(getOnlineUsers()),
+    formatOnlineUsersTable(socketService.getActiveUsers()),
   );
 
-  brodcastOnlineUsers();
+  socketService.brodcastActiveUsers();
 
   socket.on("join-room", (roomId) => {
     socket.join(roomId);
@@ -66,16 +61,6 @@ export function handleConnection(socket) {
     });
   });
 
-  socket.on("disconnect", () => {
-    logger.info(
-      `[ON : disconnect] :: name: ${socket.user.name} email: ${socket.user.email} userId: ${socket.userId}`,
-    );
-
-    removeOnlineUser(socket);
-
-    brodcastOnlineUsers();
-  });
-
   socket.on("get-room-users", (roomId, callback) => {
     const room = io.sockets.adapter.rooms.get(roomId);
     const users = [];
@@ -106,5 +91,23 @@ export function handleConnection(socket) {
         });
       }
     });
+  });
+
+  /**
+   * Disconnect
+   */
+  socket.on("disconnect", () => {
+    logger.info(
+      `[ON : disconnect] :: name: ${socket.user.name} email: ${socket.user.email} userId: ${socket.userId}`,
+    );
+
+    socketService.removeActiveUser(socket);
+
+    logger.table(
+      "Online Users Snapshot",
+      formatOnlineUsersTable(socketService.getActiveUsers()),
+    );
+
+    socketService.brodcastActiveUsers();
   });
 }

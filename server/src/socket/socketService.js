@@ -3,15 +3,15 @@ import { socketManager } from "../server.js";
 import logger from "../utils/logger.js";
 
 // userId → Set of socketIds (supports multi-tabs)
-const onlineUsers = new Map();
+const activeUsers = new Map();
 
 /**
- * Add online user to onlineUsers Map
+ * Add online user to activeUsers Map
  * ----------------------------------
- * @description Add online user to onlineUsers Map `in-memory`
+ * @description Add online user to activeUsers Map `in-memory`
  */
-export function addOnlineUser({ userId, deviceId, browserInfo, socketId }) {
-  let userEntry = onlineUsers.get(userId);
+export function addActiveUser({ userId, deviceId, browserInfo, socketId }) {
+  let userEntry = activeUsers.get(userId);
 
   // First time user comes online
   if (!userEntry) {
@@ -24,7 +24,7 @@ export function addOnlineUser({ userId, deviceId, browserInfo, socketId }) {
       lastSeen: new Date(),
     });
 
-    onlineUsers.set(userId, { devices });
+    activeUsers.set(userId, { devices });
     return;
   }
 
@@ -50,16 +50,16 @@ export function addOnlineUser({ userId, deviceId, browserInfo, socketId }) {
 }
 
 /**
- * Remove online user from onlineUsers Map
+ * Remove online user from activeUsers Map
  * ---------------------------------------
  * @description Cleans up socket → device → user
  */
-export function removeOnlineUser(socket) {
+export function removeActiveUser(socket) {
   const { userId, deviceId } = socket.data;
 
   if (!userId || !deviceId) return;
 
-  const user = onlineUsers.get(userId);
+  const user = activeUsers.get(userId);
   if (!user) return;
 
   const device = user.devices.get(deviceId);
@@ -75,7 +75,7 @@ export function removeOnlineUser(socket) {
 
   // If no devices left → user is fully offline
   if (user.devices.size === 0) {
-    onlineUsers.delete(userId);
+    activeUsers.delete(userId);
     return;
   }
 
@@ -87,22 +87,22 @@ export function removeOnlineUser(socket) {
  * Broadcast online users to Everyone
  * -----------------------
  */
-export function brodcastOnlineUsers() {
-  const activeUsers = getOnlineUsersDTO();
+export function brodcastActiveUsers() {
+  const activeUsers = getActiveUsersDTO();
 
   socketManager.getIO().emit(SOCKET_EVENTS.ONLINE_USERS, activeUsers);
   logger.info(`EMIT : ${SOCKET_EVENTS.ONLINE_USERS}`);
 }
 
-export function getOnlineUsers() {
-  return onlineUsers;
+export function getActiveUsers() {
+  return activeUsers;
 }
 
 /*************************************************************************
  ************************* PRIVATE ***************************************
  *************************************************************************/
-function getOnlineUsersDTO() {
-  return Array.from(onlineUsers.entries()).map(([userId, user]) => ({
+function getActiveUsersDTO() {
+  return Array.from(activeUsers.entries()).map(([userId, user]) => ({
     userId,
     devices: user.devices.size,
     lastSeen: Math.max(
