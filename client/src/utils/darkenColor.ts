@@ -1,4 +1,5 @@
-export function darkenColor(hex: string, amount = 0.4) {
+export function darkenColor(hex?: string, amount = 0.4) {
+  if (!hex) return "";
   const c = hex.replace("#", "");
 
   let r = parseInt(c.substring(0, 2), 16);
