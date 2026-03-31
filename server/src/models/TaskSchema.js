@@ -20,11 +20,14 @@ const taskSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "User",
       required: [true, "creator is required "],
+      immutable: true,
     },
+
     startDate: {
       type: Date,
       default: null,
     },
+    
     dueDate: {
       type: Date,
       default: null,

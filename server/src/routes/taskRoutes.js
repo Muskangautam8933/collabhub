@@ -182,6 +182,111 @@ router.get("/", taskController.getTasks);
 
 /**
  * @swagger
+ * /api/projects/{projectId}/tasks/{taskId}:
+ *   patch:
+ *     summary: Update task attributes
+ *     description: Update tasks by project ID with optional filtering and search by title
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the project
+ *
+ *       - in: path
+ *         name: taskId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID of the task
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ *               dueDate:
+ *                 type: string
+ *                 format: date-time
+ *                 nullable: true
+ * 
+ *
+ *     responses:
+ *       200:
+ *         description: Task updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   title:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   project:
+ *                     type: string
+ *                   creator:
+ *                     type: string
+ *                   startDate:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *                   dueDate:
+ *                     type: string
+ *                     format: date-time
+ *                     nullable: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                   filters:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         filterId:
+ *                           type: string
+ *                         valueId:
+ *                           type: string
+ *                         valueName:
+ *                           type: string
+ *                         color:
+ *                           type: string
+ *                   __v:
+ *                     type: integer
+ *
+ *       400:
+ *         description: Bad request - Invalid input
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Project not found
+ *       500:
+ *         description: Internal server error
+ */
+router.patch("/:taskId", taskController.updateTask);
+
+/**
+ * @swagger
  * /api/projects/{projectId}/tasks/{taskId}/taskfiltervalues:
  *   post:
  *     summary: Add new filtervalue for a task

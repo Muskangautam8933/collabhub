@@ -2,6 +2,7 @@ import * as TFVRepo from "../repos/TaskFilterValueRepo.js";
 import * as taskRepo from "../repos/TaskRepo.js";
 import { withTransaction } from "../utils/withTransaction.js";
 import asyncHandler from "../utils/asyncHandler.js";
+import { removeKeys } from "../utils/removeKeys.js";
 
 export const createTaskWithfilterValue = asyncHandler(
   async (req, res, next) => {
@@ -39,14 +40,14 @@ export const getTasks = asyncHandler(async (req, res) => {
 export const updateTask = asyncHandler(async (req, res) => {
   const { taskId } = req.params;
 
-  const { title, description } = req.body;
-  const updates = { title: title, description: description };
+  const updates = req.body;
 
   const updatedRes = await taskRepo.updateTask(
     taskId,
     req.user.userId,
     updates,
   );
+
   res.status(200).json(updatedRes);
 });
 
