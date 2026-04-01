@@ -9,6 +9,10 @@ export type Task = {
   _id: string;
   title: string;
   description: string;
+  dueDate: string;
+  startDate: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Payload = Task & {

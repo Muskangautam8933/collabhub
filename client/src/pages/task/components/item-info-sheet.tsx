@@ -18,6 +18,7 @@ import { usePageContext } from "../_context";
 import { Badge } from "@/components/ui/badge";
 import { darkenColor } from "@/utils/darkenColor";
 import { Input } from "@/components/ui/input";
+import patchTask from "@/services/patch-task";
 
 export type ItemInfoSheetProps = React.HTMLAttributes<HTMLDivElement> & {
   task?: Response;
@@ -25,16 +26,40 @@ export type ItemInfoSheetProps = React.HTMLAttributes<HTMLDivElement> & {
 
 export function ItemInfoSheet({ children, task }: ItemInfoSheetProps) {
   const [open, setOpen] = React.useState(false);
-
+  const [title, setTitle] = React.useState<string>(task?.title || "");
+  const [description, setDescription] = React.useState<string>(
+    task?.description || "",
+  );
   const [isEditName, setIsEditName] = React.useState(false);
+  const [isEditDescription, setIsEditDescription] = React.useState(false);
 
   const ctx = usePageContext();
 
   React.useEffect(() => {
-    if (open) {
-      console.log("sheet");
+    if (open && task) {
+      setTitle(task.title || "");
+      setDescription(task.description || "");
     }
-  }, [open]);
+  }, [open, task]);
+
+  if (!task) return null;
+
+  const saveTitle = async (taskId: string, title: string) => {
+    try {
+      await patchTask(ctx.projectId as string, taskId, { title });
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const saveDescription = async (taskId: string, description: string) => {
+    try {
+      await patchTask(ctx.projectId as string, taskId, { description });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -44,31 +69,43 @@ export function ItemInfoSheet({ children, task }: ItemInfoSheetProps) {
           <ScrollArea className="h-screen">
             <div>
               <SheetHeader className="p-6">
-                <SheetTitle className="flex gap-1 items-center pr-6">
-                  {isEditName ? (
-                    <Input defaultValue={task?.title} />
-                  ) : (
-                    <span>{task?.title}</span>
-                  )}
+                <>
+                  <SheetTitle className="flex gap-1 items-center pr-6">
+                    {isEditName ? (
+                      <Input
+                        name="title"
+                        defaultValue={task?.title}
+                        onChange={(e) => setTitle(e.target.value)}
+                      />
+                    ) : (
+                      <span>{title}</span>
+                    )}
 
-                  {isEditName ? (
-                    <Button
-                      variant={"outline"}
-                      onClick={() => setIsEditName(false)}
-                      className="text-white bg-green-500 border border-green-800 hover:bg-green-600 hover:text-white"
-                    >
-                      Save
-                    </Button>
-                  ) : (
-                    <Button
-                      variant={"outline"}
-                      onClick={() => setIsEditName(true)}
-                      className="bg-gray-200"
-                    >
-                      <Pencil />
-                    </Button>
-                  )}
-                </SheetTitle>
+                    {isEditName ? (
+                      <Button
+                        variant={"outline"}
+                        onClick={() => {
+                          setIsEditName(false);
+
+                          if (title === task?.title) return;
+                          saveTitle(task._id, title);
+                        }}
+                        type="submit"
+                        className="text-white bg-green-500 border border-green-800 hover:bg-green-600 hover:text-white"
+                      >
+                        Save
+                      </Button>
+                    ) : (
+                      <Button
+                        variant={"ghost"}
+                        type="button"
+                        onClick={() => setIsEditName(true)}
+                      >
+                        <Pencil />
+                      </Button>
+                    )}
+                  </SheetTitle>
+                </>
               </SheetHeader>
 
               <Separator />
@@ -76,28 +113,73 @@ export function ItemInfoSheet({ children, task }: ItemInfoSheetProps) {
               <div className="flex">
                 {/* Left */}
                 <Card className="w-[70%] p-6 shadow-none border-none">
-                  <Card className="p-0   block">
-                    <CardHeader className="block p-4!">
+                  <Card className="p-2   block">
+                    <CardHeader className="block p-2!">
                       <CardTitle>
                         Sahil Verma{" "}
                         <span className="text-gray-500">
-                          created on Aug 30, 2023
+                          created on{" "}
+                          {new Date(task.createdAt || "").toLocaleDateString()}
                         </span>
+                        <Button
+                          variant={"ghost"}
+                          onClick={() => setIsEditDescription(true)}
+                        >
+                          <Pencil />
+                        </Button>
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="p-0">
-                      <Textarea
-                        disabled
-                        className="border-none shadow-none  focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none px-4"
-                        defaultValue={
-                          task?.description || "No description provided."
-                        }
-                      />
+                    <CardContent className="p-0 space-y-1">
+                      {!isEditDescription ? (
+                        <p className="p-4 text-gray-800 text-sm">
+                          {description || "No description provided."}{" "}
+                        </p>
+                      ) : (
+                        <div className="space-y-2">
+                          <Textarea
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            name="description"
+                          />
+
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              onClick={() => setIsEditDescription(false)}
+                              type="submit"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              variant={"outline"}
+                              onClick={() => {
+                                setIsEditDescription(false);
+
+                                if (description === task?.description) return;
+                                saveDescription(task._id, description);
+                              }}
+                              className="text-white bg-green-500 border border-green-800 hover:bg-green-600 hover:text-white"
+                            >
+                              Save
+                            </Button>
+                          </div>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
 
-                  <Label>Add a Comment</Label>
-                  <Textarea placeholder="Write comment here..." />
+                  <div className="space-y-4">
+                    <Label>Add a Comment</Label>
+                    <Textarea placeholder="Write comment here..." />
+                    <div className="flex justify-end">
+                      <Button
+                        variant={"outline"}
+                        type="submit"
+                        className="text-white bg-green-500 border border-green-800 hover:bg-green-600 hover:text-white"
+                      >
+                        Comment
+                      </Button>
+                    </div>
+                  </div>
                 </Card>
 
                 {/* Right */}

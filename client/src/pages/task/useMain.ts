@@ -213,6 +213,7 @@ export default function useMain() {
     tasksLoading,
     tasksError,
     filterId,
+    projectId,
     getColumnBySelectionHandler,
     setTasks,
     getDropHandler,
